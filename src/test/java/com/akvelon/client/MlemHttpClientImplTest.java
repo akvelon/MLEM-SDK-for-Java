@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class MlemHttpClientImplTest {
     private final ObjectMapper mapper = new ObjectMapper();
-    private final static String host = "http://localhost:8080/";
+    private final static String host = "http://example-mlem-get-started-app.herokuapp.com/";
 
     private static ExecutorService executorService = Executors.newFixedThreadPool(10);
     private final MlemHttpClientImpl clientWithExecutor = new MlemHttpClientImpl(executorService, host);
