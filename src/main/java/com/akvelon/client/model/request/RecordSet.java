@@ -1,26 +1,42 @@
 package com.akvelon.client.model.request;
 
+import com.akvelon.client.util.JsonMapper;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class RecordSet {
+    @JsonProperty("values")
     private final List<Record> records = new ArrayList<>();
-    private final ObjectMapper mapper = new ObjectMapper();
+
+    public RecordSet() {
+    }
+
+    public List<Record> getRecords() {
+        return records;
+    }
 
     public void addRecord(Record record) {
         records.add(record);
     }
 
     public JsonNode toJson(String propertyName) {
-        ArrayNode arrayNode = mapper.createArrayNode();
-        for (Record record : records) {
-            arrayNode.add(record.toJsonNode());
-        }
+        return JsonMapper.recordsToJsonNode(propertyName, records);
+    }
 
-        return mapper.createObjectNode().set(propertyName, arrayNode);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RecordSet recordSet = (RecordSet) o;
+        return Objects.equals(records, recordSet.records);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(records);
     }
 }

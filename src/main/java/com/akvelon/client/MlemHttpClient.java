@@ -1,6 +1,7 @@
 package com.akvelon.client;
 
 import com.akvelon.client.model.interface_.InterfaceModel;
+import com.akvelon.client.model.request.Request;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.concurrent.CompletableFuture;
@@ -45,6 +46,14 @@ public interface MlemHttpClient {
      * @return a JsonNode response wrapped in the CompletableFuture object.
      */
     CompletableFuture<JsonNode> predictAsync(JsonNode requestBody);
+
+    /**
+     * The method sends the /predict post request. The method can catch the exception via exceptionaly method.
+     *
+     * @param requestBody is the representation of the Request class.
+     * @return a String response wrapped in the CompletableFuture object.
+     */
+    CompletableFuture<String> predictAsync(Request requestBody);
 
     /**
      * The method sends the /predictProba post request. The method can catch the exception via exceptionaly method.

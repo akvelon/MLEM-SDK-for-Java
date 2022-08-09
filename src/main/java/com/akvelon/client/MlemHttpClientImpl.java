@@ -2,7 +2,8 @@ package com.akvelon.client;
 
 import com.akvelon.client.exception.RestException;
 import com.akvelon.client.model.interface_.InterfaceModel;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.akvelon.client.model.request.Request;
+import com.akvelon.client.util.JsonMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -114,6 +115,17 @@ class MlemHttpClientImpl implements MlemHttpClient {
     }
 
     /**
+     * The method sends the /predict post request. The method can catch the exception via exceptionaly method.
+     *
+     * @param requestBody is the representation of the Request class.
+     * @return a String response wrapped in the CompletableFuture object.
+     */
+    @Override
+    public CompletableFuture<String> predictAsync(Request requestBody) {
+        return sendAsyncPostString(POST_PREDICT, requestBody.toString());
+    }
+
+    /**
      * The method sends the /predictProba post request. The method can catch the exception via exceptionaly method.
      *
      * @param requestBody is the String representation of the request.
@@ -193,7 +205,8 @@ class MlemHttpClientImpl implements MlemHttpClient {
     private CompletableFuture<JsonNode> sendAsyncGetJson(String method) {
         HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create(host + method)).build();
 
-        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(stringHttpResponse -> stringToJsonNode(stringHttpResponse.body(), JsonNode.class));
+        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(stringHttpResponse -> JsonMapper.stringToObject(stringHttpResponse.body(), JsonNode.class));
     }
 
     /**
@@ -205,7 +218,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
     private CompletableFuture<InterfaceModel> sendAsyncGetModel(String method) {
         HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create(host + method)).build();
 
-        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(stringHttpResponse -> stringToJsonNode(stringHttpResponse.body(), InterfaceModel.class));
+        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(stringHttpResponse -> JsonMapper.stringToObject(stringHttpResponse.body(), InterfaceModel.class));
     }
 
     /**
@@ -252,7 +265,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
                     // check response for exception and if true throw the exception
                     checkResponseAndThrowException(httpResponse);
                     // if no exception caused, return the response body converted to Json
-                    return stringToJsonNode(httpResponse.body(), JsonNode.class);
+                    return JsonMapper.stringToObject(httpResponse.body(), JsonNode.class);
                 });
     }
 
@@ -266,22 +279,6 @@ class MlemHttpClientImpl implements MlemHttpClient {
         if (httpResponse.statusCode() / 100 != 2) {
             //if the code is not start with the digit 2, throw the RestException
             throw new RestException(httpResponse.body(), httpResponse.statusCode());
-        }
-    }
-
-    /**
-     * The method convert the string representation to given class
-     *
-     * @param json   is the string representation of Json
-     * @param tClass is the class for conversion result
-     * @param <T>    is the generic for setting the class
-     * @return the result object of the conversion
-     */
-    private <T> T stringToJsonNode(String json, Class<T> tClass) {
-        try {
-            return mapper.readValue(json, tClass);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
         }
     }
 }

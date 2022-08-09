@@ -1,36 +1,45 @@
 package com.akvelon.client.model.request;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.akvelon.client.util.JsonMapper;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class Record {
+    @JsonValue
     private final HashMap<String, Number> columns = new HashMap<>();
-    private final ObjectMapper mapper = new ObjectMapper();
+
+    public Record() {
+    }
+
+    public HashMap<String, Number> getColumns() {
+        return columns;
+    }
 
     public void addColumn(String name, Number value) {
         columns.put(name, value);
     }
 
     public String toString() {
-        try {
-            return mapper.writeValueAsString(columns);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        return JsonMapper.writeValueAsString(columns);
     }
 
     public JsonNode toJsonNode() {
-        return stringToJsonNode(toString());
+        return JsonMapper.stringToObject(toString(), JsonNode.class);
     }
 
-    private JsonNode stringToJsonNode(String json) {
-        try {
-            return mapper.readValue(json, JsonNode.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Record record = (Record) o;
+        return columns.equals(record.columns);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(columns);
     }
 }
