@@ -1,6 +1,7 @@
 package com.akvelon.client.model.request;
 
 import com.akvelon.client.util.JsonMapper;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -9,9 +10,14 @@ import java.util.Objects;
 
 public class Record {
     @JsonValue
-    private final HashMap<String, Number> columns = new HashMap<>();
+    private HashMap<String, Number> columns = new HashMap<>();
 
     public Record() {
+    }
+
+    @JsonCreator
+    public Record(HashMap<String, Number> columns) {
+        this.columns = columns;
     }
 
     public HashMap<String, Number> getColumns() {
