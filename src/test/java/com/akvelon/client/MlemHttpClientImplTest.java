@@ -6,7 +6,6 @@ import com.akvelon.client.model.interface_.InterfaceModel;
 import com.akvelon.client.model.request.Request;
 import com.akvelon.client.util.JsonMapper;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -18,8 +17,11 @@ import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public class MlemHttpClientImplTest {
-    private final ObjectMapper mapper = new ObjectMapper();
-    private final static String HOST_URL = "http://example-mlem-get-started-app.herokuapp.com/";
+        private final static String HOST_URL = "http://example-mlem-get-started-app.herokuapp.com/";
+/*
+    private final static String HOST_URL = "http://localhost:8080/";
+*/
+
 
     private final static ExecutorService executorService = Executors.newFixedThreadPool(10);
     private final MlemHttpClientImpl clientWithExecutor = new MlemHttpClientImpl(executorService, HOST_URL);
@@ -217,7 +219,7 @@ public class MlemHttpClientImplTest {
 
     private void assertResponseException(RestException restException) {
         Assertions.assertNotNull(restException);
-        Assertions.assertNotNull(restException.getMessage());
+        Assertions.assertNotNull(restException.getMessage(), restException.getMessage());
         assertResponseString(restException.getMessage());
 
         if (restException.getStatusCode() == 422) {

@@ -1,9 +1,11 @@
 package com.akvelon.client.model.interface_;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 
+@JsonIgnoreProperties
 public class Type {
     private ArrayList<String> columns;
     private ArrayList<String> dtypes;

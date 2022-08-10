@@ -26,11 +26,18 @@ public class Methods {
     @JsonProperty("sklearn_predict_proba")
     private Method sklearnMethodProba;
 
-    public Methods(Method method, Method methodProba, Method sklearnMethod, Method sklearnMethodProba) {
+    /**
+     * The /torch_predict method
+     */
+    @JsonProperty("torch_predict")
+    private Method torch_predict;
+
+    public Methods(Method method, Method methodProba, Method sklearnMethod, Method sklearnMethodProba, Method torch_predict) {
         this.method = method;
         this.methodProba = methodProba;
         this.sklearnMethod = sklearnMethod;
         this.sklearnMethodProba = sklearnMethodProba;
+        this.torch_predict = torch_predict;
     }
 
     public Methods() {
@@ -66,5 +73,13 @@ public class Methods {
 
     public void setSklearnPredictProba(Method sklearnMethodProba) {
         this.sklearnMethodProba = sklearnMethodProba;
+    }
+
+    public Method getTorch_predict() {
+        return torch_predict;
+    }
+
+    public void setTorch_predict(Method torch_predict) {
+        this.torch_predict = torch_predict;
     }
 }
