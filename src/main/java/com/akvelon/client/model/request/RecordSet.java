@@ -24,7 +24,7 @@ public class RecordSet {
     }
 
     public JsonNode toJson(String propertyName) {
-        return JsonMapper.recordsToJsonNode(propertyName, records);
+        return JsonMapper.createObjectNodeWithArray(propertyName, records);
     }
 
     @Override

@@ -13,7 +13,7 @@ public class Request {
     }
 
     public JsonNode toJson() {
-        return JsonMapper.stringToObject(toString(), JsonNode.class);
+        return JsonMapper.readValue(toString(), JsonNode.class);
     }
 
     public String toString() {

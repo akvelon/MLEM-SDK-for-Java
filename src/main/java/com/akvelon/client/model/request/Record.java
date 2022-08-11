@@ -33,7 +33,7 @@ public class Record {
     }
 
     public JsonNode toJsonNode() {
-        return JsonMapper.stringToObject(toString(), JsonNode.class);
+        return JsonMapper.readValue(toString(), JsonNode.class);
     }
 
     @Override

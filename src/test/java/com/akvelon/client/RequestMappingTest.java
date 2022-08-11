@@ -42,7 +42,7 @@ public class RequestMappingTest {
         JsonNode dataJsonNode = jsonNode.get("data");
         Assertions.assertNotNull(dataJsonNode);
 
-        RecordSet recordSetFromJson = JsonMapper.stringToObject(dataJsonNode.toString(), RecordSet.class);
+        RecordSet recordSetFromJson = JsonMapper.readValue(dataJsonNode.toString(), RecordSet.class);
         Assertions.assertNotNull(recordSetFromJson);
         Assertions.assertEquals(recordSet, recordSetFromJson);
     }

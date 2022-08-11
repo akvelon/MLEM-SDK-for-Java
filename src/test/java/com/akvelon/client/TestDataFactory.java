@@ -35,11 +35,11 @@ public class TestDataFactory {
             "}";
 
     public static JsonNode buildDataRequestBody() {
-        return JsonMapper.stringToObject(dataRequestBody, JsonNode.class);
+        return JsonMapper.readValue(dataRequestBody, JsonNode.class);
     }
 
     public static JsonNode buildXRequestBody() {
-        return JsonMapper.stringToObject(xRequestBody, JsonNode.class);
+        return JsonMapper.readValue(xRequestBody, JsonNode.class);
     }
 
     public static RecordSet buildRecordSet() {

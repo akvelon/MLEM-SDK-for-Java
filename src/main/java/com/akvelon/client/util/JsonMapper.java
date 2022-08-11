@@ -19,7 +19,7 @@ public class JsonMapper {
      * @param <T>    is the generic for setting the class
      * @return the result object of the conversion
      */
-    public static <T> T stringToObject(String json, Class<T> tClass) {
+    public static <T> T readValue(String json, Class<T> tClass) {
         try {
             return mapper.readValue(json, tClass);
         } catch (JsonProcessingException e) {
@@ -35,7 +35,7 @@ public class JsonMapper {
         }
     }
 
-    public static JsonNode recordsToJsonNode(String propertyName, List<Record> records) {
+    public static JsonNode createObjectNodeWithArray(String propertyName, List<Record> records) {
         ArrayNode arrayNode = mapper.createArrayNode();
         for (Record record : records) {
             arrayNode.add(record.toJsonNode());

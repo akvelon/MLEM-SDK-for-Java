@@ -42,10 +42,20 @@ public interface MlemHttpClient {
     CompletableFuture<JsonNode> predict(Request requestBody);
 
     /**
-     * The method sends the /predictProba post request. The method can catch the exception via exceptionaly method.
+     * The method sends the post request. The method can catch the exception via exceptionaly method.
      *
+     * @param methodName  is the method name for the request
      * @param requestBody is the JsonNode representation of the request.
      * @return a JsonNode response wrapped in the CompletableFuture object.
      */
     CompletableFuture<JsonNode> call(String methodName, JsonNode requestBody);
+
+    /**
+     * The method sends the post request. The method can catch the exception via exceptionaly method.
+     *
+     * @param methodName  is the method name for the request
+     * @param requestBody is the Request representation of the request.
+     * @return a JsonNode response wrapped in the CompletableFuture object.
+     */
+    CompletableFuture<JsonNode> call(String methodName, Request requestBody);
 }

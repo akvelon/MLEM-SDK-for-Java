@@ -22,8 +22,8 @@ public class MlemHttpClientImplTest {
         private final static String HOST_URL = "http://localhost:8080/";
     */
     private final static ExecutorService executorService = Executors.newFixedThreadPool(10);
-    private final MlemHttpClientImpl clientWithExecutor = new MlemHttpClientImpl(executorService, HOST_URL);
-    private final MlemHttpClientImpl clientWithOutExecutor = new MlemHttpClientImpl(HOST_URL);
+    private final MlemHttpClient clientWithExecutor = MlemHttpClientFactory.createMlemHttpClient(executorService, HOST_URL);
+    private final MlemHttpClient clientWithOutExecutor = MlemHttpClientFactory.createMlemHttpClient(HOST_URL);
 
     /**
      * /predict post-methods
@@ -67,11 +67,11 @@ public class MlemHttpClientImplTest {
     }
 
     @Test
-    @DisplayName("Test post /predict method with Request response")
+    @DisplayName("Test post /predict method with Request request and Json response")
     public void testPredictRequest() throws ExecutionException, InterruptedException {
         Request request = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet());
 
-        assertResponseJsonOrHandleException(clientWithExecutor.predict(request.toJson()));
+        assertResponseJsonOrHandleException(clientWithExecutor.predict(request));
     }
 
     @Test
@@ -80,10 +80,18 @@ public class MlemHttpClientImplTest {
         assertResponseJsonOrHandleException(clientWithExecutor.call(POST_PREDICT_PROBA, TestDataFactory.buildDataRequestBody()));
     }
 
+    @Test
+    @DisplayName("Test post /predictProba method with Request request and Json response")
+    public void testPredictProbaRequest() throws ExecutionException, InterruptedException {
+        Request request = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet());
+
+        assertResponseJsonOrHandleException(clientWithExecutor.call(POST_PREDICT_PROBA, request));
+    }
+
     @Test()
     @DisplayName("Test post /predictProba method with null request body")
     public void testPredictProbaEmptyString() {
-        NullPointerException thrown = Assertions.assertThrows(NullPointerException.class, () -> clientWithExecutor.call(POST_PREDICT_PROBA, null).exceptionally(throwable -> {
+        NullPointerException thrown = Assertions.assertThrows(NullPointerException.class, () -> clientWithExecutor.call(POST_PREDICT_PROBA, (JsonNode) null).exceptionally(throwable -> {
             RestException restException = (RestException) throwable.getCause();
             assertResponseException(restException);
             return null;
@@ -178,7 +186,7 @@ public class MlemHttpClientImplTest {
         assertResponseString(restException.getMessage());
 
         if (restException.getStatusCode() == 422) {
-            ValidationError validationError = JsonMapper.stringToObject(restException.getMessage(), ValidationError.class);
+            ValidationError validationError = JsonMapper.readValue(restException.getMessage(), ValidationError.class);
             Assertions.assertNotNull(validationError);
             Assertions.assertNotNull(validationError.getDetail());
         }
