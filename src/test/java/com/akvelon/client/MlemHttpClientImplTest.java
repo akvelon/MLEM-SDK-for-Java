@@ -25,6 +25,13 @@ public class MlemHttpClientImplTest {
     private final MlemHttpClientImpl clientWithExecutor = new MlemHttpClientImpl(executorService, HOST_URL);
     private final MlemHttpClientImpl clientWithOutExecutor = new MlemHttpClientImpl(HOST_URL);
 
+    /**
+     * /predict post-methods
+     */
+    private final String POST_PREDICT_PROBA = "predict_proba";
+    private final String POST_SKLEARN_PREDICT = "sklearn_predict";
+    private final String POST_SKLEARN_PREDICT_PROBA = "sklearn_predict_proba";
+
     @AfterAll
     @DisplayName("ExecutorService stopped")
     public static void cleanUp() {
@@ -56,7 +63,7 @@ public class MlemHttpClientImplTest {
     @Test
     @DisplayName("Test post /predict method with JSON response")
     public void testPredictJson() throws ExecutionException, InterruptedException {
-        assertResponseJsonOrHandleException(clientWithExecutor.predictAsync(TestDataFactory.buildDataRequestBody()));
+        assertResponseJsonOrHandleException(clientWithExecutor.predict(TestDataFactory.buildDataRequestBody()));
     }
 
     @Test
@@ -64,19 +71,19 @@ public class MlemHttpClientImplTest {
     public void testPredictRequest() throws ExecutionException, InterruptedException {
         Request request = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet());
 
-        assertResponseJsonOrHandleException(clientWithExecutor.predictAsync(request.toJson()));
+        assertResponseJsonOrHandleException(clientWithExecutor.predict(request.toJson()));
     }
 
     @Test
     @DisplayName("Test post /predictProba method with JSON request and response")
     public void testPredictProbaJson() throws ExecutionException, InterruptedException {
-        assertResponseJsonOrHandleException(clientWithExecutor.predictProbaAsync(TestDataFactory.buildDataRequestBody()));
+        assertResponseJsonOrHandleException(clientWithExecutor.call(POST_PREDICT_PROBA, TestDataFactory.buildDataRequestBody()));
     }
 
     @Test()
     @DisplayName("Test post /predictProba method with null request body")
     public void testPredictProbaEmptyString() {
-        NullPointerException thrown = Assertions.assertThrows(NullPointerException.class, () -> clientWithExecutor.predictProbaAsync(null).exceptionally(throwable -> {
+        NullPointerException thrown = Assertions.assertThrows(NullPointerException.class, () -> clientWithExecutor.call(POST_PREDICT_PROBA, null).exceptionally(throwable -> {
             RestException restException = (RestException) throwable.getCause();
             assertResponseException(restException);
             return null;
@@ -87,19 +94,19 @@ public class MlemHttpClientImplTest {
     @Test()
     @DisplayName("Test post /sklearnPredict method with JSON request and response")
     public void testSklearnPredictJson() throws InterruptedException, ExecutionException {
-        assertResponseJsonOrHandleException(clientWithExecutor.sklearnPredictAsync(TestDataFactory.buildXRequestBody()));
+        assertResponseJsonOrHandleException(clientWithExecutor.call(POST_SKLEARN_PREDICT, TestDataFactory.buildXRequestBody()));
     }
 
     @Test
     @DisplayName("Test post /sklearnPredictProba method with JSON request and response")
     public void testSklearnPredictProbaJson() throws InterruptedException, ExecutionException {
-        assertResponseJsonOrHandleException(clientWithExecutor.sklearnPredictProbaAsync(TestDataFactory.buildDataRequestBody()));
+        assertResponseJsonOrHandleException(clientWithExecutor.call(POST_SKLEARN_PREDICT_PROBA, TestDataFactory.buildDataRequestBody()));
     }
 
     @Test()
     @DisplayName("Test post /sklearnPredict method with WRONG JSON request and response. Handle the HTTP 500.")
     public void testSklearnPredict500Error() throws InterruptedException, ExecutionException {
-        JsonNode result = clientWithExecutor.sklearnPredictAsync(TestDataFactory.buildDataRequestBody()).exceptionally(throwable -> {
+        JsonNode result = clientWithExecutor.call(POST_SKLEARN_PREDICT, TestDataFactory.buildDataRequestBody()).exceptionally(throwable -> {
             RestException restException = (RestException) throwable.getCause();
             assertResponseException(restException);
             return null;
@@ -110,7 +117,7 @@ public class MlemHttpClientImplTest {
     @Test
     @DisplayName("Test post /sklearnPredict method with WRONG JSON request and response")
     public void testSklearnPredictProba500error() throws InterruptedException, ExecutionException {
-        JsonNode result = clientWithExecutor.sklearnPredictProbaAsync(TestDataFactory.buildDataRequestBody()).exceptionally(throwable -> {
+        JsonNode result = clientWithExecutor.call(POST_SKLEARN_PREDICT_PROBA, TestDataFactory.buildDataRequestBody()).exceptionally(throwable -> {
             RestException restException = (RestException) throwable.getCause();
             assertResponseException(restException);
             return null;
@@ -123,7 +130,7 @@ public class MlemHttpClientImplTest {
     public void testGetInterfaceExecutorNull() throws ExecutionException, InterruptedException {
         MlemHttpClientImpl mlemHttpClientImpl = new MlemHttpClientImpl(null, HOST_URL);
 
-        CompletableFuture<JsonNode> future = mlemHttpClientImpl.predictAsync(TestDataFactory.buildDataRequestBody());
+        CompletableFuture<JsonNode> future = mlemHttpClientImpl.predict(TestDataFactory.buildDataRequestBody());
         assertResponseJsonOrHandleException(future);
     }
 
@@ -134,7 +141,7 @@ public class MlemHttpClientImplTest {
 
         MlemHttpClientImpl mlemHttpClientImpl = new MlemHttpClientImpl(executorService, HOST_URL);
         List<JsonNode> dataRequestList = Arrays.asList(TestDataFactory.buildDataRequestBody(), TestDataFactory.buildDataRequestBody(), TestDataFactory.buildDataRequestBody());
-        List<CompletableFuture<JsonNode>> completableFutures = dataRequestList.stream().map(mlemHttpClientImpl::predictAsync).collect(Collectors.toList());
+        List<CompletableFuture<JsonNode>> completableFutures = dataRequestList.stream().map(mlemHttpClientImpl::predict).collect(Collectors.toList());
 
         for (CompletableFuture<JsonNode> future : completableFutures) {
             assertResponseJsonOrHandleException(future);

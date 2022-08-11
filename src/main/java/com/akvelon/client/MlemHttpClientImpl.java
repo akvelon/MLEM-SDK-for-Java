@@ -26,17 +26,10 @@ class MlemHttpClientImpl implements MlemHttpClient {
      * /predict post-method
      */
     private final String POST_PREDICT = "predict";
-    /**
-     * /predict post-method
-     */
-    private final String POST_PREDICT_PROBA = "predict_proba";
-    private final String POST_SKLEARN_PREDICT = "sklearn_predict";
-    private final String POST_SKLEARN_PREDICT_PROBA = "sklearn_predict_proba";
 
     private final String host;
 
     private final HttpClient httpClient;
-    private final ObjectMapper mapper = new ObjectMapper();
 
     /**
      * Constructor for creating the implementation of Mlem HttpClient
@@ -91,7 +84,8 @@ class MlemHttpClientImpl implements MlemHttpClient {
      * @param requestBody is the JsonNode representation of the request.
      * @return a JsonNode response wrapped in the CompletableFuture object.
      */
-    public CompletableFuture<JsonNode> predictAsync(JsonNode requestBody) {
+    @Override
+    public CompletableFuture<JsonNode> predict(JsonNode requestBody) {
         return sendAsyncPostJson(POST_PREDICT, requestBody);
     }
 
@@ -102,7 +96,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
      * @return a String response wrapped in the CompletableFuture object.
      */
     @Override
-    public CompletableFuture<JsonNode> predictAsync(Request requestBody) {
+    public CompletableFuture<JsonNode> predict(Request requestBody) {
         return sendAsyncPostJson(POST_PREDICT, requestBody.toJson());
     }
 
@@ -112,28 +106,9 @@ class MlemHttpClientImpl implements MlemHttpClient {
      * @param requestBody is the JsonNode representation of the request.
      * @return a JsonNode response wrapped in the CompletableFuture object.
      */
-    public CompletableFuture<JsonNode> predictProbaAsync(JsonNode requestBody) {
-        return sendAsyncPostJson(POST_PREDICT_PROBA, requestBody);
-    }
-
-    /**
-     * The method sends the /sklearnPredict post request. The method can catch the exception via exceptionaly method.
-     *
-     * @param requestBody is the JsonNode representation of the request.
-     * @return a JsonNode response wrapped in the CompletableFuture object.
-     */
-    public CompletableFuture<JsonNode> sklearnPredictAsync(JsonNode requestBody) {
-        return sendAsyncPostJson(POST_SKLEARN_PREDICT, requestBody);
-    }
-
-    /**
-     * The method sends the /sklearnPredictProba post request. The method can catch the exception via exceptionaly method.
-     *
-     * @param requestBody is the JsonNode representation of the request.
-     * @return a JsonNode response wrapped in the CompletableFuture object.
-     */
-    public CompletableFuture<JsonNode> sklearnPredictProbaAsync(JsonNode requestBody) {
-        return sendAsyncPostJson(POST_SKLEARN_PREDICT_PROBA, requestBody);
+    @Override
+    public CompletableFuture<JsonNode> call(String methodName, JsonNode requestBody) {
+        return sendAsyncPostJson(methodName, requestBody);
     }
 
     /**

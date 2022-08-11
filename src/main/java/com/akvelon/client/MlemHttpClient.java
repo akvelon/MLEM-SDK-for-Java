@@ -31,7 +31,7 @@ public interface MlemHttpClient {
      * @param requestBody is the JsonNode representation of the request.
      * @return a JsonNode response wrapped in the CompletableFuture object.
      */
-    CompletableFuture<JsonNode> predictAsync(JsonNode requestBody);
+    CompletableFuture<JsonNode> predict(JsonNode requestBody);
 
     /**
      * The method sends the /predict post request. The method can catch the exception via exceptionaly method.
@@ -39,8 +39,7 @@ public interface MlemHttpClient {
      * @param requestBody is the representation of the Request class.
      * @return a JsonNode response wrapped in the CompletableFuture object.
      */
-    CompletableFuture<JsonNode> predictAsync(Request requestBody);
-
+    CompletableFuture<JsonNode> predict(Request requestBody);
 
     /**
      * The method sends the /predictProba post request. The method can catch the exception via exceptionaly method.
@@ -48,21 +47,5 @@ public interface MlemHttpClient {
      * @param requestBody is the JsonNode representation of the request.
      * @return a JsonNode response wrapped in the CompletableFuture object.
      */
-    CompletableFuture<JsonNode> predictProbaAsync(JsonNode requestBody);
-
-    /**
-     * The method sends the /sklearnPredict post request. The method can catch the exception via exceptionaly method.
-     *
-     * @param requestBody is the JsonNode representation of the request.
-     * @return a JsonNode response wrapped in the CompletableFuture object.
-     */
-    CompletableFuture<JsonNode> sklearnPredictAsync(JsonNode requestBody);
-
-    /**
-     * The method sends the /sklearnPredictProba post request. The method can catch the exception via exceptionaly method.
-     *
-     * @param requestBody is the JsonNode representation of the request.
-     * @return a JsonNode response wrapped in the CompletableFuture object.
-     */
-    CompletableFuture<JsonNode> sklearnPredictProbaAsync(JsonNode requestBody);
+    CompletableFuture<JsonNode> call(String methodName, JsonNode requestBody);
 }
