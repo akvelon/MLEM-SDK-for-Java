@@ -3,11 +3,12 @@ package com.akvelon.client;
 import com.akvelon.client.model.request.Record;
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.Request;
+import com.akvelon.client.util.JsonMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Assertions;
 
 public class TestDataFactory {
-    public static final String dataRequestBody = "{\n" +
+    private static final String dataRequestBody = "{\n" +
             "  \"data\": {\n" +
             "    \"values\": [\n" +
             "      {\n" +
@@ -20,7 +21,7 @@ public class TestDataFactory {
             "  }\n" +
             "}";
 
-    public static final String xRequestBody = "{\n" +
+    private static final String xRequestBody = "{\n" +
             "  \"X\": {\n" +
             "    \"values\": [\n" +
             "      {\n" +
@@ -32,6 +33,14 @@ public class TestDataFactory {
             "    ]\n" +
             "  }\n" +
             "}";
+
+    public static JsonNode buildDataRequestBody() {
+        return JsonMapper.stringToObject(dataRequestBody, JsonNode.class);
+    }
+
+    public static JsonNode buildXRequestBody() {
+        return JsonMapper.stringToObject(xRequestBody, JsonNode.class);
+    }
 
     public static RecordSet buildRecordSet() {
         Record record = new Record();

@@ -70,15 +70,6 @@ class MlemHttpClientImpl implements MlemHttpClient {
     /**
      * The method sends the /inteface.json get request. The method can catch the exception via exceptionaly method.
      *
-     * @return a String response wrapped in the CompletableFuture object.
-     */
-    public CompletableFuture<String> interfaceStringAsync() {
-        return sendAsyncGetString(GET_INTERFACE);
-    }
-
-    /**
-     * The method sends the /inteface.json get request. The method can catch the exception via exceptionaly method.
-     *
      * @return a JsonNode response wrapped in the CompletableFuture object.
      */
     public CompletableFuture<JsonNode> interfaceJsonAsync() {
@@ -92,16 +83,6 @@ class MlemHttpClientImpl implements MlemHttpClient {
      */
     public CompletableFuture<InterfaceModel> interfaceModelAsync() {
         return sendAsyncGetModel(GET_INTERFACE);
-    }
-
-    /**
-     * The method sends the /predict post request.  The method can catch the exception via exceptionaly method.
-     *
-     * @param requestBody is the String representation of the request.
-     * @return a String response wrapped in the CompletableFuture object.
-     */
-    public CompletableFuture<String> predictAsync(String requestBody) {
-        return sendAsyncPostString(POST_PREDICT, requestBody);
     }
 
     /**
@@ -121,18 +102,8 @@ class MlemHttpClientImpl implements MlemHttpClient {
      * @return a String response wrapped in the CompletableFuture object.
      */
     @Override
-    public CompletableFuture<String> predictAsync(Request requestBody) {
-        return sendAsyncPostString(POST_PREDICT, requestBody.toString());
-    }
-
-    /**
-     * The method sends the /predictProba post request. The method can catch the exception via exceptionaly method.
-     *
-     * @param requestBody is the String representation of the request.
-     * @return a String response wrapped in the CompletableFuture object.
-     */
-    public CompletableFuture<String> predictProbaAsync(String requestBody) {
-        return sendAsyncPostString(POST_PREDICT_PROBA, requestBody);
+    public CompletableFuture<JsonNode> predictAsync(Request requestBody) {
+        return sendAsyncPostJson(POST_PREDICT, requestBody.toJson());
     }
 
     /**
@@ -148,16 +119,6 @@ class MlemHttpClientImpl implements MlemHttpClient {
     /**
      * The method sends the /sklearnPredict post request. The method can catch the exception via exceptionaly method.
      *
-     * @param requestBody is the String representation of the request.
-     * @return a String response wrapped in the CompletableFuture object.
-     */
-    public CompletableFuture<String> sklearnPredictAsync(String requestBody) {
-        return sendAsyncPostString(POST_SKLEARN_PREDICT, requestBody);
-    }
-
-    /**
-     * The method sends the /sklearnPredict post request. The method can catch the exception via exceptionaly method.
-     *
      * @param requestBody is the JsonNode representation of the request.
      * @return a JsonNode response wrapped in the CompletableFuture object.
      */
@@ -168,32 +129,11 @@ class MlemHttpClientImpl implements MlemHttpClient {
     /**
      * The method sends the /sklearnPredictProba post request. The method can catch the exception via exceptionaly method.
      *
-     * @param requestBody is the String representation of the request.
-     * @return a String response wrapped in the CompletableFuture object.
-     */
-    public CompletableFuture<String> sklearnPredictProbaAsync(String requestBody) {
-        return sendAsyncPostString(POST_SKLEARN_PREDICT_PROBA, requestBody);
-    }
-
-    /**
-     * The method sends the /sklearnPredictProba post request. The method can catch the exception via exceptionaly method.
-     *
      * @param requestBody is the JsonNode representation of the request.
      * @return a JsonNode response wrapped in the CompletableFuture object.
      */
     public CompletableFuture<JsonNode> sklearnPredictProbaAsync(JsonNode requestBody) {
         return sendAsyncPostJson(POST_SKLEARN_PREDICT_PROBA, requestBody);
-    }
-
-    /**
-     * The method send the async get request for given method name.
-     *
-     * @param method is the name of request params
-     * @return a String response wrapped in the CompletableFuture object.
-     */
-    private CompletableFuture<String> sendAsyncGetString(String method) {
-        HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create(host + method)).build();
-        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body);
     }
 
     /**
@@ -225,34 +165,13 @@ class MlemHttpClientImpl implements MlemHttpClient {
      * The method send the async post request for given method name and request body
      *
      * @param method      is the name of request params
-     * @param requestBody is the request body
-     * @return a String response wrapped in the CompletableFuture object.
-     */
-    private CompletableFuture<String> sendAsyncPostString(String method, String requestBody) {
-        // Build a new post request
-        HttpRequest request = HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(requestBody)).uri(URI.create(host + method)).header("Content-Type", "application/json").build();
-
-        return httpClient
-                // Sends the given request asynchronously using this client with the given response body handler
-                .sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                // Returns a new CompletionStage that, when this stage completes normally,
-                // is executed with this stage's result as the argument to the supplied function.
-                .thenApply(httpResponse -> {
-                    // check response for exception and if true throw the exception
-                    checkResponseAndThrowException(httpResponse);
-                    // if no exception caused, return the response body
-                    return httpResponse.body();
-                });
-    }
-
-    /**
-     * The method send the async post request for given method name and request body
-     *
-     * @param method      is the name of request params
      * @param requestBody is the JsonNode representation of the request.
      * @return a JsonNode response wrapped in the CompletableFuture object.
      */
     private CompletableFuture<JsonNode> sendAsyncPostJson(String method, JsonNode requestBody) {
+        if (requestBody == null) {
+            throw new NullPointerException();
+        }
         // Build a new post request
         HttpRequest request = HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(requestBody.toString())).uri(URI.create(host + method)).header("Content-Type", "application/json").build();
 

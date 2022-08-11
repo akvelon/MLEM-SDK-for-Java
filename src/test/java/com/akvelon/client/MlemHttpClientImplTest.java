@@ -17,12 +17,10 @@ import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public class MlemHttpClientImplTest {
-        private final static String HOST_URL = "http://example-mlem-get-started-app.herokuapp.com/";
-/*
-    private final static String HOST_URL = "http://localhost:8080/";
-*/
-
-
+    private final static String HOST_URL = "http://example-mlem-get-started-app.herokuapp.com/";
+    /*
+        private final static String HOST_URL = "http://localhost:8080/";
+    */
     private final static ExecutorService executorService = Executors.newFixedThreadPool(10);
     private final MlemHttpClientImpl clientWithExecutor = new MlemHttpClientImpl(executorService, HOST_URL);
     private final MlemHttpClientImpl clientWithOutExecutor = new MlemHttpClientImpl(HOST_URL);
@@ -41,18 +39,6 @@ public class MlemHttpClientImplTest {
     }
 
     @Test
-    @DisplayName("Test get /interface.json method with string response")
-    public void testGetInterfaceString() throws ExecutionException, InterruptedException {
-        assertResponseStringOrHandleException(clientWithExecutor.interfaceStringAsync());
-    }
-
-    @Test
-    @DisplayName("Test get /interface.json method without executor")
-    public void testGetInterfaceWithoutExecutor() throws ExecutionException, InterruptedException {
-        assertResponseStringOrHandleException(clientWithOutExecutor.interfaceStringAsync());
-    }
-
-    @Test
     @DisplayName("Test get /interface.json method with json response")
     public void testGetInterfaceJson() throws ExecutionException, InterruptedException {
         assertResponseJsonOrHandleException(clientWithExecutor.interfaceJsonAsync());
@@ -68,15 +54,9 @@ public class MlemHttpClientImplTest {
     }
 
     @Test
-    @DisplayName("Test post /predict method with string response")
-    public void testPredictString() throws ExecutionException, InterruptedException {
-        assertResponseStringOrHandleException(clientWithExecutor.predictAsync(TestDataFactory.dataRequestBody));
-    }
-
-    @Test
     @DisplayName("Test post /predict method with JSON response")
     public void testPredictJson() throws ExecutionException, InterruptedException {
-        assertResponseJsonOrHandleException(clientWithExecutor.predictAsync(stringToJsonNode(TestDataFactory.dataRequestBody)));
+        assertResponseJsonOrHandleException(clientWithExecutor.predictAsync(TestDataFactory.buildDataRequestBody()));
     }
 
     @Test
@@ -84,60 +64,42 @@ public class MlemHttpClientImplTest {
     public void testPredictRequest() throws ExecutionException, InterruptedException {
         Request request = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet());
 
-        assertResponseStringOrHandleException(clientWithExecutor.predictAsync(request));
-    }
-
-    @Test
-    @DisplayName("Test post /predictProba method with STRING request and response")
-    public void testPredictProbaString() throws ExecutionException, InterruptedException {
-        assertResponseStringOrHandleException(clientWithExecutor.predictProbaAsync(TestDataFactory.dataRequestBody));
+        assertResponseJsonOrHandleException(clientWithExecutor.predictAsync(request.toJson()));
     }
 
     @Test
     @DisplayName("Test post /predictProba method with JSON request and response")
     public void testPredictProbaJson() throws ExecutionException, InterruptedException {
-        assertResponseJsonOrHandleException(clientWithExecutor.predictProbaAsync(stringToJsonNode(TestDataFactory.dataRequestBody)));
-    }
-
-    @Test
-    @DisplayName("Test post /predictProba method with empty request body")
-    public void testPredictProbaEmptyString() throws InterruptedException, ExecutionException {
-        String result = clientWithExecutor.predictProbaAsync("").exceptionally(throwable -> {
-            RestException restException = (RestException) throwable.getCause();
-            assertResponseException(restException);
-            return null;
-        }).get();
-        Assertions.assertNull(result);
+        assertResponseJsonOrHandleException(clientWithExecutor.predictProbaAsync(TestDataFactory.buildDataRequestBody()));
     }
 
     @Test()
-    @DisplayName("Test post /sklearnPredict method with STRING request and response")
-    public void testSklearnPredictString() throws InterruptedException, ExecutionException {
-        assertResponseStringOrHandleException(clientWithExecutor.predictProbaAsync(TestDataFactory.xRequestBody));
-    }
-
-    @Test
-    @DisplayName("Test post /sklearnPredictProba method with STRING request and response")
-    public void testSklearnPredictProbaString() throws InterruptedException, ExecutionException {
-        assertResponseStringOrHandleException(clientWithExecutor.sklearnPredictProbaAsync(TestDataFactory.xRequestBody));
+    @DisplayName("Test post /predictProba method with null request body")
+    public void testPredictProbaEmptyString() {
+        NullPointerException thrown = Assertions.assertThrows(NullPointerException.class, () -> clientWithExecutor.predictProbaAsync(null).exceptionally(throwable -> {
+            RestException restException = (RestException) throwable.getCause();
+            assertResponseException(restException);
+            return null;
+        }).get());
+        Assertions.assertNotNull(thrown);
     }
 
     @Test()
     @DisplayName("Test post /sklearnPredict method with JSON request and response")
     public void testSklearnPredictJson() throws InterruptedException, ExecutionException {
-        assertResponseJsonOrHandleException(clientWithExecutor.sklearnPredictAsync(stringToJsonNode(TestDataFactory.xRequestBody)));
+        assertResponseJsonOrHandleException(clientWithExecutor.sklearnPredictAsync(TestDataFactory.buildXRequestBody()));
     }
 
     @Test
     @DisplayName("Test post /sklearnPredictProba method with JSON request and response")
     public void testSklearnPredictProbaJson() throws InterruptedException, ExecutionException {
-        assertResponseJsonOrHandleException(clientWithExecutor.sklearnPredictProbaAsync(stringToJsonNode(TestDataFactory.xRequestBody)));
+        assertResponseJsonOrHandleException(clientWithExecutor.sklearnPredictProbaAsync(TestDataFactory.buildDataRequestBody()));
     }
 
     @Test()
     @DisplayName("Test post /sklearnPredict method with WRONG JSON request and response. Handle the HTTP 500.")
     public void testSklearnPredict500Error() throws InterruptedException, ExecutionException {
-        String result = clientWithExecutor.sklearnPredictAsync(TestDataFactory.dataRequestBody).exceptionally(throwable -> {
+        JsonNode result = clientWithExecutor.sklearnPredictAsync(TestDataFactory.buildDataRequestBody()).exceptionally(throwable -> {
             RestException restException = (RestException) throwable.getCause();
             assertResponseException(restException);
             return null;
@@ -148,7 +110,7 @@ public class MlemHttpClientImplTest {
     @Test
     @DisplayName("Test post /sklearnPredict method with WRONG JSON request and response")
     public void testSklearnPredictProba500error() throws InterruptedException, ExecutionException {
-        String result = clientWithExecutor.sklearnPredictProbaAsync(TestDataFactory.dataRequestBody).exceptionally(throwable -> {
+        JsonNode result = clientWithExecutor.sklearnPredictProbaAsync(TestDataFactory.buildDataRequestBody()).exceptionally(throwable -> {
             RestException restException = (RestException) throwable.getCause();
             assertResponseException(restException);
             return null;
@@ -161,8 +123,8 @@ public class MlemHttpClientImplTest {
     public void testGetInterfaceExecutorNull() throws ExecutionException, InterruptedException {
         MlemHttpClientImpl mlemHttpClientImpl = new MlemHttpClientImpl(null, HOST_URL);
 
-        CompletableFuture<String> future = mlemHttpClientImpl.predictAsync(TestDataFactory.dataRequestBody);
-        assertResponseStringOrHandleException(future);
+        CompletableFuture<JsonNode> future = mlemHttpClientImpl.predictAsync(TestDataFactory.buildDataRequestBody());
+        assertResponseJsonOrHandleException(future);
     }
 
     @Test
@@ -171,28 +133,14 @@ public class MlemHttpClientImplTest {
         ExecutorService executorService = Executors.newFixedThreadPool(3);
 
         MlemHttpClientImpl mlemHttpClientImpl = new MlemHttpClientImpl(executorService, HOST_URL);
-        List<String> dataRequestList = Arrays.asList(TestDataFactory.dataRequestBody, TestDataFactory.dataRequestBody, TestDataFactory.dataRequestBody);
-        List<CompletableFuture<String>> completableFutures = dataRequestList.stream().map(mlemHttpClientImpl::predictAsync).collect(Collectors.toList());
+        List<JsonNode> dataRequestList = Arrays.asList(TestDataFactory.buildDataRequestBody(), TestDataFactory.buildDataRequestBody(), TestDataFactory.buildDataRequestBody());
+        List<CompletableFuture<JsonNode>> completableFutures = dataRequestList.stream().map(mlemHttpClientImpl::predictAsync).collect(Collectors.toList());
 
-        for (CompletableFuture<String> future : completableFutures) {
-            assertResponseStringOrHandleException(future);
+        for (CompletableFuture<JsonNode> future : completableFutures) {
+            assertResponseJsonOrHandleException(future);
         }
 
         executorService.shutdown();
-    }
-
-    private void assertResponseStringOrHandleException(CompletableFuture<String> future) throws ExecutionException, InterruptedException {
-        Assertions.assertNotNull(future);
-        String response = future.exceptionally(throwable -> {
-            RestException restException = (RestException) throwable.getCause();
-            assertResponseException(restException);
-            return null;
-        }).get();
-        if (response == null) {
-            return;
-        }
-
-        assertResponseString(response);
     }
 
     private void assertResponseString(String response) {
@@ -227,9 +175,5 @@ public class MlemHttpClientImplTest {
             Assertions.assertNotNull(validationError);
             Assertions.assertNotNull(validationError.getDetail());
         }
-    }
-
-    private JsonNode stringToJsonNode(String json) {
-        return JsonMapper.stringToObject(json, JsonNode.class);
     }
 }
