@@ -1,7 +1,6 @@
 package com.akvelon.client;
 
 import com.akvelon.client.exception.RestException;
-import com.akvelon.client.model.interface_.InterfaceModel;
 import com.akvelon.client.model.request.Request;
 import com.akvelon.client.util.JsonMapper;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -69,15 +68,6 @@ class MlemHttpClientImpl implements MlemHttpClient {
     }
 
     /**
-     * The method sends the /inteface.json get request. The method can catch the exception via exceptionaly method.
-     *
-     * @return a InterfaceModel response wrapped in the CompletableFuture object.
-     */
-    public CompletableFuture<InterfaceModel> interfaceModelAsync() {
-        return sendAsyncGetModel(GET_INTERFACE);
-    }
-
-    /**
      * The method sends the /predict post request.  The method can catch the exception via exceptionaly method.
      *
      * @param requestBody is the JsonNode representation of the request.
@@ -134,18 +124,6 @@ class MlemHttpClientImpl implements MlemHttpClient {
 
         return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(stringHttpResponse -> JsonMapper.readValue(stringHttpResponse.body(), JsonNode.class));
-    }
-
-    /**
-     * The method send the async get request for given method name.
-     *
-     * @param method is the name of request params
-     * @return a InterfaceModel response wrapped in the CompletableFuture object.
-     */
-    private CompletableFuture<InterfaceModel> sendAsyncGetModel(String method) {
-        HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create(host + method)).build();
-
-        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(stringHttpResponse -> JsonMapper.readValue(stringHttpResponse.body(), InterfaceModel.class));
     }
 
     /**

@@ -1,6 +1,5 @@
 package com.akvelon.client;
 
-import com.akvelon.client.model.interface_.InterfaceModel;
 import com.akvelon.client.model.request.Request;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -17,13 +16,6 @@ public interface MlemHttpClient {
      * @return a JsonNode response wrapped in the CompletableFuture object.
      */
     CompletableFuture<JsonNode> interfaceJsonAsync();
-
-    /**
-     * The method sends the /inteface.json get request. The method can catch the exception via exceptionaly method.
-     *
-     * @return a InterfaceModel response wrapped in the CompletableFuture object.
-     */
-    CompletableFuture<InterfaceModel> interfaceModelAsync();
 
     /**
      * The method sends the /predict post request. The method can catch the exception via exceptionaly method.

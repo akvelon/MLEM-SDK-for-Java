@@ -2,7 +2,6 @@ package com.akvelon.client;
 
 import com.akvelon.client.exception.RestException;
 import com.akvelon.client.model.error.ValidationError;
-import com.akvelon.client.model.interface_.InterfaceModel;
 import com.akvelon.client.model.request.Request;
 import com.akvelon.client.util.JsonMapper;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -18,9 +17,6 @@ import java.util.stream.Collectors;
 
 public class MlemHttpClientImplTest {
     private final static String HOST_URL = "http://example-mlem-get-started-app.herokuapp.com/";
-    /*
-        private final static String HOST_URL = "http://localhost:8080/";
-    */
     private final static ExecutorService executorService = Executors.newFixedThreadPool(10);
     private final MlemHttpClient clientWithExecutor = MlemHttpClientFactory.createMlemHttpClient(executorService, HOST_URL);
     private final MlemHttpClient clientWithOutExecutor = MlemHttpClientFactory.createMlemHttpClient(HOST_URL);
@@ -49,15 +45,6 @@ public class MlemHttpClientImplTest {
     @DisplayName("Test get /interface.json method with json response")
     public void testGetInterfaceJson() throws ExecutionException, InterruptedException {
         assertResponseJsonOrHandleException(clientWithExecutor.interfaceJsonAsync());
-    }
-
-    @Test
-    @DisplayName("Test get /interface.json method with InterfaceModel response")
-    public void testGetInterfaceModel() throws ExecutionException, InterruptedException {
-        CompletableFuture<InterfaceModel> future = clientWithExecutor.interfaceModelAsync();
-        Assertions.assertNotNull(future);
-        InterfaceModel response = future.get();
-        Assertions.assertNotNull(response);
     }
 
     @Test

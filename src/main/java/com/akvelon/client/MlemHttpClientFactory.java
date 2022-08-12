@@ -20,7 +20,7 @@ public class MlemHttpClientFactory {
      * Create the implementation of MlemHttpClient
      *
      * @param executorService provides a pool of threads and an API for assigning tasks to it
-     * @param host is the host URL
+     * @param host            is the host URL
      * @return the new MlemHttpClient
      */
     public static MlemHttpClient createMlemHttpClient(ExecutorService executorService, String host) {
