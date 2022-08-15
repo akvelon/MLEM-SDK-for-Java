@@ -3,13 +3,17 @@ package com.akvelon.client;
 import com.akvelon.client.exception.RestException;
 import com.akvelon.client.model.error.ValidationError;
 import com.akvelon.client.model.request.Request;
+import com.akvelon.client.model.validation.RequestDesc;
 import com.akvelon.client.util.JsonMapper;
+import com.akvelon.client.util.RequestMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
@@ -45,6 +49,23 @@ public class MlemHttpClientImplTest {
     @DisplayName("Test get /interface.json method with json response")
     public void testGetInterfaceJson() throws ExecutionException, InterruptedException {
         assertResponseJsonOrHandleException(clientWithExecutor.interfaceJsonAsync());
+    }
+
+    @Test
+    @DisplayName("Test get /interface.json method with json response")
+    public void testGetInterfaceRequest() throws ExecutionException, InterruptedException, IOException {
+        JsonNode response = clientWithExecutor.interfaceJsonAsync().exceptionally(throwable -> {
+            RestException restException = (RestException) throwable.getCause();
+            assertResponseException(restException);
+            return null;
+        }).get();
+
+        if (response == null) {
+            return;
+        }
+
+        RequestDesc requestDesc = RequestMapper.mapToRequestDesc(response);
+        Assertions.assertNotNull(requestDesc);
     }
 
     @Test

@@ -1,29 +1,21 @@
 package com.akvelon.client.model.validation;
 
-import java.util.ArrayList;
+import com.fasterxml.jackson.databind.JsonNode;
+
+import java.util.Map;
 
 public class RequestDesc {
-    private ArrayList<RecordSetColumn> parameters;
-    private DataType returnType;
+    private Map<String, JsonNode> jsonNodeMap;
 
-    public RequestDesc(ArrayList<RecordSetColumn> parameters, DataType returnType) {
-        this.parameters = parameters;
-        this.returnType = returnType;
+    public RequestDesc(Map<String, JsonNode> jsonNodeMap) {
+        this.jsonNodeMap = jsonNodeMap;
     }
 
-    public ArrayList<RecordSetColumn> getParameters() {
-        return parameters;
+    public Map<String, JsonNode> getJsonNodeMap() {
+        return jsonNodeMap;
     }
 
-    public void setParameters(ArrayList<RecordSetColumn> parameters) {
-        this.parameters = parameters;
-    }
-
-    public DataType getReturnType() {
-        return returnType;
-    }
-
-    public void setReturnType(DataType returnType) {
-        this.returnType = returnType;
+    public void setJsonNodeMap(Map<String, JsonNode> jsonNodeMap) {
+        this.jsonNodeMap = jsonNodeMap;
     }
 }

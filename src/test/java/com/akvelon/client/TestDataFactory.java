@@ -63,4 +63,12 @@ public class TestDataFactory {
 
         return request;
     }
+
+    private static final String type_ = "{\"columns\":[\"sepal length (cm)\",\"sepal width (cm)\",\"petal length (cm)\"," +
+            "\"petal width (cm)\"],\"dtypes\":[\"float64\",\"float64\",\"float64\",\"float64\"],\"index_cols\":[]," +
+            "\"type\":\"dataframe\"}";
+
+    public static JsonNode buildType_() {
+        return JsonMapper.readValue(type_, JsonNode.class);
+    }
 }
