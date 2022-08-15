@@ -6,7 +6,6 @@ import com.akvelon.client.model.request.Request;
 import com.akvelon.client.model.validation.RequestDesc;
 import com.akvelon.client.util.JsonMapper;
 import com.akvelon.client.util.RequestMapper;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -70,13 +69,13 @@ public class MlemHttpClientImplTest {
 
     @Test
     @DisplayName("Test post /predict method with JSON response")
-    public void testPredictJson() throws ExecutionException, InterruptedException {
+    public void testPredictJson() throws ExecutionException, InterruptedException, IOException {
         assertResponseJsonOrHandleException(clientWithExecutor.predict(TestDataFactory.buildDataRequestBody()));
     }
 
     @Test
     @DisplayName("Test post /predict method with Request request and Json response")
-    public void testPredictRequest() throws ExecutionException, InterruptedException {
+    public void testPredictRequest() throws ExecutionException, InterruptedException, IOException {
         Request request = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet());
 
         assertResponseJsonOrHandleException(clientWithExecutor.predict(request));
@@ -164,6 +163,13 @@ public class MlemHttpClientImplTest {
         }
 
         executorService.shutdown();
+    }
+
+    @Test
+    @DisplayName("Test post /predict method with JSON response with validation")
+    public void testPredictJsonWithValidation() throws ExecutionException, InterruptedException, IOException {
+        Request request = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet());
+        assertResponseJsonOrHandleException(clientWithExecutor.predictWithValidation(request));
     }
 
     private void assertResponseString(String response) {

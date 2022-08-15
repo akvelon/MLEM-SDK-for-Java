@@ -2,14 +2,20 @@ package com.akvelon.client;
 
 import com.akvelon.client.exception.RestException;
 import com.akvelon.client.model.request.Request;
+import com.akvelon.client.model.validation.RequestDesc;
+import com.akvelon.client.model.validation.method.Method;
 import com.akvelon.client.util.JsonMapper;
+import com.akvelon.client.util.RequestValidator;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -28,6 +34,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
     private final String host;
 
     private final HttpClient httpClient;
+    private RequestDesc requestDesc;
 
     /**
      * Constructor for creating the implementation of Mlem HttpClient
@@ -85,8 +92,21 @@ class MlemHttpClientImpl implements MlemHttpClient {
      * @return a String response wrapped in the CompletableFuture object.
      */
     @Override
-    public CompletableFuture<JsonNode> predict(Request requestBody) {
+    public CompletableFuture<JsonNode> predict(Request requestBody) throws IOException, ExecutionException, InterruptedException {
+        if (requestDesc == null) {
+            return getSchemaAndDoPredict(POST_PREDICT, requestBody);
+        }
+
         return sendAsyncPostJson(POST_PREDICT, requestBody.toJson());
+    }
+
+    @Override
+    public CompletableFuture<JsonNode> predictWithValidation(Request requestBody) throws IOException, ExecutionException, InterruptedException {
+        /*if (requestDesc == null) {
+            return getSchemaAndDoPredict(requestBody);
+        }*/
+
+        return predict(requestBody);
     }
 
     /**
@@ -164,5 +184,24 @@ class MlemHttpClientImpl implements MlemHttpClient {
             //if the code is not start with the digit 2, throw the RestException
             throw new RestException(httpResponse.body(), httpResponse.statusCode());
         }
+    }
+
+    private CompletableFuture<JsonNode> getSchemaAndDoPredict(String method, Request requestBody) throws ExecutionException, InterruptedException, IOException {
+        JsonNode response = interfaceJsonAsync().exceptionally(throwable -> {
+            RestException restException = (RestException) throwable.getCause();
+            return null;
+        }).get();
+
+        if (response == null) {
+            throw new NullPointerException();
+        }
+
+        Map<String, Method> jsonNodeMap = JsonMapper.readMap(response.get("methods"));
+        if (jsonNodeMap == null || jsonNodeMap.isEmpty()) {
+            throw new NullPointerException();
+        }
+        requestDesc = new RequestDesc(jsonNodeMap);
+        RequestValidator.validateRequest(method, requestBody, requestDesc);
+        return sendAsyncPostJson(method, requestBody.toJson());
     }
 }

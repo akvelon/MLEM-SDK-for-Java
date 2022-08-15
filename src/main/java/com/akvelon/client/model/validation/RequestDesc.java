@@ -1,21 +1,21 @@
 package com.akvelon.client.model.validation;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.akvelon.client.model.validation.method.Method;
 
 import java.util.Map;
 
 public class RequestDesc {
-    private Map<String, JsonNode> jsonNodeMap;
+    private Map<String, Method> jsonNodeMap;
 
-    public RequestDesc(Map<String, JsonNode> jsonNodeMap) {
+    public RequestDesc(Map<String, Method> jsonNodeMap) {
         this.jsonNodeMap = jsonNodeMap;
     }
 
-    public Map<String, JsonNode> getJsonNodeMap() {
+    public Map<String, Method> getJsonNodeMap() {
         return jsonNodeMap;
     }
 
-    public void setJsonNodeMap(Map<String, JsonNode> jsonNodeMap) {
+    public void setJsonNodeMap(Map<String, Method> jsonNodeMap) {
         this.jsonNodeMap = jsonNodeMap;
     }
 }

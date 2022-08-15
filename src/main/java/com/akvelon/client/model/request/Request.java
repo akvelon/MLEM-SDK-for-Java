@@ -19,4 +19,8 @@ public class Request {
     public String toString() {
         return JsonMapper.writeValueAsString(request);
     }
+
+    public HashMap<String, RecordSet> getRequest() {
+        return request;
+    }
 }

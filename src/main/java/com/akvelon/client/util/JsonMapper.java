@@ -1,6 +1,7 @@
 package com.akvelon.client.util;
 
 import com.akvelon.client.model.request.Record;
+import com.akvelon.client.model.validation.method.Method;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -37,8 +38,8 @@ public class JsonMapper {
         return reader.readValue(json);
     }
 
-    public static Map<String, JsonNode> readMap(JsonNode json) throws IOException {
-        ObjectReader reader = mapper.readerFor(new TypeReference<Map<String, JsonNode>>() {
+    public static Map<String, Method> readMap(JsonNode json) throws IOException {
+        ObjectReader reader = mapper.readerFor(new TypeReference<Map<String, Method>>() {
         });
         return reader.readValue(json);
     }

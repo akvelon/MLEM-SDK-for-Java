@@ -1,6 +1,7 @@
 package com.akvelon.client.util;
 
 import com.akvelon.client.model.validation.*;
+import com.akvelon.client.model.validation.method.Method;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
@@ -30,7 +31,7 @@ public class RequestMapper {
     }
 
     public static RequestDesc mapToRequestDesc(JsonNode jsonNode) throws IOException {
-        Map<String, JsonNode> jsonNodeMap = JsonMapper.readMap(jsonNode.get("methods"));
+        Map<String, Method> jsonNodeMap = JsonMapper.readMap(jsonNode.get("methods"));
 
         return new RequestDesc(jsonNodeMap);
     }
