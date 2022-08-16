@@ -1,9 +1,8 @@
 package com.akvelon.client;
 
-import com.akvelon.client.model.validation.ParameterDesc;
 import com.akvelon.client.model.validation.RecordSetColumn;
-import com.akvelon.client.model.validation.RecordSetDesc;
-import com.akvelon.client.util.RequestMapper;
+import com.akvelon.client.model.validation.RecordSetColumnsDesc;
+import com.akvelon.client.util.RequestParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -12,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class RequestMapperTest {
+public class RequestParserTest {
     private static JsonNode columnsJson;
     private static JsonNode dtypesJson;
 
@@ -30,7 +29,7 @@ public class RequestMapperTest {
 
     @Test
     public void testMapToRecordSetColumn() throws IOException {
-        ArrayList<RecordSetColumn> recordSetColumns = RequestMapper.mapToRecordSetColumn(columnsJson, dtypesJson);
+        ArrayList<RecordSetColumn> recordSetColumns = RequestParser.mapToRecordSetColumn(columnsJson, dtypesJson);
 
         Assertions.assertNotNull(recordSetColumns);
         Assertions.assertEquals(4, recordSetColumns.size());
@@ -38,18 +37,9 @@ public class RequestMapperTest {
 
     @Test
     public void testMapToRecordSetDesc() throws IOException {
-        RecordSetDesc recordSetDesc = RequestMapper.mapToRecordSetDesc(columnsJson, dtypesJson);
+        RecordSetColumnsDesc recordSetColumnsDesc = RequestParser.mapToRecordSetDesc("data", columnsJson, dtypesJson);
 
-        Assertions.assertNotNull(recordSetDesc);
-        Assertions.assertEquals(4, recordSetDesc.getColumns().size());
-    }
-
-    @Test
-    public void testMapToParameterDesc() throws IOException {
-        RecordSetDesc recordSetDesc = RequestMapper.mapToRecordSetDesc(columnsJson, dtypesJson);
-
-        ParameterDesc parameterDesc = RequestMapper.mapToParameterDesc("data", recordSetDesc);
-        Assertions.assertNotNull(parameterDesc);
-        Assertions.assertEquals(4, parameterDesc.getType().getColumns().size());
+        Assertions.assertNotNull(recordSetColumnsDesc);
+        Assertions.assertEquals(4, recordSetColumnsDesc.getColumns().size());
     }
 }

@@ -5,7 +5,7 @@ import com.akvelon.client.model.error.ValidationError;
 import com.akvelon.client.model.request.Request;
 import com.akvelon.client.model.validation.RequestDesc;
 import com.akvelon.client.util.JsonMapper;
-import com.akvelon.client.util.RequestMapper;
+import com.akvelon.client.util.RequestParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -63,13 +63,13 @@ public class MlemHttpClientImplTest {
             return;
         }
 
-        RequestDesc requestDesc = RequestMapper.mapToRequestDesc(response);
+        RequestDesc requestDesc = RequestParser.toRequestDesc(response);
         Assertions.assertNotNull(requestDesc);
     }
 
     @Test
     @DisplayName("Test post /predict method with JSON response")
-    public void testPredictJson() throws ExecutionException, InterruptedException, IOException {
+    public void testPredictJson() throws ExecutionException, InterruptedException {
         assertResponseJsonOrHandleException(clientWithExecutor.predict(TestDataFactory.buildDataRequestBody()));
     }
 

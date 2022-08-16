@@ -1,21 +1,29 @@
 package com.akvelon.client.model.validation;
 
-import com.akvelon.client.model.validation.method.Method;
-
-import java.util.Map;
+import java.util.ArrayList;
 
 public class RequestDesc {
-    private Map<String, Method> jsonNodeMap;
+    private ArrayList<ParameterDesc> parameters;
+    private DataType returnType;
 
-    public RequestDesc(Map<String, Method> jsonNodeMap) {
-        this.jsonNodeMap = jsonNodeMap;
+    public RequestDesc(ArrayList<ParameterDesc> parameters, DataType returnType) {
+        this.parameters = parameters;
+        this.returnType = returnType;
     }
 
-    public Map<String, Method> getJsonNodeMap() {
-        return jsonNodeMap;
+    public ArrayList<ParameterDesc> getParameters() {
+        return parameters;
     }
 
-    public void setJsonNodeMap(Map<String, Method> jsonNodeMap) {
-        this.jsonNodeMap = jsonNodeMap;
+    public void setParameters(ArrayList<ParameterDesc> parameters) {
+        this.parameters = parameters;
+    }
+
+    public DataType getReturnType() {
+        return returnType;
+    }
+
+    public void setReturnType(DataType returnType) {
+        this.returnType = returnType;
     }
 }

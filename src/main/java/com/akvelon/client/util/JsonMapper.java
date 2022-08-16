@@ -38,8 +38,8 @@ public class JsonMapper {
         return reader.readValue(json);
     }
 
-    public static Map<String, Method> readMap(JsonNode json) throws IOException {
-        ObjectReader reader = mapper.readerFor(new TypeReference<Map<String, Method>>() {
+    public static Map<String, JsonNode> readMap(JsonNode json) throws IOException {
+        ObjectReader reader = mapper.readerFor(new TypeReference<Map<String, JsonNode>>() {
         });
         return reader.readValue(json);
     }

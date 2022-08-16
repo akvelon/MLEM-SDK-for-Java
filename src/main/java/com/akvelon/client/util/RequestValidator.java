@@ -5,8 +5,8 @@ import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.Request;
 import com.akvelon.client.model.validation.RequestDesc;
 import com.akvelon.client.model.validation.method.Arg;
-import com.akvelon.client.model.validation.method.Method;
 import com.akvelon.client.model.validation.method.Type;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,18 +14,21 @@ import java.util.List;
 import java.util.Map;
 
 public class RequestValidator {
+    // TODO: 8/16/2022  
     public static void validateRequest(String method, Request requestBody, RequestDesc requestDesc) {
-        Map<String, Method> methodsDesc = requestDesc.getJsonNodeMap();
-        validateMethods(method, requestBody, methodsDesc);
+/*
+        Map<String, JsonNode> methodsDesc = requestDesc.getJsonNodeMap();
+*/
+        validateMethods(method, requestBody, /*methodsDesc*/null);
     }
 
-    private static void validateMethods(String method, Request requestBody, Map<String, Method> methodsDesc) {
+    private static void validateMethods(String method, Request requestBody, Map<String, JsonNode> methodsDesc) {
         if (!methodsDesc.containsKey(method)) {
             throw new RuntimeException();
         }
 
-        Method methodDesc = methodsDesc.get(method);
-        validateArgs(requestBody.getRequest(), methodDesc.getArgs());
+        JsonNode methodDesc = methodsDesc.get(method);
+        validateArgs(requestBody.getRequest(), /*methodDesc.getArgs()*/null);
     }
 
     private static void validateArgs(HashMap<String, RecordSet> request, ArrayList<Arg> argsDesc) {

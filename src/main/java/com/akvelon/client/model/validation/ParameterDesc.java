@@ -2,9 +2,9 @@ package com.akvelon.client.model.validation;
 
 public class ParameterDesc {
     private String name;
-    private RecordSetDesc type;
+    private RecordSetColumnsDesc type;
 
-    public ParameterDesc(String name, RecordSetDesc type) {
+    public ParameterDesc(String name, RecordSetColumnsDesc type) {
         this.name = name;
         this.type = type;
     }
@@ -17,11 +17,11 @@ public class ParameterDesc {
         this.name = name;
     }
 
-    public RecordSetDesc getType() {
+    public RecordSetColumnsDesc getType() {
         return type;
     }
 
-    public void setType(RecordSetDesc type) {
+    public void setType(RecordSetColumnsDesc type) {
         this.type = type;
     }
 }
