@@ -165,13 +165,6 @@ public class MlemHttpClientImplTest {
         executorService.shutdown();
     }
 
-    @Test
-    @DisplayName("Test post /predict method with JSON response with validation")
-    public void testPredictJsonWithValidation() throws ExecutionException, InterruptedException, IOException {
-        Request request = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet());
-        assertResponseJsonOrHandleException(clientWithExecutor.predictWithValidation(request));
-    }
-
     private void assertResponseString(String response) {
         Assertions.assertNotNull(response);
         Assertions.assertFalse(response.isEmpty());

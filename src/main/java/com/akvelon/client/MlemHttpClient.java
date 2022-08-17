@@ -36,14 +36,6 @@ public interface MlemHttpClient {
     CompletableFuture<JsonNode> predict(Request requestBody) throws IOException, ExecutionException, InterruptedException;
 
     /**
-     * The method sends the /predict post request. The method can catch the exception via exceptionaly method.
-     *
-     * @param requestBody is the representation of the Request class.
-     * @return a JsonNode response wrapped in the CompletableFuture object.
-     */
-    CompletableFuture<JsonNode> predictWithValidation(Request requestBody) throws IOException, ExecutionException, InterruptedException;
-
-    /**
      * The method sends the post request. The method can catch the exception via exceptionaly method.
      *
      * @param methodName  is the method name for the request

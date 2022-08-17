@@ -4,6 +4,7 @@ import com.akvelon.client.exception.RestException;
 import com.akvelon.client.model.request.Request;
 import com.akvelon.client.model.validation.RequestDesc;
 import com.akvelon.client.util.JsonMapper;
+import com.akvelon.client.util.RequestValidator;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
@@ -11,6 +12,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -90,21 +92,11 @@ class MlemHttpClientImpl implements MlemHttpClient {
      */
     @Override
     public CompletableFuture<JsonNode> predict(Request requestBody) throws IOException, ExecutionException, InterruptedException {
-        // TODO: 8/16/2022  
-        /*if (requestDesc == null) {
+        if (requestDesc == null) {
             return getSchemaAndDoPredict(POST_PREDICT, requestBody);
-        }*/
+        }
 
         return sendAsyncPostJson(POST_PREDICT, requestBody.toJson());
-    }
-
-    @Override
-    public CompletableFuture<JsonNode> predictWithValidation(Request requestBody) throws IOException, ExecutionException, InterruptedException {
-        /*if (requestDesc == null) {
-            return getSchemaAndDoPredict(requestBody);
-        }*/
-
-        return predict(requestBody);
     }
 
     /**
@@ -184,8 +176,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
         }
     }
 
-    // TODO: 8/16/2022  
-   /* private CompletableFuture<JsonNode> getSchemaAndDoPredict(String method, Request requestBody) throws ExecutionException, InterruptedException, IOException {
+    private CompletableFuture<JsonNode> getSchemaAndDoPredict(String method, Request requestBody) throws ExecutionException, InterruptedException, IOException {
         JsonNode response = interfaceJsonAsync().exceptionally(throwable -> {
             RestException restException = (RestException) throwable.getCause();
             return null;
@@ -199,8 +190,8 @@ class MlemHttpClientImpl implements MlemHttpClient {
         if (jsonNodeMap == null || jsonNodeMap.isEmpty()) {
             throw new NullPointerException();
         }
-        requestDesc = new RequestDesc(jsonNodeMap);
+        requestDesc = new RequestDesc(null, null);
         RequestValidator.validateRequest(method, requestBody, requestDesc);
         return sendAsyncPostJson(method, requestBody.toJson());
-    }*/
+    }
 }
