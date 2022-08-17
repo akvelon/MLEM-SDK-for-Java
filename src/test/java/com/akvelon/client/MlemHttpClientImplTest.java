@@ -77,7 +77,6 @@ public class MlemHttpClientImplTest {
     @DisplayName("Test post /predict method with Request request and Json response")
     public void testPredictRequest() throws ExecutionException, InterruptedException, IOException {
         Request request = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet());
-
         assertResponseJsonOrHandleException(clientWithExecutor.predict(request));
     }
 

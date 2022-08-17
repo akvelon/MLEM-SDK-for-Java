@@ -177,21 +177,20 @@ class MlemHttpClientImpl implements MlemHttpClient {
     }
 
     private CompletableFuture<JsonNode> getSchemaAndDoPredict(String method, Request requestBody) throws ExecutionException, InterruptedException, IOException {
-        JsonNode response = interfaceJsonAsync().exceptionally(throwable -> {
+        JsonNode schema = interfaceJsonAsync().exceptionally(throwable -> {
             RestException restException = (RestException) throwable.getCause();
             return null;
         }).get();
 
-        if (response == null) {
+        if (schema == null) {
             throw new NullPointerException();
         }
 
-        Map<String, JsonNode> jsonNodeMap = JsonMapper.readMap(response.get("methods"));
+        /*Map<String, JsonNode> jsonNodeMap = JsonMapper.readMap(response.get("methods"));
         if (jsonNodeMap == null || jsonNodeMap.isEmpty()) {
             throw new NullPointerException();
-        }
-        requestDesc = new RequestDesc(null, null);
-        RequestValidator.validateRequest(method, requestBody, requestDesc);
+        }*/
+        RequestValidator.validateRequest(method, requestBody, schema);
         return sendAsyncPostJson(method, requestBody.toJson());
     }
 }
