@@ -2,7 +2,7 @@ package com.akvelon.client;
 
 import com.akvelon.client.exception.RestException;
 import com.akvelon.client.model.request.Request;
-import com.akvelon.client.model.validation.RequestDesc;
+import com.akvelon.client.model.validation.MethodDesc;
 import com.akvelon.client.util.JsonMapper;
 import com.akvelon.client.util.RequestValidator;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -12,7 +12,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -33,7 +32,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
     private final String host;
 
     private final HttpClient httpClient;
-    private RequestDesc requestDesc;
+    private MethodDesc methodDesc;
 
     /**
      * Constructor for creating the implementation of Mlem HttpClient
@@ -92,7 +91,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
      */
     @Override
     public CompletableFuture<JsonNode> predict(Request requestBody) throws IOException, ExecutionException, InterruptedException {
-        if (requestDesc == null) {
+        if (methodDesc == null) {
             return getSchemaAndDoPredict(POST_PREDICT, requestBody);
         }
 
@@ -182,14 +181,6 @@ class MlemHttpClientImpl implements MlemHttpClient {
             return null;
         }).get();
 
-        if (schema == null) {
-            throw new NullPointerException();
-        }
-
-        /*Map<String, JsonNode> jsonNodeMap = JsonMapper.readMap(response.get("methods"));
-        if (jsonNodeMap == null || jsonNodeMap.isEmpty()) {
-            throw new NullPointerException();
-        }*/
         RequestValidator.validateRequest(method, requestBody, schema);
         return sendAsyncPostJson(method, requestBody.toJson());
     }

@@ -1,7 +1,6 @@
 package com.akvelon.client.util;
 
 import com.akvelon.client.model.request.Record;
-import com.akvelon.client.model.validation.method.Method;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;

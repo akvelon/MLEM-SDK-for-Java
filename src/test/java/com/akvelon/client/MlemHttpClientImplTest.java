@@ -63,8 +63,8 @@ public class MlemHttpClientImplTest {
             return;
         }
 
-        RequestDesc requestDesc = RequestParser.toRequestDesc(response);
-        Assertions.assertNotNull(requestDesc);
+        RequestDesc methodDesc = RequestParser.toRequestDesc(response);
+        Assertions.assertNotNull(methodDesc);
     }
 
     @Test

@@ -11,17 +11,19 @@ import java.util.Map;
 public class RequestParser {
     public static RequestDesc toRequestDesc(JsonNode jsonNode) throws IOException {
         Map<String, JsonNode> jsonNodeMap = JsonMapper.readMap(jsonNode.get("methods"));
-        ArrayList<ParameterDesc> parameters = toParameters(jsonNodeMap);
+        ArrayList<MethodDesc> methods = toMethods(jsonNodeMap);
 
-        // TODO: 8/16/2022
-        return new RequestDesc(parameters, DataType.valueOfType(""));
+        return new RequestDesc(methods);
     }
 
-    public static ArrayList<ParameterDesc> toParameters(Map<String, JsonNode> jsonNodeMap) throws IOException {
-        ArrayList<ParameterDesc> parameters = new ArrayList<>();
+    public static ArrayList<MethodDesc> toMethods(Map<String, JsonNode> jsonNodeMap) throws IOException {
+        ArrayList<MethodDesc> parameters = new ArrayList<>();
         for (Map.Entry<String, JsonNode> entry : jsonNodeMap.entrySet()) {
             JsonNode argJsonNode = entry.getValue().get("args").get(0);
-            ParameterDesc parameterDesc = new ParameterDesc(entry.getKey(), toRecordSetColumnsDesc(argJsonNode.get("name").asText(), argJsonNode.get("type_")));
+            JsonNode returnsJsonNode = entry.getValue().get("returns");
+            MethodDesc parameterDesc = new MethodDesc(
+                    new ParameterDesc(entry.getKey(), toRecordSetColumnsDesc(argJsonNode.get("name").asText(), argJsonNode.get("type_"))),
+                    DataType.valueOfType(returnsJsonNode.get("dtype").asText()));
             parameters.add(parameterDesc);
         }
 
