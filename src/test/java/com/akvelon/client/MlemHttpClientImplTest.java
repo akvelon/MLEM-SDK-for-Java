@@ -3,7 +3,7 @@ package com.akvelon.client;
 import com.akvelon.client.exception.RestException;
 import com.akvelon.client.model.error.ValidationError;
 import com.akvelon.client.model.request.Request;
-import com.akvelon.client.model.validation.RequestDesc;
+import com.akvelon.client.model.validation.InterfaceDesc;
 import com.akvelon.client.util.JsonMapper;
 import com.akvelon.client.util.RequestParser;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -63,7 +63,7 @@ public class MlemHttpClientImplTest {
             return;
         }
 
-        RequestDesc methodDesc = RequestParser.toRequestDesc(response);
+        InterfaceDesc methodDesc = RequestParser.parseInterfaceSchema(response);
         Assertions.assertNotNull(methodDesc);
     }
 

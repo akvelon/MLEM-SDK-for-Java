@@ -6,10 +6,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 
 public class Request {
-    private final HashMap<String, RecordSet> request = new HashMap<>();
+    private final HashMap<String, RecordSet> parameters = new HashMap<>();
 
-    public void addRecordSet(String propertyName, RecordSet recordSet) {
-        request.put(propertyName, recordSet);
+    public void addParameter(String propertyName, RecordSet recordSet) {
+        parameters.put(propertyName, recordSet);
     }
 
     public JsonNode toJson() {
@@ -17,10 +17,10 @@ public class Request {
     }
 
     public String toString() {
-        return JsonMapper.writeValueAsString(request);
+        return JsonMapper.writeValueAsString(parameters);
     }
 
-    public HashMap<String, RecordSet> getRequest() {
-        return request;
+    public HashMap<String, RecordSet> getParameters() {
+        return parameters;
     }
 }

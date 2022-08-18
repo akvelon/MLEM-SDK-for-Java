@@ -10,12 +10,12 @@ public enum DataType {
         this.type = type;
     }
 
-    public static DataType valueOfType(String type) {
+    public static DataType fromString(String type) {
         for (DataType dataType : values()) {
             if (dataType.type.equals(type)) {
                 return dataType;
             }
         }
-        return null;
+        throw new IllegalArgumentException();
     }
 }

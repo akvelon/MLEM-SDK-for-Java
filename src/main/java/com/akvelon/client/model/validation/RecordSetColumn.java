@@ -4,9 +4,6 @@ public class RecordSetColumn {
     private String name;
     private DataType type;
 
-    public RecordSetColumn() {
-    }
-
     public RecordSetColumn(String name, DataType type) {
         this.name = name;
         this.type = type;

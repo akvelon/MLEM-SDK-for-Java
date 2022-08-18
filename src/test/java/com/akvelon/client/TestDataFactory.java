@@ -44,10 +44,10 @@ public class TestDataFactory {
 
     public static RecordSet buildRecordSet() {
         Record record = new Record();
-        record.addColumn("sepal length (cm)", 0);
-        record.addColumn("sepal width (cm)", 0);
-        record.addColumn("petal length (cm)", 0);
-        record.addColumn("petal width (cm)", 0);
+        record.addColumn("sepal length (cm)", 1.2);
+        record.addColumn("sepal width (cm)", 2.4);
+        record.addColumn("petal length (cm)", 3.3);
+        record.addColumn("petal width (cm)", 4.1);
         JsonNode jsonNode = record.toJsonNode();
         Assertions.assertNotNull(jsonNode);
 
@@ -59,7 +59,7 @@ public class TestDataFactory {
 
     public static Request buildRequest(String propertyName, RecordSet recordSet) {
         Request request = new Request();
-        request.addRecordSet(propertyName, recordSet);
+        request.addParameter(propertyName, recordSet);
 
         return request;
     }

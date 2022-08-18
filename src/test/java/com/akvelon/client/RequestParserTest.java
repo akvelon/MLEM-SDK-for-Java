@@ -1,7 +1,6 @@
 package com.akvelon.client;
 
-import com.akvelon.client.model.validation.RecordSetColumn;
-import com.akvelon.client.model.validation.RecordSetColumnsDesc;
+import com.akvelon.client.model.validation.RecordSetDesc;
 import com.akvelon.client.util.RequestParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Assertions;
@@ -9,37 +8,32 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class RequestParserTest {
-    private static JsonNode columnsJson;
-    private static JsonNode dtypesJson;
+    private static JsonNode typeJson;
 
     @BeforeAll
     public static void initJson() {
-        JsonNode typeJson = TestDataFactory.buildType_();
-        columnsJson = typeJson.get("columns");
-        dtypesJson = typeJson.get("dtypes");
+        typeJson = TestDataFactory.buildType_();
 
-        Assertions.assertNotNull(columnsJson);
-        Assertions.assertNotNull(dtypesJson);
+        Assertions.assertNotNull(typeJson);
 
         Assertions.assertNotNull(typeJson);
     }
 
     @Test
     public void testMapToRecordSetColumn() throws IOException {
-        ArrayList<RecordSetColumn> recordSetColumns = RequestParser.mapToRecordSetColumn(columnsJson, dtypesJson);
+        RecordSetDesc recordSetDesc = RequestParser.parseRecordSetDesc("", typeJson);
 
-        Assertions.assertNotNull(recordSetColumns);
-        Assertions.assertEquals(4, recordSetColumns.size());
+        Assertions.assertNotNull(recordSetDesc);
+        Assertions.assertEquals(4, recordSetDesc.getColumns().size());
     }
 
     @Test
     public void testMapToRecordSetDesc() throws IOException {
-        RecordSetColumnsDesc recordSetColumnsDesc = RequestParser.mapToRecordSetDesc("data", columnsJson, dtypesJson);
+        RecordSetDesc recordSetDesc = RequestParser.parseRecordSetDesc("data", typeJson);
 
-        Assertions.assertNotNull(recordSetColumnsDesc);
-        Assertions.assertEquals(4, recordSetColumnsDesc.getColumns().size());
+        Assertions.assertNotNull(recordSetDesc);
+        Assertions.assertEquals(4, recordSetDesc.getColumns().size());
     }
 }

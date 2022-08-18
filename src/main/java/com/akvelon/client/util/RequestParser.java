@@ -9,44 +9,42 @@ import java.util.List;
 import java.util.Map;
 
 public class RequestParser {
-    public static RequestDesc toRequestDesc(JsonNode jsonNode) throws IOException {
-        Map<String, JsonNode> jsonNodeMap = JsonMapper.readMap(jsonNode.get("methods"));
-        ArrayList<MethodDesc> methods = toMethods(jsonNodeMap);
+    public static InterfaceDesc parseInterfaceSchema(JsonNode schema) throws IOException {
+        Map<String, JsonNode> jsonNodeMap = JsonMapper.readMap(schema.get("methods"));
+        ArrayList<RequestDesc> methods = parseMethod(jsonNodeMap);
 
-        return new RequestDesc(methods);
+        return new InterfaceDesc(methods);
     }
 
-    public static ArrayList<MethodDesc> toMethods(Map<String, JsonNode> jsonNodeMap) throws IOException {
-        ArrayList<MethodDesc> parameters = new ArrayList<>();
+    public static ArrayList<RequestDesc> parseMethod(Map<String, JsonNode> jsonNodeMap) throws IOException {
+        ArrayList<RequestDesc> parameters = new ArrayList<>();
         for (Map.Entry<String, JsonNode> entry : jsonNodeMap.entrySet()) {
-            JsonNode argJsonNode = entry.getValue().get("args").get(0);
-            JsonNode returnsJsonNode = entry.getValue().get("returns");
-            MethodDesc parameterDesc = new MethodDesc(
-                    new ParameterDesc(entry.getKey(), toRecordSetColumnsDesc(argJsonNode.get("name").asText(), argJsonNode.get("type_"))),
-                    DataType.valueOfType(returnsJsonNode.get("dtype").asText()));
+            RequestDesc parameterDesc = parseParameter(entry);
             parameters.add(parameterDesc);
         }
 
         return parameters;
     }
 
-    public static RecordSetColumnsDesc toRecordSetColumnsDesc(String name, JsonNode jsonNode) throws IOException {
-        return mapToRecordSetDesc(name, jsonNode.get("columns"), jsonNode.get("dtypes"));
+    public static RequestDesc parseParameter(Map.Entry<String, JsonNode> entry) throws IOException {
+        JsonNode argJsonNode = entry.getValue().get("args").get(0);
+        JsonNode returnsJsonNode = entry.getValue().get("returns");
+        return new RequestDesc(
+                new ParameterDesc(entry.getKey(), parseRecordSetDesc(argJsonNode.get("name").asText(), argJsonNode.get("type_"))),
+                DataType.fromString(returnsJsonNode.get("dtype").asText()));
     }
 
-    public static RecordSetColumnsDesc mapToRecordSetDesc(String name, JsonNode columns, JsonNode dtypes) throws IOException {
-        ArrayList<RecordSetColumn> recordSetColumns = mapToRecordSetColumn(columns, dtypes);
-        return new RecordSetColumnsDesc(name, recordSetColumns);
-    }
+    public static RecordSetDesc parseRecordSetDesc(String name, JsonNode jsonNode) throws IOException {
+        JsonNode columns = jsonNode.get("columns");
+        JsonNode dtypes = jsonNode.get("dtypes");
 
-    public static ArrayList<RecordSetColumn> mapToRecordSetColumn(JsonNode columns, JsonNode dtypes) throws IOException {
         ArrayList<RecordSetColumn> recordSetColumns = new ArrayList<>();
         List<String> names = JsonMapper.readValues(columns);
         List<String> dTypes = JsonMapper.readValues(dtypes);
         for (int i = 0; i < names.size(); i++) {
-            recordSetColumns.add(new RecordSetColumn(names.get(i), DataType.valueOfType(dTypes.get(i))));
+            recordSetColumns.add(new RecordSetColumn(names.get(i), DataType.fromString(dTypes.get(i))));
         }
 
-        return recordSetColumns;
+        return new RecordSetDesc(name, jsonNode.get("type").asText(), recordSetColumns);
     }
 }

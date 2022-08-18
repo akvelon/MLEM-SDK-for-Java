@@ -2,12 +2,14 @@ package com.akvelon.client.model.validation;
 
 import java.util.ArrayList;
 
-public class RecordSetColumnsDesc {
+public class RecordSetDesc {
     private String name;
+    private String type;
     private ArrayList<RecordSetColumn> columns;
 
-    public RecordSetColumnsDesc(String name, ArrayList<RecordSetColumn> columns) {
+    public RecordSetDesc(String name, String type, ArrayList<RecordSetColumn> columns) {
         this.name = name;
+        this.type = type;
         this.columns = columns;
     }
 
@@ -17,6 +19,14 @@ public class RecordSetColumnsDesc {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public ArrayList<RecordSetColumn> getColumns() {

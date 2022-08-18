@@ -1,19 +1,27 @@
 package com.akvelon.client.model.validation;
 
-import java.util.ArrayList;
-
 public class RequestDesc {
-    private ArrayList<MethodDesc> methodDescs;
+    private ParameterDesc parameter;
+    private DataType returnType;
 
-    public RequestDesc(ArrayList<MethodDesc> methodDescs) {
-        this.methodDescs = methodDescs;
+    public RequestDesc(ParameterDesc parameter, DataType returnType) {
+        this.parameter = parameter;
+        this.returnType = returnType;
     }
 
-    public ArrayList<MethodDesc> getMethodDescs() {
-        return methodDescs;
+    public ParameterDesc getParameter() {
+        return parameter;
     }
 
-    public void setMethodDescs(ArrayList<MethodDesc> methodDescs) {
-        this.methodDescs = methodDescs;
+    public void setParameters(ParameterDesc parameter) {
+        this.parameter = parameter;
+    }
+
+    public DataType getReturnType() {
+        return returnType;
+    }
+
+    public void setReturnType(DataType returnType) {
+        this.returnType = returnType;
     }
 }

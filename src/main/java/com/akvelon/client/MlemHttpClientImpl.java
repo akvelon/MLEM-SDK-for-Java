@@ -2,8 +2,10 @@ package com.akvelon.client;
 
 import com.akvelon.client.exception.RestException;
 import com.akvelon.client.model.request.Request;
-import com.akvelon.client.model.validation.MethodDesc;
+import com.akvelon.client.model.validation.InterfaceDesc;
+import com.akvelon.client.model.validation.RequestDesc;
 import com.akvelon.client.util.JsonMapper;
+import com.akvelon.client.util.RequestParser;
 import com.akvelon.client.util.RequestValidator;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -32,7 +34,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
     private final String host;
 
     private final HttpClient httpClient;
-    private MethodDesc methodDesc;
+    private RequestDesc requestDesc;
 
     /**
      * Constructor for creating the implementation of Mlem HttpClient
@@ -91,8 +93,8 @@ class MlemHttpClientImpl implements MlemHttpClient {
      */
     @Override
     public CompletableFuture<JsonNode> predict(Request requestBody) throws IOException, ExecutionException, InterruptedException {
-        if (methodDesc == null) {
-            return getSchemaAndDoPredict(POST_PREDICT, requestBody);
+        if (requestDesc == null) {
+            return validateAndSendAsyncPostJson(POST_PREDICT, requestBody);
         }
 
         return sendAsyncPostJson(POST_PREDICT, requestBody.toJson());
@@ -175,13 +177,14 @@ class MlemHttpClientImpl implements MlemHttpClient {
         }
     }
 
-    private CompletableFuture<JsonNode> getSchemaAndDoPredict(String method, Request requestBody) throws ExecutionException, InterruptedException, IOException {
+    private CompletableFuture<JsonNode> validateAndSendAsyncPostJson(String method, Request requestBody) throws ExecutionException, InterruptedException, IOException {
         JsonNode schema = interfaceJsonAsync().exceptionally(throwable -> {
             RestException restException = (RestException) throwable.getCause();
             return null;
         }).get();
 
-        RequestValidator.validateRequest(method, requestBody, schema);
+        InterfaceDesc interfaceDesc = RequestParser.parseInterfaceSchema(schema);
+        RequestValidator.validateRequest(method, requestBody, interfaceDesc);
         return sendAsyncPostJson(method, requestBody.toJson());
     }
 }

@@ -3,57 +3,68 @@ package com.akvelon.client.util;
 import com.akvelon.client.model.request.Record;
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.Request;
-import com.akvelon.client.model.validation.MethodDesc;
-import com.akvelon.client.model.validation.ParameterDesc;
-import com.akvelon.client.model.validation.RecordSetColumn;
-import com.akvelon.client.model.validation.RecordSetColumnsDesc;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.akvelon.client.model.validation.*;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class RequestValidator {
-    public static void validateRequest(String method, Request requestBody, JsonNode schema) throws IOException {
-        ArrayList<MethodDesc> parameterDescs = RequestParser.toRequestDesc(schema).getMethodDescs();
-        ParameterDesc parameterDesc = getParameterDescOrThrowException(method, parameterDescs);
-
-        RecordSetColumnsDesc recordSetColumnsDesc = parameterDesc.getType();
-        RecordSet recordSet = getRecordSetOrThrowException(requestBody, recordSetColumnsDesc);
-        validateRecords(recordSet.getRecords(), recordSetColumnsDesc.getColumns());
-    }
-
-    private static ParameterDesc getParameterDescOrThrowException(String method, ArrayList<MethodDesc> parameters) {
-        for (MethodDesc methodDesc : parameters) {
-            ParameterDesc parameterDesc = methodDesc.getParameter();
+    public static void validateRequest(String method, Request requestBody, InterfaceDesc interfaceDesc) {
+        ArrayList<RequestDesc> requestDescs = interfaceDesc.getMethodDescs();
+        for (RequestDesc requestDesc : requestDescs) {
+            ParameterDesc parameterDesc = requestDesc.getParameter();
             String name = parameterDesc.getName();
             if (method.equals(name)) {
-                return parameterDesc;
+                validateRequestSingle(requestBody, parameterDesc);
             }
         }
-
-        throw new IllegalArgumentException();
     }
 
-    private static RecordSet getRecordSetOrThrowException(Request requestBody, RecordSetColumnsDesc type) {
-        HashMap<String, RecordSet> requestMap = requestBody.getRequest();
-        if (!requestMap.containsKey(type.getName())) {
+    private static void validateRequestSingle(Request requestBody, ParameterDesc parameterDesc) {
+        RecordSetDesc type = parameterDesc.getType();
+        if (!type.getType().equals("dataframe")) {
             throw new IllegalArgumentException();
         }
 
-        return requestMap.get(type.getName());
+        HashMap<String, RecordSet> parameters = requestBody.getParameters();
+        if (!parameters.containsKey(type.getName())) {
+            throw new IllegalArgumentException();
+        }
+
+        validateParameter(parameters.get(type.getName()), type);
     }
 
-    private static void validateRecords(List<Record> recordList, ArrayList<RecordSetColumn> columns) {
-        for (Record record : recordList) {
-            HashMap<String, Number> columnsMap = record.getColumns();
-            for (RecordSetColumn recordSetColumn : columns) {
-                if (!columnsMap.containsKey(recordSetColumn.getName())) {
-                    throw new IllegalArgumentException();
-                }
+    private static void validateParameter(RecordSet recordSet, RecordSetDesc typeDesc) {
+        validateRecordSet(recordSet, typeDesc);
+    }
 
-                // TODO: 8/17/2022 Check type
+    private static void validateRecordSet(RecordSet recordSet, RecordSetDesc typeDesc) {
+        List<Record> recordList = recordSet.getRecords();
+        for (Record record : recordList) {
+            for (RecordSetColumn recordSetColumn : typeDesc.getColumns()) {
+                validateRecord(record, recordSetColumn);
+            }
+        }
+    }
+
+    private static void validateRecord(Record record, RecordSetColumn recordSetColumnDesc) {
+        HashMap<String, Number> columns = record.getColumns();
+        if (!columns.containsKey(recordSetColumnDesc.getName())) {
+            throw new IllegalArgumentException();
+        }
+
+        validateType(columns.get(recordSetColumnDesc.getName()), recordSetColumnDesc.getType());
+    }
+
+    private static void validateType(Number number, DataType typeDesc) {
+        if (typeDesc.equals(DataType.Float64)) {
+            if (!(number instanceof Double)) {
+                throw new IllegalArgumentException();
+            }
+        } else if (typeDesc.equals(DataType.Int64)) {
+            if (!(number instanceof Integer)) {
+                throw new IllegalArgumentException();
             }
         }
     }
