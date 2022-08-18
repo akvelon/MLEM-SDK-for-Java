@@ -35,6 +35,11 @@ public class RequestParser {
     }
 
     public static RecordSetDesc parseRecordSetDesc(String name, JsonNode jsonNode) throws IOException {
+        String recordSetDescType = jsonNode.get("type").asText();
+        if (!recordSetDescType.equals("dataframe")) {
+            throw new IllegalArgumentException();
+        }
+
         JsonNode columns = jsonNode.get("columns");
         JsonNode dtypes = jsonNode.get("dtypes");
 
@@ -45,6 +50,6 @@ public class RequestParser {
             recordSetColumns.add(new RecordSetColumn(names.get(i), DataType.fromString(dTypes.get(i))));
         }
 
-        return new RecordSetDesc(name, jsonNode.get("type").asText(), recordSetColumns);
+        return new RecordSetDesc(name, recordSetDescType, recordSetColumns);
     }
 }

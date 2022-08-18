@@ -10,51 +10,53 @@ import java.util.HashMap;
 import java.util.List;
 
 public class RequestValidator {
-    public static void validateRequest(String method, Request requestBody, InterfaceDesc interfaceDesc) {
+    public static void validateRequest(String method, Request request, InterfaceDesc interfaceDesc) {
         ArrayList<RequestDesc> requestDescs = interfaceDesc.getMethodDescs();
         for (RequestDesc requestDesc : requestDescs) {
-            ParameterDesc parameterDesc = requestDesc.getParameter();
-            String name = parameterDesc.getName();
-            if (method.equals(name)) {
-                validateRequestSingle(requestBody, parameterDesc);
-            }
+            validateSingleRequest(method, request, requestDesc);
         }
     }
 
-    private static void validateRequestSingle(Request requestBody, ParameterDesc parameterDesc) {
-        RecordSetDesc type = parameterDesc.getType();
-        if (!type.getType().equals("dataframe")) {
+    private static void validateSingleRequest(String method, Request request, RequestDesc requestDesc) {
+        ParameterDesc parameterDesc = requestDesc.getParameter();
+        String name = parameterDesc.getName();
+        if (!method.equals(name)) {
+            return;
+        }
+
+        HashMap<String, RecordSet> parameters = request.getParameters();
+        if (!parameters.containsKey(parameterDesc.getType().getName())) {
             throw new IllegalArgumentException();
         }
 
-        HashMap<String, RecordSet> parameters = requestBody.getParameters();
-        if (!parameters.containsKey(type.getName())) {
-            throw new IllegalArgumentException();
-        }
-
-        validateParameter(parameters.get(type.getName()), type);
+        validateParameter(parameters.get(parameterDesc.getType().getName()), parameterDesc);
     }
 
-    private static void validateParameter(RecordSet recordSet, RecordSetDesc typeDesc) {
-        validateRecordSet(recordSet, typeDesc);
+    private static void validateParameter(RecordSet recordSet, ParameterDesc parameterDesc) {
+        validateRecordSet(recordSet, parameterDesc.getType());
     }
 
     private static void validateRecordSet(RecordSet recordSet, RecordSetDesc typeDesc) {
         List<Record> recordList = recordSet.getRecords();
         for (Record record : recordList) {
-            for (RecordSetColumn recordSetColumn : typeDesc.getColumns()) {
-                validateRecord(record, recordSetColumn);
-            }
+            validateRecord(record, typeDesc);
         }
     }
 
-    private static void validateRecord(Record record, RecordSetColumn recordSetColumnDesc) {
+    private static void validateRecord(Record record, RecordSetDesc recordSetColumnDesc) {
         HashMap<String, Number> columns = record.getColumns();
-        if (!columns.containsKey(recordSetColumnDesc.getName())) {
+        ArrayList<RecordSetColumn> columnsDesc = recordSetColumnDesc.getColumns();
+        if (columns.size() != columnsDesc.size()) {
             throw new IllegalArgumentException();
         }
 
-        validateType(columns.get(recordSetColumnDesc.getName()), recordSetColumnDesc.getType());
+        for (RecordSetColumn recordSetColumn : columnsDesc) {
+            if (!columns.containsKey(recordSetColumn.getName())) {
+                throw new IllegalArgumentException();
+            }
+
+            validateType(columns.get(recordSetColumn.getName()), recordSetColumn.getType());
+        }
     }
 
     private static void validateType(Number number, DataType typeDesc) {
