@@ -3,7 +3,6 @@ package com.akvelon.client;
 import com.akvelon.client.exception.RestException;
 import com.akvelon.client.model.request.Request;
 import com.akvelon.client.model.validation.InterfaceDesc;
-import com.akvelon.client.model.validation.RequestDesc;
 import com.akvelon.client.util.JsonMapper;
 import com.akvelon.client.util.RequestParser;
 import com.akvelon.client.util.RequestValidator;
@@ -34,7 +33,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
     private final String host;
 
     private final HttpClient httpClient;
-    private RequestDesc requestDesc;
+    private JsonNode schema;
 
     /**
      * Constructor for creating the implementation of Mlem HttpClient
@@ -93,11 +92,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
      */
     @Override
     public CompletableFuture<JsonNode> predict(Request requestBody) throws IOException, ExecutionException, InterruptedException {
-        if (requestDesc == null) {
-            return validateAndSendAsyncPostJson(POST_PREDICT, requestBody);
-        }
-
-        return sendAsyncPostJson(POST_PREDICT, requestBody.toJson());
+        return validateAndSendAsyncPostJson(POST_PREDICT, requestBody);
     }
 
     /**
@@ -120,8 +115,8 @@ class MlemHttpClientImpl implements MlemHttpClient {
      * @return a JsonNode response wrapped in the CompletableFuture object.
      */
     @Override
-    public CompletableFuture<JsonNode> call(String methodName, Request requestBody) {
-        return sendAsyncPostJson(methodName, requestBody.toJson());
+    public CompletableFuture<JsonNode> call(String methodName, Request requestBody) throws IOException, ExecutionException, InterruptedException {
+        return validateAndSendAsyncPostJson(methodName, requestBody);
     }
 
     /**
@@ -178,10 +173,12 @@ class MlemHttpClientImpl implements MlemHttpClient {
     }
 
     private CompletableFuture<JsonNode> validateAndSendAsyncPostJson(String method, Request requestBody) throws ExecutionException, InterruptedException, IOException {
-        JsonNode schema = interfaceJsonAsync().exceptionally(throwable -> {
-            RestException restException = (RestException) throwable.getCause();
-            return null;
-        }).get();
+        if (schema == null) {
+            schema = interfaceJsonAsync().exceptionally(throwable -> {
+                RestException restException = (RestException) throwable.getCause();
+                return null;
+            }).get();
+        }
 
         InterfaceDesc interfaceDesc = RequestParser.parseInterfaceSchema(schema);
         RequestValidator.validateRequest(method, requestBody, interfaceDesc);

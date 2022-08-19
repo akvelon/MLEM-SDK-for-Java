@@ -1,20 +1,32 @@
 package com.akvelon.client.model.validation;
 
+import java.util.List;
+
 public class RequestDesc {
-    private ParameterDesc parameter;
+    private String name;
+    private List<ParameterDesc> parameterDescList;
     private DataType returnType;
 
-    public RequestDesc(ParameterDesc parameter, DataType returnType) {
-        this.parameter = parameter;
+    public RequestDesc(String name, List<ParameterDesc> parameterDescList, DataType returnType) {
+        this.name = name;
+        this.parameterDescList = parameterDescList;
         this.returnType = returnType;
     }
 
-    public ParameterDesc getParameter() {
-        return parameter;
+    public String getName() {
+        return name;
     }
 
-    public void setParameters(ParameterDesc parameter) {
-        this.parameter = parameter;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<ParameterDesc> getParameterDescList() {
+        return parameterDescList;
+    }
+
+    public void setParameterDescList(List<ParameterDesc> parameterDescList) {
+        this.parameterDescList = parameterDescList;
     }
 
     public DataType getReturnType() {

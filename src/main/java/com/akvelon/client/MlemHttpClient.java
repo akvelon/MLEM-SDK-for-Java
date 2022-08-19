@@ -51,5 +51,5 @@ public interface MlemHttpClient {
      * @param requestBody is the Request representation of the request.
      * @return a JsonNode response wrapped in the CompletableFuture object.
      */
-    CompletableFuture<JsonNode> call(String methodName, Request requestBody);
+    CompletableFuture<JsonNode> call(String methodName, Request requestBody) throws IOException, ExecutionException, InterruptedException;
 }

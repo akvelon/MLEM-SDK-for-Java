@@ -3,22 +3,12 @@ package com.akvelon.client.model.validation;
 import java.util.ArrayList;
 
 public class RecordSetDesc {
-    private String name;
     private String type;
     private ArrayList<RecordSetColumn> columns;
 
-    public RecordSetDesc(String name, String type, ArrayList<RecordSetColumn> columns) {
-        this.name = name;
+    public RecordSetDesc(String type, ArrayList<RecordSetColumn> columns) {
         this.type = type;
         this.columns = columns;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getType() {

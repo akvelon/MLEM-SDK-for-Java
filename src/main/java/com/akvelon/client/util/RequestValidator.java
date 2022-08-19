@@ -12,24 +12,30 @@ import java.util.List;
 public class RequestValidator {
     public static void validateRequest(String method, Request request, InterfaceDesc interfaceDesc) {
         ArrayList<RequestDesc> requestDescs = interfaceDesc.getMethodDescs();
+        boolean isMethodNameExist = false;
         for (RequestDesc requestDesc : requestDescs) {
-            validateSingleRequest(method, request, requestDesc);
+            String name = requestDesc.getName();
+            if (method.equals(name)) {
+                isMethodNameExist = true;
+                validateSingleRequest(request, requestDesc);
+            }
+        }
+
+        if (!isMethodNameExist) {
+            throw new IllegalArgumentException();
         }
     }
 
-    private static void validateSingleRequest(String method, Request request, RequestDesc requestDesc) {
-        ParameterDesc parameterDesc = requestDesc.getParameter();
-        String name = parameterDesc.getName();
-        if (!method.equals(name)) {
-            return;
-        }
+    private static void validateSingleRequest(Request request, RequestDesc requestDesc) {
+        List<ParameterDesc> parameterDescList = requestDesc.getParameterDescList();
+        for (ParameterDesc parameterDesc : parameterDescList) {
+            HashMap<String, RecordSet> parameters = request.getParameters();
+            if (!parameters.containsKey(parameterDesc.getName())) {
+                throw new IllegalArgumentException();
+            }
 
-        HashMap<String, RecordSet> parameters = request.getParameters();
-        if (!parameters.containsKey(parameterDesc.getType().getName())) {
-            throw new IllegalArgumentException();
+            validateParameter(parameters.get(parameterDesc.getName()), parameterDesc);
         }
-
-        validateParameter(parameters.get(parameterDesc.getType().getName()), parameterDesc);
     }
 
     private static void validateParameter(RecordSet recordSet, ParameterDesc parameterDesc) {

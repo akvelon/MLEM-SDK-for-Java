@@ -27,10 +27,22 @@ public class RequestParser {
     }
 
     public static RequestDesc parseParameter(Map.Entry<String, JsonNode> entry) throws IOException {
-        JsonNode argJsonNode = entry.getValue().get("args").get(0);
+        JsonNode args = entry.getValue().get("args");
         JsonNode returnsJsonNode = entry.getValue().get("returns");
-        return new RequestDesc(
-                new ParameterDesc(entry.getKey(), parseRecordSetDesc(argJsonNode.get("name").asText(), argJsonNode.get("type_"))),
+
+        if (!args.isArray()) {
+            throw new IllegalArgumentException();
+        }
+
+        List<ParameterDesc> parameterDescList = new ArrayList<>();
+        for (JsonNode arg : args) {
+            RecordSetDesc recordSetDesc = parseRecordSetDesc(arg.get("name").asText(), arg.get("type_"));
+            ParameterDesc parameterDesc = new ParameterDesc(arg.get("name").asText(), recordSetDesc);
+            parameterDescList.add(parameterDesc);
+        }
+
+        return new RequestDesc(entry.getKey(),
+                parameterDescList,
                 DataType.fromString(returnsJsonNode.get("dtype").asText()));
     }
 
@@ -50,6 +62,6 @@ public class RequestParser {
             recordSetColumns.add(new RecordSetColumn(names.get(i), DataType.fromString(dTypes.get(i))));
         }
 
-        return new RecordSetDesc(name, recordSetDescType, recordSetColumns);
+        return new RecordSetDesc(recordSetDescType, recordSetColumns);
     }
 }
