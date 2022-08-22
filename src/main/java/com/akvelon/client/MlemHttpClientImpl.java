@@ -16,8 +16,6 @@ import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Provides the functionality for Mlem API
@@ -35,7 +33,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
     private final String host;
 
     private final HttpClient httpClient;
-    private static Logger logger;
+    private final System.Logger logger;
 
     private JsonNode schema;
 
@@ -44,7 +42,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
      *
      * @param host is the host URL
      */
-    public MlemHttpClientImpl(String host, Logger logger) {
+    public MlemHttpClientImpl(String host, System.Logger logger) {
         this(null, host, logger);
     }
 
@@ -54,7 +52,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
      * @param executorService provides a pool of threads and an API for assigning tasks to it
      * @param host            is the host URL
      */
-    public MlemHttpClientImpl(ExecutorService executorService, String host, Logger logger) {
+    public MlemHttpClientImpl(ExecutorService executorService, String host, System.Logger logger) {
         this.host = host;
         //create a builder for a httpClient
         HttpClient.Builder builder = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1);
@@ -132,8 +130,8 @@ class MlemHttpClientImpl implements MlemHttpClient {
      */
     private CompletableFuture<JsonNode> sendAsyncGetJson(String method) {
         HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create(host + method)).build();
-        logger.log(Level.INFO, "host: " + host);
-        logger.log(Level.INFO, "method: " + method);
+        logger.log(System.Logger.Level.INFO, "host: " + host);
+        logger.log(System.Logger.Level.INFO, "method: " + method);
 
         return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(stringHttpResponse -> JsonMapper.readValue(stringHttpResponse.body(), JsonNode.class));
@@ -153,8 +151,8 @@ class MlemHttpClientImpl implements MlemHttpClient {
         // Build a new post request
         HttpRequest request = HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(requestBody.toString())).uri(URI.create(host + method)).header("Content-Type", "application/json").build();
 
-        logger.log(Level.INFO, "host: " + host);
-        logger.log(Level.INFO, "method: " + method);
+        logger.log(System.Logger.Level.INFO, "host: " + host);
+        logger.log(System.Logger.Level.INFO, "method: " + method);
 
         return httpClient
                 // Sends the given request asynchronously using this client with the given response body handler
@@ -179,7 +177,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
         if (httpResponse.statusCode() / 100 != 2) {
             //if the code is not start with the digit 2, throw the RestException
             RestException restException = new RestException(httpResponse.body(), httpResponse.statusCode());
-            logger.log(Level.SEVERE, restException.toString());
+            logger.log(System.Logger.Level.ERROR, restException.toString());
 
             throw restException;
         }
@@ -189,7 +187,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
         if (schema == null) {
             schema = interfaceJsonAsync().exceptionally(throwable -> {
                 RestException restException = (RestException) throwable.getCause();
-                logger.log(Level.SEVERE, restException.toString());
+                logger.log(System.Logger.Level.ERROR, restException.toString());
                 return null;
             }).get();
         }
@@ -203,7 +201,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
         if (schema == null) {
             schema = interfaceJsonAsync().exceptionally(throwable -> {
                 RestException restException = (RestException) throwable.getCause();
-                logger.log(Level.SEVERE, restException.toString());
+                logger.log(System.Logger.Level.ERROR, restException.toString());
                 return null;
             }).get();
         }
