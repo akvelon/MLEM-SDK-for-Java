@@ -10,7 +10,7 @@ There is a MLEM technology that helps you package and deploy machine learning mo
 
 ### Client description
 
-Java MLEM client provides API for using MLEM technologies in your code. There are two methods for making requests:
+Java MLEM client provides API for using MLEM technologies in your code with given schema. There are two methods for making requests:
 1) **/predict**:
 - sensd /predict post request with given body; 
 - can handle the exception;

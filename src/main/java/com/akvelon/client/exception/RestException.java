@@ -32,4 +32,12 @@ public class RestException extends RuntimeException {
     public String getMessage() {
         return this.message;
     }
+
+    @Override
+    public String toString() {
+        return "RestException{" +
+                "statusCode=" + statusCode +
+                ", message='" + message + '\'' +
+                '}';
+    }
 }

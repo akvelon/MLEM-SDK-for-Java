@@ -16,13 +16,16 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class MlemHttpClientImplTest {
     private final static String HOST_URL = "http://example-mlem-get-started-app.herokuapp.com/";
     private final static ExecutorService executorService = Executors.newFixedThreadPool(10);
-    private final MlemHttpClient clientWithExecutor = MlemHttpClientFactory.createMlemHttpClient(executorService, HOST_URL);
-    private final MlemHttpClient clientWithOutExecutor = MlemHttpClientFactory.createMlemHttpClient(HOST_URL);
+    private static final Logger logger = Logger.getLogger(MlemHttpClientImplTest.class.getName());
+
+    private final MlemHttpClient clientWithExecutor = MlemHttpClientFactory.createMlemHttpClient(executorService, HOST_URL, logger);
+    private final MlemHttpClient clientWithOutExecutor = MlemHttpClientFactory.createMlemHttpClient(HOST_URL, logger);
 
     /**
      * /predict post-methods
@@ -120,7 +123,7 @@ public class MlemHttpClientImplTest {
     @Test
     @DisplayName("Test post /predict method with executorService = null")
     public void testGetInterfaceExecutorNull() throws ExecutionException, InterruptedException {
-        MlemHttpClientImpl mlemHttpClientImpl = new MlemHttpClientImpl(null, HOST_URL);
+        MlemHttpClientImpl mlemHttpClientImpl = new MlemHttpClientImpl(null, HOST_URL, logger);
 
         CompletableFuture<JsonNode> future = mlemHttpClientImpl.predict(TestDataFactory.buildDataRequestBody());
         assertResponseJsonOrHandleException(future);
@@ -131,7 +134,7 @@ public class MlemHttpClientImplTest {
     public void testListRequests() throws ExecutionException, InterruptedException {
         ExecutorService executorService = Executors.newFixedThreadPool(3);
 
-        MlemHttpClientImpl mlemHttpClientImpl = new MlemHttpClientImpl(executorService, HOST_URL);
+        MlemHttpClientImpl mlemHttpClientImpl = new MlemHttpClientImpl(executorService, HOST_URL, logger);
         List<JsonNode> dataRequestList = Arrays.asList(TestDataFactory.buildDataRequestBody(), TestDataFactory.buildDataRequestBody(), TestDataFactory.buildDataRequestBody());
         List<CompletableFuture<JsonNode>> completableFutures = dataRequestList.stream().map(mlemHttpClientImpl::predict).collect(Collectors.toList());
 

@@ -1,6 +1,7 @@
 package com.akvelon.client;
 
 import java.util.concurrent.ExecutorService;
+import java.util.logging.Logger;
 
 /**
  * Factory class provides creating MlemHttpClient implementation
@@ -12,8 +13,8 @@ public class MlemHttpClientFactory {
      * @param host is the host URL
      * @return the new MlemHttpClient
      */
-    public static MlemHttpClient createMlemHttpClient(String host) {
-        return new MlemHttpClientImpl(host);
+    public static MlemHttpClient createMlemHttpClient(String host, Logger logger) {
+        return new MlemHttpClientImpl(host, logger);
     }
 
     /**
@@ -23,7 +24,7 @@ public class MlemHttpClientFactory {
      * @param host            is the host URL
      * @return the new MlemHttpClient
      */
-    public static MlemHttpClient createMlemHttpClient(ExecutorService executorService, String host) {
-        return new MlemHttpClientImpl(executorService, host);
+    public static MlemHttpClient createMlemHttpClient(ExecutorService executorService, String host, Logger logger) {
+        return new MlemHttpClientImpl(executorService, host, logger);
     }
 }
