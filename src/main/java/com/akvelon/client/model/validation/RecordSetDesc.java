@@ -15,15 +15,7 @@ public class RecordSetDesc {
         return type;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public ArrayList<RecordSetColumn> getColumns() {
         return columns;
-    }
-
-    public void setColumns(ArrayList<RecordSetColumn> columns) {
-        this.columns = columns;
     }
 }

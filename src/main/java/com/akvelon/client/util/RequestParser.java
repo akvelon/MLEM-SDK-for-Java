@@ -1,5 +1,7 @@
 package com.akvelon.client.util;
 
+import com.akvelon.client.model.request.RecordSet;
+import com.akvelon.client.model.request.Request;
 import com.akvelon.client.model.validation.*;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -16,7 +18,7 @@ public class RequestParser {
         return new InterfaceDesc(methods);
     }
 
-    public static ArrayList<RequestDesc> parseMethod(Map<String, JsonNode> jsonNodeMap) throws IOException {
+    private static ArrayList<RequestDesc> parseMethod(Map<String, JsonNode> jsonNodeMap) throws IOException {
         ArrayList<RequestDesc> parameters = new ArrayList<>();
         for (Map.Entry<String, JsonNode> entry : jsonNodeMap.entrySet()) {
             RequestDesc parameterDesc = parseParameter(entry);
@@ -26,7 +28,7 @@ public class RequestParser {
         return parameters;
     }
 
-    public static RequestDesc parseParameter(Map.Entry<String, JsonNode> entry) throws IOException {
+    private static RequestDesc parseParameter(Map.Entry<String, JsonNode> entry) throws IOException {
         JsonNode args = entry.getValue().get("args");
         JsonNode returnsJsonNode = entry.getValue().get("returns");
 
@@ -36,7 +38,7 @@ public class RequestParser {
 
         List<ParameterDesc> parameterDescList = new ArrayList<>();
         for (JsonNode arg : args) {
-            RecordSetDesc recordSetDesc = parseRecordSetDesc(arg.get("name").asText(), arg.get("type_"));
+            RecordSetDesc recordSetDesc = parseRecordSetDesc(arg.get("type_"));
             ParameterDesc parameterDesc = new ParameterDesc(arg.get("name").asText(), recordSetDesc);
             parameterDescList.add(parameterDesc);
         }
@@ -46,7 +48,7 @@ public class RequestParser {
                 DataType.fromString(returnsJsonNode.get("dtype").asText()));
     }
 
-    public static RecordSetDesc parseRecordSetDesc(String name, JsonNode jsonNode) throws IOException {
+    public static RecordSetDesc parseRecordSetDesc(JsonNode jsonNode) throws IOException {
         String recordSetDescType = jsonNode.get("type").asText();
         if (!recordSetDescType.equals("dataframe")) {
             throw new IllegalArgumentException();
@@ -63,5 +65,19 @@ public class RequestParser {
         }
 
         return new RecordSetDesc(recordSetDescType, recordSetColumns);
+    }
+
+    public static Request parseRequest(JsonNode body) throws IOException {
+        Map<String, JsonNode> parameters = JsonMapper.readMap(body);
+        Request request = new Request();
+        for (Map.Entry<String, JsonNode> entry : parameters.entrySet()) {
+            request.addParameter(entry.getKey(), parseRecordSet(entry.getValue()));
+        }
+
+        return request;
+    }
+
+    public static RecordSet parseRecordSet(JsonNode recordSetJson) {
+        return JsonMapper.readValue(recordSetJson.toString(), RecordSet.class);
     }
 }

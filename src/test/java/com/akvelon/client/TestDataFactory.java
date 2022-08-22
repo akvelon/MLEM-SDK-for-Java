@@ -12,10 +12,10 @@ public class TestDataFactory {
             "  \"data\": {\n" +
             "    \"values\": [\n" +
             "      {\n" +
-            "        \"sepal length (cm)\": 0,\n" +
-            "        \"sepal width (cm)\": 0,\n" +
-            "        \"petal length (cm)\": 0,\n" +
-            "        \"petal width (cm)\": 0\n" +
+            "        \"sepal length (cm)\": 0.0,\n" +
+            "        \"sepal width (cm)\": 0.1,\n" +
+            "        \"petal length (cm)\": 0.5,\n" +
+            "        \"petal width (cm)\": 0.2\n" +
             "      }\n" +
             "    ]\n" +
             "  }\n" +
@@ -25,10 +25,10 @@ public class TestDataFactory {
             "  \"X\": {\n" +
             "    \"values\": [\n" +
             "      {\n" +
-            "        \"sepal length (cm)\": 0,\n" +
-            "        \"sepal width (cm)\": 0,\n" +
-            "        \"petal length (cm)\": 0,\n" +
-            "        \"petal width (cm)\": 0\n" +
+            "        \"sepal length (cm)\": 0.1,\n" +
+            "        \"sepal width (cm)\": 0.2,\n" +
+            "        \"petal length (cm)\": 0.3,\n" +
+            "        \"petal width (cm)\": 0.4\n" +
             "      }\n" +
             "    ]\n" +
             "  }\n" +

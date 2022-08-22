@@ -82,7 +82,7 @@ public class MlemHttpClientImplTest {
 
     @Test
     @DisplayName("Test post /predictProba method with JSON request and response")
-    public void testPredictProbaJson() throws ExecutionException, InterruptedException {
+    public void testPredictProbaJson() throws ExecutionException, InterruptedException, IOException {
         assertResponseJsonOrHandleException(clientWithExecutor.call(POST_PREDICT_PROBA, TestDataFactory.buildDataRequestBody()));
     }
 
@@ -97,7 +97,7 @@ public class MlemHttpClientImplTest {
     @Test()
     @DisplayName("Test post /predictProba method with null request body")
     public void testPredictProbaEmptyString() {
-        NullPointerException thrown = Assertions.assertThrows(NullPointerException.class, () -> clientWithExecutor.call(POST_PREDICT_PROBA, (JsonNode) null).exceptionally(throwable -> {
+        IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> clientWithExecutor.call(POST_PREDICT_PROBA, (JsonNode) null).exceptionally(throwable -> {
             RestException restException = (RestException) throwable.getCause();
             assertResponseException(restException);
             return null;
@@ -107,36 +107,14 @@ public class MlemHttpClientImplTest {
 
     @Test()
     @DisplayName("Test post /sklearnPredict method with JSON request and response")
-    public void testSklearnPredictJson() throws InterruptedException, ExecutionException {
+    public void testSklearnPredictJson() throws InterruptedException, ExecutionException, IOException {
         assertResponseJsonOrHandleException(clientWithExecutor.call(POST_SKLEARN_PREDICT, TestDataFactory.buildXRequestBody()));
     }
 
     @Test
     @DisplayName("Test post /sklearnPredictProba method with JSON request and response")
-    public void testSklearnPredictProbaJson() throws InterruptedException, ExecutionException {
-        assertResponseJsonOrHandleException(clientWithExecutor.call(POST_SKLEARN_PREDICT_PROBA, TestDataFactory.buildDataRequestBody()));
-    }
-
-    @Test()
-    @DisplayName("Test post /sklearnPredict method with WRONG JSON request and response. Handle the HTTP 500.")
-    public void testSklearnPredict500Error() throws InterruptedException, ExecutionException {
-        JsonNode result = clientWithExecutor.call(POST_SKLEARN_PREDICT, TestDataFactory.buildDataRequestBody()).exceptionally(throwable -> {
-            RestException restException = (RestException) throwable.getCause();
-            assertResponseException(restException);
-            return null;
-        }).get();
-        Assertions.assertNull(result);
-    }
-
-    @Test
-    @DisplayName("Test post /sklearnPredict method with WRONG JSON request and response")
-    public void testSklearnPredictProba500error() throws InterruptedException, ExecutionException {
-        JsonNode result = clientWithExecutor.call(POST_SKLEARN_PREDICT_PROBA, TestDataFactory.buildDataRequestBody()).exceptionally(throwable -> {
-            RestException restException = (RestException) throwable.getCause();
-            assertResponseException(restException);
-            return null;
-        }).get();
-        Assertions.assertNull(result);
+    public void testSklearnPredictProbaJson() throws InterruptedException, ExecutionException, IOException {
+        assertResponseJsonOrHandleException(clientWithExecutor.call(POST_SKLEARN_PREDICT_PROBA, TestDataFactory.buildXRequestBody()));
     }
 
     @Test

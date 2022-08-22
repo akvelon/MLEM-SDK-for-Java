@@ -13,15 +13,7 @@ public class ParameterDesc {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public RecordSetDesc getType() {
         return type;
-    }
-
-    public void setType(RecordSetDesc type) {
-        this.type = type;
     }
 }

@@ -12,8 +12,4 @@ public class InterfaceDesc {
     public ArrayList<RequestDesc> getMethodDescs() {
         return requestDescs;
     }
-
-    public void setMethodDescs(ArrayList<RequestDesc> requestDescs) {
-        this.requestDescs = requestDescs;
-    }
 }

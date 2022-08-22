@@ -17,23 +17,11 @@ public class RequestDesc {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public List<ParameterDesc> getParameterDescList() {
         return parameterDescList;
     }
 
-    public void setParameterDescList(List<ParameterDesc> parameterDescList) {
-        this.parameterDescList = parameterDescList;
-    }
-
     public DataType getReturnType() {
         return returnType;
-    }
-
-    public void setReturnType(DataType returnType) {
-        this.returnType = returnType;
     }
 }

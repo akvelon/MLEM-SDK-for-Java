@@ -92,7 +92,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
      */
     @Override
     public CompletableFuture<JsonNode> predict(Request requestBody) throws IOException, ExecutionException, InterruptedException {
-        return validateAndSendAsyncPostJson(POST_PREDICT, requestBody);
+        return validateAndSendRequest(POST_PREDICT, requestBody);
     }
 
     /**
@@ -103,8 +103,8 @@ class MlemHttpClientImpl implements MlemHttpClient {
      * @return a JsonNode response wrapped in the CompletableFuture object.
      */
     @Override
-    public CompletableFuture<JsonNode> call(String methodName, JsonNode requestBody) {
-        return sendAsyncPostJson(methodName, requestBody);
+    public CompletableFuture<JsonNode> call(String methodName, JsonNode requestBody) throws IOException, ExecutionException, InterruptedException {
+        return validateAndSendRequest(methodName, requestBody);
     }
 
     /**
@@ -116,7 +116,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
      */
     @Override
     public CompletableFuture<JsonNode> call(String methodName, Request requestBody) throws IOException, ExecutionException, InterruptedException {
-        return validateAndSendAsyncPostJson(methodName, requestBody);
+        return validateAndSendRequest(methodName, requestBody);
     }
 
     /**
@@ -172,7 +172,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
         }
     }
 
-    private CompletableFuture<JsonNode> validateAndSendAsyncPostJson(String method, Request requestBody) throws ExecutionException, InterruptedException, IOException {
+    private CompletableFuture<JsonNode> validateAndSendRequest(String method, Request body) throws ExecutionException, InterruptedException, IOException {
         if (schema == null) {
             schema = interfaceJsonAsync().exceptionally(throwable -> {
                 RestException restException = (RestException) throwable.getCause();
@@ -181,7 +181,22 @@ class MlemHttpClientImpl implements MlemHttpClient {
         }
 
         InterfaceDesc interfaceDesc = RequestParser.parseInterfaceSchema(schema);
-        RequestValidator.validateRequest(method, requestBody, interfaceDesc);
-        return sendAsyncPostJson(method, requestBody.toJson());
+        RequestValidator.validateRequest(method, body, interfaceDesc);
+        return sendAsyncPostJson(method, body.toJson());
+    }
+
+    private CompletableFuture<JsonNode> validateAndSendRequest(String method, JsonNode body) throws ExecutionException, InterruptedException, IOException {
+        if (schema == null) {
+            schema = interfaceJsonAsync().exceptionally(throwable -> {
+                RestException restException = (RestException) throwable.getCause();
+                return null;
+            }).get();
+        }
+
+        InterfaceDesc interfaceDesc = RequestParser.parseInterfaceSchema(schema);
+        Request request = RequestParser.parseRequest(body);
+
+        RequestValidator.validateRequest(method, request, interfaceDesc);
+        return sendAsyncPostJson(method, body);
     }
 }
