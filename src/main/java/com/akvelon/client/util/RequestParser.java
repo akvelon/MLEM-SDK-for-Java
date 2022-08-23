@@ -3,6 +3,7 @@ package com.akvelon.client.util;
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.Request;
 import com.akvelon.client.model.validation.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class RequestParser {
         JsonNode returnsJsonNode = entry.getValue().get("returns");
 
         if (!args.isArray()) {
-            throw new IllegalArgumentException();
+            throw new IOException();
         }
 
         List<ParameterDesc> parameterDescList = new ArrayList<>();
@@ -48,10 +49,10 @@ public class RequestParser {
                 DataType.fromString(returnsJsonNode.get("dtype").asText()));
     }
 
-    public static RecordSetDesc parseRecordSetDesc(JsonNode jsonNode) throws IOException {
+    private static RecordSetDesc parseRecordSetDesc(JsonNode jsonNode) throws IOException {
         String recordSetDescType = jsonNode.get("type").asText();
         if (!recordSetDescType.equals("dataframe")) {
-            throw new IllegalArgumentException();
+            throw new IOException();
         }
 
         JsonNode columns = jsonNode.get("columns");
@@ -77,7 +78,7 @@ public class RequestParser {
         return request;
     }
 
-    public static RecordSet parseRecordSet(JsonNode recordSetJson) {
+    private static RecordSet parseRecordSet(JsonNode recordSetJson) throws JsonProcessingException {
         return JsonMapper.readValue(recordSetJson.toString(), RecordSet.class);
     }
 }

@@ -1,6 +1,7 @@
 package com.akvelon.client.model.request;
 
 import com.akvelon.client.util.JsonMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.HashMap;
@@ -12,12 +13,16 @@ public class Request {
         parameters.put(propertyName, recordSet);
     }
 
-    public JsonNode toJson() {
+    public JsonNode toJson() throws JsonProcessingException {
         return JsonMapper.readValue(toString(), JsonNode.class);
     }
 
     public String toString() {
-        return JsonMapper.writeValueAsString(parameters);
+        try {
+            return JsonMapper.writeValueAsString(parameters);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public HashMap<String, RecordSet> getParameters() {

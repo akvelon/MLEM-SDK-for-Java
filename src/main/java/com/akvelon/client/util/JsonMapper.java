@@ -23,12 +23,8 @@ public class JsonMapper {
      * @param <T>    is the generic for setting the class
      * @return the result object of the conversion
      */
-    public static <T> T readValue(String json, Class<T> tClass) {
-        try {
-            return mapper.readValue(json, tClass);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+    public static <T> T readValue(String json, Class<T> tClass) throws JsonProcessingException {
+        return mapper.readValue(json, tClass);
     }
 
     public static <T> List<T> readValues(JsonNode json) throws IOException {
@@ -43,15 +39,11 @@ public class JsonMapper {
         return reader.readValue(json);
     }
 
-    public static String writeValueAsString(Object object) {
-        try {
-            return mapper.writeValueAsString(object);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+    public static String writeValueAsString(Object object) throws JsonProcessingException {
+        return mapper.writeValueAsString(object);
     }
 
-    public static JsonNode createObjectNodeWithArray(String propertyName, List<Record> records) {
+    public static JsonNode createObjectNodeWithArray(String propertyName, List<Record> records) throws JsonProcessingException {
         ArrayNode arrayNode = mapper.createArrayNode();
         for (Record record : records) {
             arrayNode.add(record.toJsonNode());

@@ -6,6 +6,7 @@ import com.akvelon.client.model.validation.InterfaceDesc;
 import com.akvelon.client.util.JsonMapper;
 import com.akvelon.client.util.RequestParser;
 import com.akvelon.client.util.RequestValidator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
@@ -134,7 +135,16 @@ class MlemHttpClientImpl implements MlemHttpClient {
         logger.log(System.Logger.Level.INFO, "method: " + method);
 
         return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(stringHttpResponse -> JsonMapper.readValue(stringHttpResponse.body(), JsonNode.class));
+                .thenApply(stringHttpResponse -> {
+                    checkResponseAndThrowException(stringHttpResponse);
+
+                    try {
+                        return JsonMapper.readValue(stringHttpResponse.body(), JsonNode.class);
+                    } catch (JsonProcessingException e) {
+                        logger.log(System.Logger.Level.ERROR, "JsonMapper convert body exception", e);
+                        throw new RuntimeException(e);
+                    }
+                });
     }
 
     /**
@@ -163,7 +173,12 @@ class MlemHttpClientImpl implements MlemHttpClient {
                     // check response for exception and if true throw the exception
                     checkResponseAndThrowException(httpResponse);
                     // if no exception caused, return the response body converted to Json
-                    return JsonMapper.readValue(httpResponse.body(), JsonNode.class);
+                    try {
+                        return JsonMapper.readValue(httpResponse.body(), JsonNode.class);
+                    } catch (JsonProcessingException e) {
+                        logger.log(System.Logger.Level.ERROR, "JsonMapper convert body exception", e);
+                        throw new RuntimeException(e);
+                    }
                 });
     }
 
@@ -176,40 +191,38 @@ class MlemHttpClientImpl implements MlemHttpClient {
         // check the status code for 2**
         if (httpResponse.statusCode() / 100 != 2) {
             //if the code is not start with the digit 2, throw the RestException
-            RestException restException = new RestException(httpResponse.body(), httpResponse.statusCode());
-            logger.log(System.Logger.Level.ERROR, restException.toString());
-
-            throw restException;
+            throw new RestException(httpResponse.body(), httpResponse.statusCode());
         }
+
+        logger.log(System.Logger.Level.INFO, httpResponse.statusCode());
     }
 
-    private CompletableFuture<JsonNode> validateAndSendRequest(String method, Request body) throws ExecutionException, InterruptedException, IOException {
+    private synchronized CompletableFuture<JsonNode> validateAndSendRequest(String method, Request body) throws ExecutionException, InterruptedException, IOException {
+        downloadSchemaIfNotExist();
+
+        return sendAsyncRequest(method, body);
+    }
+
+    private synchronized CompletableFuture<JsonNode> validateAndSendRequest(String method, JsonNode bodyJson) throws ExecutionException, InterruptedException, IOException {
+        downloadSchemaIfNotExist();
+
+        Request body = RequestParser.parseRequest(bodyJson);
+        return sendAsyncRequest(method, body);
+    }
+
+    private void downloadSchemaIfNotExist() throws ExecutionException, InterruptedException {
         if (schema == null) {
             schema = interfaceJsonAsync().exceptionally(throwable -> {
                 RestException restException = (RestException) throwable.getCause();
-                logger.log(System.Logger.Level.ERROR, restException.toString());
+                logger.log(System.Logger.Level.ERROR, "the http response status code is " + restException.getStatusCode(), restException);
                 return null;
             }).get();
         }
-
-        InterfaceDesc interfaceDesc = RequestParser.parseInterfaceSchema(schema);
-        RequestValidator.validateRequest(method, body, interfaceDesc);
-        return sendAsyncPostJson(method, body.toJson());
     }
 
-    private CompletableFuture<JsonNode> validateAndSendRequest(String method, JsonNode body) throws ExecutionException, InterruptedException, IOException {
-        if (schema == null) {
-            schema = interfaceJsonAsync().exceptionally(throwable -> {
-                RestException restException = (RestException) throwable.getCause();
-                logger.log(System.Logger.Level.ERROR, restException.toString());
-                return null;
-            }).get();
-        }
-
+    private CompletableFuture<JsonNode> sendAsyncRequest(String method, Request request) throws IOException {
         InterfaceDesc interfaceDesc = RequestParser.parseInterfaceSchema(schema);
-        Request request = RequestParser.parseRequest(body);
-
         RequestValidator.validateRequest(method, request, interfaceDesc);
-        return sendAsyncPostJson(method, body);
+        return sendAsyncPostJson(method, request.toJson());
     }
 }

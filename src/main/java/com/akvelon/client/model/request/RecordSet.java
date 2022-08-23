@@ -2,6 +2,7 @@ package com.akvelon.client.model.request;
 
 import com.akvelon.client.util.JsonMapper;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class RecordSet {
         records.add(record);
     }
 
-    public JsonNode toJson(String propertyName) {
+    public JsonNode toJson(String propertyName) throws JsonProcessingException {
         return JsonMapper.createObjectNodeWithArray(propertyName, records);
     }
 

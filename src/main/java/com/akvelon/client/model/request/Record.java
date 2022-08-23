@@ -3,6 +3,7 @@ package com.akvelon.client.model.request;
 import com.akvelon.client.util.JsonMapper;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.HashMap;
@@ -28,12 +29,12 @@ public class Record {
         columns.put(name, value);
     }
 
-    public String toString() {
+    public String toJsonString() throws JsonProcessingException {
         return JsonMapper.writeValueAsString(columns);
     }
 
-    public JsonNode toJsonNode() {
-        return JsonMapper.readValue(toString(), JsonNode.class);
+    public JsonNode toJsonNode() throws JsonProcessingException {
+        return JsonMapper.readValue(toJsonString(), JsonNode.class);
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.akvelon.client.model.request.Request;
 import com.akvelon.client.model.validation.InterfaceDesc;
 import com.akvelon.client.util.JsonMapper;
 import com.akvelon.client.util.RequestParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -21,9 +22,6 @@ import java.util.stream.Collectors;
 public class MlemHttpClientImplTest {
     private final static String HOST_URL = "http://example-mlem-get-started-app.herokuapp.com/";
     private final static ExecutorService executorService = Executors.newFixedThreadPool(10);
-    /*
-        private static final Logger logger = Logger.getLogger(MlemHttpClientImplTest.class.getName());
-    */
     private static final System.Logger LOGGER = System.getLogger(MlemHttpClientImplTest.class.getName());
 
 
@@ -75,7 +73,7 @@ public class MlemHttpClientImplTest {
 
     @Test
     @DisplayName("Test post /predict method with JSON response")
-    public void testPredictJson() throws ExecutionException, InterruptedException {
+    public void testPredictJson() throws ExecutionException, InterruptedException, JsonProcessingException {
         assertResponseJsonOrHandleException(clientWithExecutor.predict(TestDataFactory.buildDataRequestBody()));
     }
 
@@ -125,7 +123,7 @@ public class MlemHttpClientImplTest {
 
     @Test
     @DisplayName("Test post /predict method with executorService = null")
-    public void testGetInterfaceExecutorNull() throws ExecutionException, InterruptedException {
+    public void testGetInterfaceExecutorNull() throws ExecutionException, InterruptedException, JsonProcessingException {
         MlemHttpClientImpl mlemHttpClientImpl = new MlemHttpClientImpl(null, HOST_URL, LOGGER);
 
         CompletableFuture<JsonNode> future = mlemHttpClientImpl.predict(TestDataFactory.buildDataRequestBody());
@@ -134,7 +132,7 @@ public class MlemHttpClientImplTest {
 
     @Test
     @DisplayName("Test a list of the requests")
-    public void testListRequests() throws ExecutionException, InterruptedException {
+    public void testListRequests() throws ExecutionException, InterruptedException, JsonProcessingException {
         ExecutorService executorService = Executors.newFixedThreadPool(3);
 
         MlemHttpClientImpl mlemHttpClientImpl = new MlemHttpClientImpl(executorService, HOST_URL, LOGGER);
@@ -176,7 +174,12 @@ public class MlemHttpClientImplTest {
         assertResponseString(restException.getMessage());
 
         if (restException.getStatusCode() == 422) {
-            ValidationError validationError = JsonMapper.readValue(restException.getMessage(), ValidationError.class);
+            ValidationError validationError;
+            try {
+                validationError = JsonMapper.readValue(restException.getMessage(), ValidationError.class);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
             Assertions.assertNotNull(validationError);
             Assertions.assertNotNull(validationError.getDetail());
         }

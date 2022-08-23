@@ -4,6 +4,7 @@ import com.akvelon.client.model.request.Record;
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.Request;
 import com.akvelon.client.util.JsonMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Assertions;
 
@@ -34,15 +35,15 @@ public class TestDataFactory {
             "  }\n" +
             "}";
 
-    public static JsonNode buildDataRequestBody() {
+    public static JsonNode buildDataRequestBody() throws JsonProcessingException {
         return JsonMapper.readValue(dataRequestBody, JsonNode.class);
     }
 
-    public static JsonNode buildXRequestBody() {
+    public static JsonNode buildXRequestBody() throws JsonProcessingException {
         return JsonMapper.readValue(xRequestBody, JsonNode.class);
     }
 
-    public static RecordSet buildRecordSet() {
+    public static RecordSet buildRecordSet() throws JsonProcessingException {
         Record record = new Record();
         record.addColumn("sepal length (cm)", 1.2);
         record.addColumn("sepal width (cm)", 2.4);
@@ -68,7 +69,7 @@ public class TestDataFactory {
             "\"petal width (cm)\"],\"dtypes\":[\"float64\",\"float64\",\"float64\",\"float64\"],\"index_cols\":[]," +
             "\"type\":\"dataframe\"}";
 
-    public static JsonNode buildType_() {
+    public static JsonNode buildType_() throws JsonProcessingException {
         return JsonMapper.readValue(type_, JsonNode.class);
     }
 }
