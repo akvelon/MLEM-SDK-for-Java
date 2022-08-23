@@ -14,16 +14,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
 
 public class MlemHttpClientImplTest {
     private final static String HOST_URL = "http://example-mlem-get-started-app.herokuapp.com/";
     private final static ExecutorService executorService = Executors.newFixedThreadPool(10);
     private static final System.Logger LOGGER = System.getLogger(MlemHttpClientImplTest.class.getName());
-
 
     private final MlemHttpClient clientWithExecutor = MlemHttpClientFactory.createMlemHttpClient(executorService, HOST_URL, LOGGER);
     private final MlemHttpClient clientWithOutExecutor = MlemHttpClientFactory.createMlemHttpClient(HOST_URL, LOGGER);
@@ -73,7 +72,7 @@ public class MlemHttpClientImplTest {
 
     @Test
     @DisplayName("Test post /predict method with JSON response")
-    public void testPredictJson() throws ExecutionException, InterruptedException, JsonProcessingException {
+    public void testPredictJson() throws ExecutionException, InterruptedException, IOException {
         assertResponseJsonOrHandleException(clientWithExecutor.predict(TestDataFactory.buildDataRequestBody()));
     }
 
@@ -123,7 +122,7 @@ public class MlemHttpClientImplTest {
 
     @Test
     @DisplayName("Test post /predict method with executorService = null")
-    public void testGetInterfaceExecutorNull() throws ExecutionException, InterruptedException, JsonProcessingException {
+    public void testGetInterfaceExecutorNull() throws ExecutionException, InterruptedException, IOException {
         MlemHttpClientImpl mlemHttpClientImpl = new MlemHttpClientImpl(null, HOST_URL, LOGGER);
 
         CompletableFuture<JsonNode> future = mlemHttpClientImpl.predict(TestDataFactory.buildDataRequestBody());
@@ -132,12 +131,16 @@ public class MlemHttpClientImplTest {
 
     @Test
     @DisplayName("Test a list of the requests")
-    public void testListRequests() throws ExecutionException, InterruptedException, JsonProcessingException {
+    public void testListRequests() throws ExecutionException, InterruptedException, IOException {
         ExecutorService executorService = Executors.newFixedThreadPool(3);
 
         MlemHttpClientImpl mlemHttpClientImpl = new MlemHttpClientImpl(executorService, HOST_URL, LOGGER);
         List<JsonNode> dataRequestList = Arrays.asList(TestDataFactory.buildDataRequestBody(), TestDataFactory.buildDataRequestBody(), TestDataFactory.buildDataRequestBody());
-        List<CompletableFuture<JsonNode>> completableFutures = dataRequestList.stream().map(mlemHttpClientImpl::predict).collect(Collectors.toList());
+        List<CompletableFuture<JsonNode>> completableFutures = new ArrayList<>();
+        for (JsonNode jsonNode : dataRequestList) {
+            CompletableFuture<JsonNode> predict = mlemHttpClientImpl.predict(jsonNode);
+            completableFutures.add(predict);
+        }
 
         for (CompletableFuture<JsonNode> future : completableFutures) {
             assertResponseJsonOrHandleException(future);

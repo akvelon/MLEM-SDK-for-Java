@@ -8,47 +8,46 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Interface provides Mlem API
+ * Java MLEM client provides API for using MLEM technologies with given schema.
  */
 public interface MlemHttpClient {
-
     /**
-     * The method sends the /inteface.json get request. The method can catch the exception via exceptionaly method.
+     * The method sends the /inteface.json get request.
      *
-     * @return a JsonNode response wrapped in the CompletableFuture object.
+     * @return a schema wrapped in the CompletableFuture object.
      */
     CompletableFuture<JsonNode> interfaceJsonAsync();
 
     /**
-     * The method sends the /predict post request. The method can catch the exception via exceptionaly method.
+     * The method sends the /predict post request.
      *
-     * @param requestBody is the JsonNode representation of the request.
+     * @param requestBody the JsonNode representation of the request.
      * @return a JsonNode response wrapped in the CompletableFuture object.
      */
-    CompletableFuture<JsonNode> predict(JsonNode requestBody);
+    CompletableFuture<JsonNode> predict(JsonNode requestBody) throws IOException, ExecutionException, InterruptedException;
 
     /**
-     * The method sends the /predict post request. The method can catch the exception via exceptionaly method.
+     * The method sends the /predict post request.
      *
-     * @param requestBody is the representation of the Request class.
+     * @param requestBody the representation of the Request class.
      * @return a JsonNode response wrapped in the CompletableFuture object.
      */
     CompletableFuture<JsonNode> predict(Request requestBody) throws IOException, ExecutionException, InterruptedException;
 
     /**
-     * The method sends the post request. The method can catch the exception via exceptionaly method.
+     * The method sends the post request.
      *
-     * @param methodName  is the method name for the request
-     * @param requestBody is the JsonNode representation of the request.
+     * @param methodName  the method name for the request
+     * @param requestBody the JsonNode representation of the request.
      * @return a JsonNode response wrapped in the CompletableFuture object.
      */
     CompletableFuture<JsonNode> call(String methodName, JsonNode requestBody) throws IOException, ExecutionException, InterruptedException;
 
     /**
-     * The method sends the post request. The method can catch the exception via exceptionaly method.
+     * The method sends the post request.
      *
-     * @param methodName  is the method name for the request
-     * @param requestBody is the Request representation of the request.
+     * @param methodName  the method name for the request
+     * @param requestBody the Request representation of the request.
      * @return a JsonNode response wrapped in the CompletableFuture object.
      */
     CompletableFuture<JsonNode> call(String methodName, Request requestBody) throws IOException, ExecutionException, InterruptedException;
