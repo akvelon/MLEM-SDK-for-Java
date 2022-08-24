@@ -1,15 +1,29 @@
 package com.akvelon.client.model.validation;
 
-import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * Class represents the schema for validation the requests.
+ */
 public class InterfaceDesc {
-    private final ArrayList<RequestDesc> requestDescs;
+    /**
+     * The list of request descriptions.
+     */
+    private final List<RequestDesc> requestDescs;
 
-    public InterfaceDesc(ArrayList<RequestDesc> requestDescs) {
+    /**
+     * Constructs a new InterfaceDesc
+     *
+     * @param requestDescs the list of request descriptions.
+     */
+    public InterfaceDesc(List<RequestDesc> requestDescs) {
         this.requestDescs = requestDescs;
     }
 
-    public ArrayList<RequestDesc> getRequestDescs() {
+    /**
+     * @return the list of request descriptions.
+     */
+    public List<RequestDesc> getRequestDescs() {
         return requestDescs;
     }
 }

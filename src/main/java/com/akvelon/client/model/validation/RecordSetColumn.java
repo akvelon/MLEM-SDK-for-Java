@@ -1,9 +1,24 @@
 package com.akvelon.client.model.validation;
 
+/**
+ * Class represents the record set column description for validation the RecordSet  objects.
+ */
 public class RecordSetColumn {
-    private String name;
-    private DataType type;
+    /**
+     * The column name.
+     */
+    private final String name;
+    /**
+     * The column type.
+     */
+    private final DataType type;
 
+    /**
+     * Construct the new RecordSetColumn.
+     *
+     * @param name the column name.
+     * @param type the column type.
+     */
     public RecordSetColumn(String name, DataType type) {
         this.name = name;
         this.type = type;

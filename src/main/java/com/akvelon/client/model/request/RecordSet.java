@@ -9,12 +9,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Class represents list of the records.
+ */
 public class RecordSet {
+    /**
+     * The records list.
+     */
     @JsonProperty("values")
     private final List<Record> records = new ArrayList<>();
-
-    public RecordSet() {
-    }
 
     public List<Record> getRecords() {
         return records;

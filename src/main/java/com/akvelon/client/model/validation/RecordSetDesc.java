@@ -1,12 +1,27 @@
 package com.akvelon.client.model.validation;
 
-import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * Class represents the record set description for validation the RecordSet objects.
+ */
 public class RecordSetDesc {
-    private String type;
-    private ArrayList<RecordSetColumn> columns;
+    /**
+     * The record set description type.
+     */
+    private final String type;
+    /**
+     * The record set description columns.
+     */
+    private final List<RecordSetColumn> columns;
 
-    public RecordSetDesc(String type, ArrayList<RecordSetColumn> columns) {
+    /**
+     * Construct a new RecordSetDesc
+     *
+     * @param type    the record set description type.
+     * @param columns the record set description columns.
+     */
+    public RecordSetDesc(String type, List<RecordSetColumn> columns) {
         this.type = type;
         this.columns = columns;
     }
@@ -15,7 +30,7 @@ public class RecordSetDesc {
         return type;
     }
 
-    public ArrayList<RecordSetColumn> getColumns() {
+    public List<RecordSetColumn> getColumns() {
         return columns;
     }
 }

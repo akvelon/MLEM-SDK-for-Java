@@ -1,6 +1,7 @@
 package com.akvelon.client.model.error;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The class represents the detail information about the error
@@ -9,7 +10,7 @@ public class Detail {
     /**
      * The location of the error
      */
-    private ArrayList<String> loc;
+    private List<String> loc;
     /**
      * The message of the error
      */
@@ -28,27 +29,15 @@ public class Detail {
     public Detail() {
     }
 
-    public ArrayList<String> getLoc() {
+    public List<String> getLoc() {
         return loc;
-    }
-
-    public void setLoc(ArrayList<String> loc) {
-        this.loc = loc;
     }
 
     public String getMsg() {
         return msg;
     }
 
-    public void setMsg(String msg) {
-        this.msg = msg;
-    }
-
     public String getType() {
         return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 }

@@ -5,9 +5,8 @@ import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.Request;
 import com.akvelon.client.model.validation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Provides functionality for validation the request by given schema.
@@ -23,7 +22,7 @@ public class RequestValidator {
      */
     public static void validateRequest(String method, Request request, InterfaceDesc interfaceDesc) {
         // get request descriptions.
-        ArrayList<RequestDesc> requestDescs = interfaceDesc.getRequestDescs();
+        List<RequestDesc> requestDescs = interfaceDesc.getRequestDescs();
         boolean isMethodNameExist = false;
         // find given request in schema by name and validate it.
         for (RequestDesc requestDesc : requestDescs) {
@@ -55,7 +54,7 @@ public class RequestValidator {
         // validate parameters by descriptions.
         for (ParameterDesc parameterDesc : parameterDescList) {
             // get record sets for validation.
-            HashMap<String, RecordSet> parameters = request.getParameters();
+            Map<String, RecordSet> parameters = request.getParameters();
             // throw exception, if parameter name is not exist in description
             if (!parameters.containsKey(parameterDesc.getName())) {
                 throw new IllegalArgumentException();
@@ -100,9 +99,9 @@ public class RequestValidator {
      */
     private static void validateRecord(Record record, RecordSetDesc recordSetColumnDesc) {
         // get record columns.
-        HashMap<String, Number> columns = record.getColumns();
+        Map<String, Number> columns = record.getColumns();
         // get record columns description.
-        ArrayList<RecordSetColumn> columnsDesc = recordSetColumnDesc.getColumns();
+        List<RecordSetColumn> columnsDesc = recordSetColumnDesc.getColumns();
         // check the column count.
         if (columns.size() != columnsDesc.size()) {
             throw new IllegalArgumentException();
