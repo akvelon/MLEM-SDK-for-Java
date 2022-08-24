@@ -78,6 +78,12 @@ public class RequestParser {
         return request;
     }
 
+    /**
+     *
+     * @param recordSetJson
+     * @return
+     * @throws JsonProcessingException
+     */
     private static RecordSet parseRecordSet(JsonNode recordSetJson) throws JsonProcessingException {
         return JsonMapper.readValue(recordSetJson.toString(), RecordSet.class);
     }

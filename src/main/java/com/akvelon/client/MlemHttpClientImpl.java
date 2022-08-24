@@ -49,7 +49,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
     /**
      * Machine learning requests rules.
      */
-    private JsonNode schema;
+    private InterfaceDesc interfaceDesc;
 
     /**
      * Constructor for creating the implementation of Mlem HttpClient.
@@ -91,6 +91,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
      * @return a JsonNode response wrapped in the CompletableFuture object.
      */
     public CompletableFuture<JsonNode> interfaceJsonAsync() {
+        // send the /inteface.json request.
         return sendGetRequest(GET_INTERFACE);
     }
 
@@ -106,7 +107,9 @@ class MlemHttpClientImpl implements MlemHttpClient {
      */
     @Override
     public CompletableFuture<JsonNode> predict(JsonNode requestBody) throws IOException, ExecutionException, InterruptedException {
+        // convert json body to Request representation.
         Request body = RequestParser.parseRequest(requestBody);
+        // validate and send the /predict request with given body.
         return validateAndSendRequest(POST_PREDICT, body);
     }
 
@@ -122,6 +125,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
      */
     @Override
     public CompletableFuture<JsonNode> predict(Request requestBody) throws IOException, ExecutionException, InterruptedException {
+        // validate and send /predict request with given body.
         return validateAndSendRequest(POST_PREDICT, requestBody);
     }
 
@@ -138,7 +142,9 @@ class MlemHttpClientImpl implements MlemHttpClient {
      */
     @Override
     public CompletableFuture<JsonNode> call(String methodName, JsonNode requestBody) throws IOException, ExecutionException, InterruptedException {
+        // convert json body to Request representation.
         Request body = RequestParser.parseRequest(requestBody);
+        // validate and send /call request with given methodName and body.
         return validateAndSendRequest(methodName, body);
     }
 
@@ -155,6 +161,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
      */
     @Override
     public CompletableFuture<JsonNode> call(String methodName, Request requestBody) throws IOException, ExecutionException, InterruptedException {
+        // validate and send /call request with given methodName and body.
         return validateAndSendRequest(methodName, requestBody);
     }
 
@@ -169,17 +176,29 @@ class MlemHttpClientImpl implements MlemHttpClient {
      * @throws InterruptedException if the current thread was interrupted while waiting
      */
     private synchronized CompletableFuture<JsonNode> validateAndSendRequest(String method, Request request) throws IOException, ExecutionException, InterruptedException {
-        if (schema == null) {
-            schema = interfaceJsonAsync().exceptionally(throwable -> {
-                RestException restException = (RestException) throwable.getCause();
-                logger.log(System.Logger.Level.ERROR, "the http response status code is " + restException.getStatusCode(), restException);
-                return null;
-            }).get();
+        // check schema for null.
+        if (interfaceDesc == null) {
+            // if true, send /interface.json request to obtain the schema.
+            JsonNode schema = interfaceJsonAsync()
+                    .exceptionally(
+                            // in case of exception.
+                            throwable -> {
+                                // create the instance of RestException.
+                                RestException restException = (RestException) throwable.getCause();
+                                // log the exception.
+                                logger.log(System.Logger.Level.ERROR, "an exception in /interface.json request", restException);
+                                return null;
+                            })
+                    .get(); // get the result from CompletableFuture.
+
+            // convert json to InterfaceDesc.
+            interfaceDesc = RequestParser.parseInterfaceSchema(schema);
         }
 
-        InterfaceDesc interfaceDesc = RequestParser.parseInterfaceSchema(schema);
+        // validate request by given schema.
         RequestValidator.validateRequest(method, request, interfaceDesc);
 
+        // send post request with given method and request.
         return sendPostRequest(method, request.toJson());
     }
 
@@ -191,7 +210,9 @@ class MlemHttpClientImpl implements MlemHttpClient {
      * @return a JsonNode response wrapped in the CompletableFuture object.
      */
     private CompletableFuture<JsonNode> sendPostRequest(String method, JsonNode requestBody) {
+        // check request body for null.
         if (requestBody == null) {
+            //if true, log the error and throw exception.
             logger.log(System.Logger.Level.ERROR, "The body is null for method: " + method);
             throw new NullPointerException();
         }
@@ -199,12 +220,14 @@ class MlemHttpClientImpl implements MlemHttpClient {
         // Build a new post request
         HttpRequest request = HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(requestBody.toString())).uri(URI.create(host + method)).header("Content-Type", "application/json").build();
 
+        //log the host
         logger.log(System.Logger.Level.INFO, "host: " + host);
+        //log the method
         logger.log(System.Logger.Level.INFO, "method: " + method);
 
         // check response for exception and if true throw the exception
         return httpClient
-                // Sends the given request asynchronously using this client with the given response body handler
+                // Sends the given request asynchronously using this client with the given response body handler.
                 .sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 // Returns a new CompletionStage that, when this stage completes normally,
                 // is executed with this stage's result as the argument to the supplied function.
@@ -218,47 +241,56 @@ class MlemHttpClientImpl implements MlemHttpClient {
      * @return a JsonNode response wrapped in the CompletableFuture object.
      */
     private CompletableFuture<JsonNode> sendGetRequest(String method) {
+        // Build a new get request
         HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create(host + method)).build();
 
+        //log the host
         logger.log(System.Logger.Level.INFO, "host: " + host);
+        //log the method
         logger.log(System.Logger.Level.INFO, "method: " + method);
 
-        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+        return httpClient
+                // Sends the given request asynchronously.
+                .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                // Returns a new CompletionStage that, when this stage completes normally,
+                // is executed with this stage's result as the argument to the supplied function.
                 .thenApply(this::checkAndReadResponse);
     }
 
     /**
-     * Checks the response for 2** status code and convert the string body to JsonNode
+     * Checks the response for 2** status code and convert the string body to JsonNode.
      *
-     * @param httpResponse contains the response status, headers, and body
-     * @return a response body
+     * @param httpResponse contains the response status, headers, and body.
+     * @return a response body.
      */
     private JsonNode checkAndReadResponse(HttpResponse<String> httpResponse) {
+        // check http response status code.
         checkStatusCode(httpResponse);
 
         try {
-            // if no exception caused, return the response body converted to Json
+            // convert the http response to json and return.
             return JsonMapper.readValue(httpResponse.body(), JsonNode.class);
         } catch (JsonProcessingException e) {
-            // in case of exception log an information
+            // in case of exception log an information.
             logger.log(System.Logger.Level.ERROR, "JsonMapper read body exception", e);
-            // and throw the exception
+            // and throw the exception.
             throw new RuntimeException(e);
         }
     }
 
     /**
-     * Checks the status code of the response and throw exception if the code is not starts with digit 2
+     * Checks the status code of the response and throw exception if the code is not starts with digit 2.
      *
-     * @param httpResponse is the http response to check
+     * @param httpResponse is the http response to check.
      */
     private void checkStatusCode(HttpResponse<String> httpResponse) {
-        // check the status code for 2**
+        // check the status code for 2**.
         if (httpResponse.statusCode() / 100 != 2) {
-            //if the code is not start with the digit 2, throw the RestException
+            //if true, throw the RestException.
             throw new RestException(httpResponse.body(), httpResponse.statusCode());
         }
 
+        // log the status code.
         logger.log(System.Logger.Level.INFO, httpResponse.statusCode());
     }
 }
