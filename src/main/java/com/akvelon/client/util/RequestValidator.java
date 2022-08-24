@@ -9,68 +9,134 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Provides functionality for validation the request by given schema.
+ */
 public class RequestValidator {
+    /**
+     * Validate Request object by given schema represented in InterfaceDesc.
+     * Throw exception if the specified method name is not exist.
+     *
+     * @param method        the method name for the request.
+     * @param request       the Request object for validation.
+     * @param interfaceDesc the schema represented in InterfaceDesc object.
+     */
     public static void validateRequest(String method, Request request, InterfaceDesc interfaceDesc) {
-        ArrayList<RequestDesc> requestDescs = interfaceDesc.getMethodDescs();
+        // get request descriptions.
+        ArrayList<RequestDesc> requestDescs = interfaceDesc.getRequestDescs();
         boolean isMethodNameExist = false;
+        // find given request in schema by name and validate it.
         for (RequestDesc requestDesc : requestDescs) {
+            // get method name in the description.
             String name = requestDesc.getName();
+            // if request found in schema, validate it.
             if (method.equals(name)) {
                 isMethodNameExist = true;
                 validateSingleRequest(request, requestDesc);
             }
         }
 
+        // throw exception if the request is not exist in schema.
         if (!isMethodNameExist) {
             throw new IllegalArgumentException();
         }
     }
 
+    /**
+     * Validate Request object by given request description.
+     * Throw exception if the specified parameters is not equal to the schema.
+     *
+     * @param request     the Request object for validation.
+     * @param requestDesc the request description provided by schema.
+     */
     private static void validateSingleRequest(Request request, RequestDesc requestDesc) {
+        // get descriptions.
         List<ParameterDesc> parameterDescList = requestDesc.getParameterDescList();
+        // validate parameters by descriptions.
         for (ParameterDesc parameterDesc : parameterDescList) {
+            // get record sets for validation.
             HashMap<String, RecordSet> parameters = request.getParameters();
+            // throw exception, if parameter name is not exist in description
             if (!parameters.containsKey(parameterDesc.getName())) {
                 throw new IllegalArgumentException();
             }
 
+            // validate parameter by description.
             validateParameter(parameters.get(parameterDesc.getName()), parameterDesc);
         }
     }
 
+    /**
+     * Validate RecordSet object by given parameter description.
+     *
+     * @param recordSet     the RecordSet object for validation.
+     * @param parameterDesc the parameter description provided by schema.
+     */
     private static void validateParameter(RecordSet recordSet, ParameterDesc parameterDesc) {
         validateRecordSet(recordSet, parameterDesc.getType());
     }
 
+    /**
+     * Validate RecordSet object by given description.
+     *
+     * @param recordSet the RecordSet object for validation.
+     * @param typeDesc  the record set description provided by schema.
+     */
     private static void validateRecordSet(RecordSet recordSet, RecordSetDesc typeDesc) {
+        // get records list.
         List<Record> recordList = recordSet.getRecords();
+        // validate the records.
         for (Record record : recordList) {
             validateRecord(record, typeDesc);
         }
     }
 
+    /**
+     * Validate Record object by given schema.
+     * Throw exception if the specified parameters is not equal to record schema.
+     *
+     * @param record              the Record object for validation.
+     * @param recordSetColumnDesc the record description provided by schema.
+     */
     private static void validateRecord(Record record, RecordSetDesc recordSetColumnDesc) {
+        // get record columns.
         HashMap<String, Number> columns = record.getColumns();
+        // get record columns description.
         ArrayList<RecordSetColumn> columnsDesc = recordSetColumnDesc.getColumns();
+        // check the column count.
         if (columns.size() != columnsDesc.size()) {
             throw new IllegalArgumentException();
         }
 
+        // check every column in the loop.
         for (RecordSetColumn recordSetColumn : columnsDesc) {
+            // throw exception if given column name is not exist in schema.
             if (!columns.containsKey(recordSetColumn.getName())) {
                 throw new IllegalArgumentException();
             }
 
+            // validate record by schema
             validateType(columns.get(recordSetColumn.getName()), recordSetColumn.getType());
         }
     }
 
+    /**
+     * Validate data type by given schema.
+     * Throw exception if the specified number is not equal to type description.
+     *
+     * @param number   the number for validation.
+     * @param typeDesc the type description provided by schema.
+     */
     private static void validateType(Number number, DataType typeDesc) {
+        // for type description Float64 the number must be Double.
         if (typeDesc.equals(DataType.Float64)) {
+            // throw exception if number for Float64 is not Double
             if (!(number instanceof Double)) {
                 throw new IllegalArgumentException();
             }
+            // for type description Int64 the number must be Integer.
         } else if (typeDesc.equals(DataType.Int64)) {
+            // throw exception if number for Int64 is not Integer
             if (!(number instanceof Integer)) {
                 throw new IllegalArgumentException();
             }

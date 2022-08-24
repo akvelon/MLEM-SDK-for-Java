@@ -23,6 +23,8 @@ public class JsonMapper {
     private static final ObjectMapper mapper = new ObjectMapper();
 
     /**
+     * Method to deserialize JSON content from given JSON content String.
+     *
      * @param json   the string representation of Json.
      * @param tClass the class for conversion result.
      * @param <T>    the generic for setting the class.

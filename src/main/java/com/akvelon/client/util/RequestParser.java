@@ -11,7 +11,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Provides functionality for deserialization JSON schema to descriptions objects.
+ */
 public class RequestParser {
+    /**
+     * Method to deserialize a InterfaceDesc object from given JSON schema.
+     *
+     * @param schema the JsonNode representation of InterfaceDesc.
+     * @return the InterfaceDesc object of the conversion.
+     * @throws IOException signals that an I/O exception has occurred
+     *                     or an illegal recordSetType has occurred or args is not array.
+     */
     public static InterfaceDesc parseInterfaceSchema(JsonNode schema) throws IOException {
         Map<String, JsonNode> jsonNodeMap = JsonMapper.readMap(schema.get("methods"));
         ArrayList<RequestDesc> methods = parseMethod(jsonNodeMap);
@@ -19,59 +30,116 @@ public class RequestParser {
         return new InterfaceDesc(methods);
     }
 
+    /**
+     * Method to deserialize a list of RequestDesc object from given JSON schema.
+     *
+     * @param jsonNodeMap a map with string-json representation of RequestDesc list.
+     * @return the ArrayList<RequestDesc> objects of the conversion.
+     * @throws IOException signals that an illegal recordSetType has occurred or args is not array.
+     */
     private static ArrayList<RequestDesc> parseMethod(Map<String, JsonNode> jsonNodeMap) throws IOException {
         ArrayList<RequestDesc> parameters = new ArrayList<>();
+        // fill the parameters by created RequestDesc.
         for (Map.Entry<String, JsonNode> entry : jsonNodeMap.entrySet()) {
+            // deserialize RequestDesc content from given JSON content.
             RequestDesc parameterDesc = parseParameter(entry);
+            // add parameterDesc to list.
             parameters.add(parameterDesc);
         }
 
         return parameters;
     }
 
+    /**
+     * Method to deserialize RequestDesc object from given JSON schema.
+     *
+     * @param entry a collection-view of the map with arguments description.
+     * @return the RequestDesc object of the conversion.
+     * @throws IOException signals that an illegal recordSetType has occurred or args is not array.
+     */
     private static RequestDesc parseParameter(Map.Entry<String, JsonNode> entry) throws IOException {
+        // access value of the "args" of an object node.
         JsonNode args = entry.getValue().get("args");
-        JsonNode returnsJsonNode = entry.getValue().get("returns");
-
+        // if args is not array, throw exception.
         if (!args.isArray()) {
             throw new IOException();
         }
 
+        // access value of the "returns" of an object node.
+        JsonNode returnsJsonNode = entry.getValue().get("returns");
+
         List<ParameterDesc> parameterDescList = new ArrayList<>();
+
+        // fill the parameterDescList by created items.
         for (JsonNode arg : args) {
+            // deserialize RecordSetDesc content from a given JSON.
             RecordSetDesc recordSetDesc = parseRecordSetDesc(arg.get("type_"));
+            // create a new ParameterDesc with given name and RecordSetDesc.
             ParameterDesc parameterDesc = new ParameterDesc(arg.get("name").asText(), recordSetDesc);
+            // add parameterDesc to list parameterDescList.
             parameterDescList.add(parameterDesc);
         }
 
-        return new RequestDesc(entry.getKey(),
-                parameterDescList,
-                DataType.fromString(returnsJsonNode.get("dtype").asText()));
+        // create new RequestDesc and return.
+        return new RequestDesc(
+                entry.getKey(), //name
+                parameterDescList, //parameterDescList
+                DataType.fromString(returnsJsonNode.get("dtype").asText()) //return type
+        );
     }
 
+    /**
+     * Method to deserialize RecordSetDesc object from given JSON schema.
+     *
+     * @param jsonNode the JsonNode representation of RecordSetDesc.
+     * @return the RecordSetDesc object of the conversion.
+     * @throws IOException signals that an illegal recordSetType has occurred.
+     */
     private static RecordSetDesc parseRecordSetDesc(JsonNode jsonNode) throws IOException {
+        // get recordSet type description.
         String recordSetDescType = jsonNode.get("type").asText();
+        // check recordSet type description.
         if (!recordSetDescType.equals("dataframe")) {
             throw new IOException();
         }
 
+        // get columns.
         JsonNode columns = jsonNode.get("columns");
+        // get dtypes.
         JsonNode dtypes = jsonNode.get("dtypes");
 
         ArrayList<RecordSetColumn> recordSetColumns = new ArrayList<>();
+        // convert results from given columns into List<String>.
         List<String> names = JsonMapper.readValues(columns);
+        // convert results from given dtypes into List<String>.
         List<String> dTypes = JsonMapper.readValues(dtypes);
+
+        // fill the recordSetColumns by names and dTypes.
         for (int i = 0; i < names.size(); i++) {
             recordSetColumns.add(new RecordSetColumn(names.get(i), DataType.fromString(dTypes.get(i))));
         }
 
-        return new RecordSetDesc(recordSetDescType, recordSetColumns);
+        // create new RecordSetDesc and return.
+        return new RecordSetDesc(
+                recordSetDescType, //type
+                recordSetColumns    //columns
+        );
     }
 
+    /**
+     * Method to deserialize Request object from given JSON schema.
+     *
+     * @param body the JsonNode representation of Request parameters.
+     * @return the Request object of the conversion.
+     * @throws IOException signals that an I/O exception has occurred.
+     */
     public static Request parseRequest(JsonNode body) throws IOException {
+        // Convert results from given JSON tree into Map<String, JsonNode>.
         Map<String, JsonNode> parameters = JsonMapper.readMap(body);
+        // create the request and add a parameters.
         Request request = new Request();
         for (Map.Entry<String, JsonNode> entry : parameters.entrySet()) {
+            // parse recordSet and add to parameter.
             request.addParameter(entry.getKey(), parseRecordSet(entry.getValue()));
         }
 
@@ -79,12 +147,17 @@ public class RequestParser {
     }
 
     /**
+     * Method to deserialize RecordSet object from given JSON schema.
      *
-     * @param recordSetJson
-     * @return
-     * @throws JsonProcessingException
+     * @param recordSetJson the JsonNode representation of RecordSet.
+     * @return the RecordSet object of the conversion.
+     * @throws JsonProcessingException used to signal fatal problems with mapping of content.
      */
     private static RecordSet parseRecordSet(JsonNode recordSetJson) throws JsonProcessingException {
-        return JsonMapper.readValue(recordSetJson.toString(), RecordSet.class);
+        // deserialize RecordSet content from given JSON
+        return JsonMapper.readValue(
+                recordSetJson.toString(),   //data
+                RecordSet.class             //class
+        );
     }
 }
