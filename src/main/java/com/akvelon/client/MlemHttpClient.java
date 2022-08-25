@@ -12,14 +12,14 @@ import java.util.concurrent.ExecutionException;
  */
 public interface MlemHttpClient {
     /**
-     * The method sends the /inteface.json get request.
+     * The method sends the /inteface.json get request to obtain a validation schema.
      *
      * @return a schema wrapped in the CompletableFuture object.
      */
     CompletableFuture<JsonNode> interfaceJsonAsync();
 
     /**
-     * The method sends the /predict post request.
+     * The method sends the /predict post request with given JSON body.
      *
      * @param requestBody the JsonNode representation of the request.
      * @return a JsonNode response wrapped in the CompletableFuture object.
@@ -30,7 +30,7 @@ public interface MlemHttpClient {
     CompletableFuture<JsonNode> predict(JsonNode requestBody) throws IOException, ExecutionException, InterruptedException;
 
     /**
-     * The method sends the /predict post request.
+     * The method sends the /predict post request with given Request object body.
      *
      * @param requestBody the representation of the Request class.
      * @return a JsonNode response wrapped in the CompletableFuture object.
@@ -41,7 +41,7 @@ public interface MlemHttpClient {
     CompletableFuture<JsonNode> predict(Request requestBody) throws IOException, ExecutionException, InterruptedException;
 
     /**
-     * The method sends the post request.
+     * The method sends the post request with given method and JsonNode body.
      *
      * @param methodName  the method name for the request
      * @param requestBody the JsonNode representation of the request.
@@ -53,7 +53,7 @@ public interface MlemHttpClient {
     CompletableFuture<JsonNode> call(String methodName, JsonNode requestBody) throws IOException, ExecutionException, InterruptedException;
 
     /**
-     * The method sends the post request.
+     * The method sends the post request with given method and Request body.
      *
      * @param methodName  the method name for the request
      * @param requestBody the Request representation of the request.

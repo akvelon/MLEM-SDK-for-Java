@@ -37,8 +37,8 @@ public class JsonMapper {
     }
 
     /**
-     * Constructs ObjectReader that will read instances of List<T> type.
-     * Convert results from given JSON tree into List<T> type.
+     * Constructs ObjectReader that will read instances of List type.
+     * Convert results from given JSON tree into List type.
      *
      * @param json the Json data.
      * @param <T>  the generic for setting the class.
@@ -54,8 +54,8 @@ public class JsonMapper {
     }
 
     /**
-     * Constructs ObjectReader that will read instances of Map<String, JsonNode> type.
-     * Convert results from given JSON tree into Map<String, JsonNode> type.
+     * Constructs ObjectReader that will read instances of Map type.
+     * Convert results from given JSON tree into Map type.
      *
      * @param json the Json data.
      * @return the list of given type Map.

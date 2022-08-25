@@ -154,7 +154,7 @@ JsonNode response = future
 ```
 So, for the /predict_proba request with body:
 ```json
-{"X":{"values":[{"sepal length (cm)":0,"sepal width (cm)":0,"petal length (cm)":0,"petal width (cm)":0}]}}```
+{"X":{"values":[{"sepal length (cm)":0,"sepal width (cm)":0,"petal length (cm)":0,"petal width (cm)":0}]}}
 ```
 The response will be:
 ```json 
