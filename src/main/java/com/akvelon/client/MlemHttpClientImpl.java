@@ -186,7 +186,11 @@ class MlemHttpClientImpl implements MlemHttpClient {
                                 // create the instance of RestException.
                                 RestException restException = (RestException) throwable.getCause();
                                 // log the exception.
-                                logger.log(System.Logger.Level.ERROR, "an exception in /interface.json request", restException);
+                                logger.log(
+                                        System.Logger.Level.ERROR,
+                                        "an exception in /interface.json request",
+                                        restException
+                                );
                                 return null;
                             })
                     .get(); // get the result from CompletableFuture.
@@ -218,7 +222,11 @@ class MlemHttpClientImpl implements MlemHttpClient {
         }
 
         // Build a new post request
-        HttpRequest request = HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(requestBody.toString())).uri(URI.create(host + method)).header("Content-Type", "application/json").build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
+                .uri(URI.create(host + method))
+                .header("Content-Type", "application/json")
+                .build();
 
         //log the host
         logger.log(System.Logger.Level.INFO, "host: " + host);
@@ -242,7 +250,10 @@ class MlemHttpClientImpl implements MlemHttpClient {
      */
     private CompletableFuture<JsonNode> sendGetRequest(String method) {
         // Build a new get request
-        HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create(host + method)).build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create(host + method))
+                .build();
 
         //log the host
         logger.log(System.Logger.Level.INFO, "host: " + host);
@@ -284,8 +295,8 @@ class MlemHttpClientImpl implements MlemHttpClient {
      * @param httpResponse is the http response to check.
      */
     private void checkStatusCode(HttpResponse<String> httpResponse) {
-        // check the status code for 2**.
-        if (httpResponse.statusCode() / 100 != 2) {
+        // check the status code for 200.
+        if (httpResponse.statusCode() != 200) {
             //if true, throw the RestException.
             throw new RestException(httpResponse.body(), httpResponse.statusCode());
         }

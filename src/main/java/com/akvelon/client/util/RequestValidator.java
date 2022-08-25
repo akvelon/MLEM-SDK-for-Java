@@ -136,7 +136,7 @@ public class RequestValidator {
             // for type description Int64 the number must be Integer.
         } else if (typeDesc.equals(DataType.Int64)) {
             // throw exception if number for Int64 is not Integer
-            if (!(number instanceof Integer)) {
+            if (!(number instanceof Long)) {
                 throw new IllegalArgumentException();
             }
         }

@@ -26,9 +26,6 @@ public class Detail {
         this.type = type;
     }
 
-    public Detail() {
-    }
-
     public List<String> getLoc() {
         return loc;
     }
