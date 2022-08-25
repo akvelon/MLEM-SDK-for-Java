@@ -157,11 +157,13 @@ public class MlemHttpClientImplTest {
     private void assertResponseJsonOrHandleException(CompletableFuture<JsonNode> future) throws ExecutionException, InterruptedException {
         Assertions.assertNotNull(future);
 
-        JsonNode response = future.exceptionally(throwable -> {
-            RestException restException = (RestException) throwable.getCause();
-            assertResponseException(restException);
-            return null;
-        }).get();
+        JsonNode response = future
+                .exceptionally(throwable -> {
+                    RestException restException = (RestException) throwable.getCause();
+                    assertResponseException(restException);
+                    return null;
+                })
+                .get();
 
         if (response == null) {
             return;
