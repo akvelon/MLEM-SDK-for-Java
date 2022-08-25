@@ -119,9 +119,11 @@ request.addParameter(propertyName, recordSet);
 4) **Sends the /predict request:**
 
 ```java 
+// send the /predict request.
 CompletableFuture<JsonNode> future = mlemClient.predict(request);
+// get the response
 JsonNode response1 = future.get();
-//to handle an exception use exceptionally method:
+//to handle an exception use exceptionally method
 JsonNode response2 = future
     .exceptionally(throwable -> {
         RestException restException = (RestException) throwable.getCause();
@@ -129,10 +131,20 @@ JsonNode response2 = future
     })
     .get();
 ```
+So, for the /predict request with body:
+```json
+{"data":{"values":[{"sepal length (cm)":0,"sepal width (cm)":0,"petal length (cm)":0,"petal width (cm)":0}]}}
+```
+The response will be: 
+```json 
+[0]
+```
 
 4) **Sends the /call request:**
 ```java 
+// send the /predict_proba request.
 CompletableFuture<JsonNode> future = mlemClient.call("predict_proba", request);
+// get the response and handle the exception
 JsonNode response = future
     .exceptionally(throwable -> {
         RestException restException = (RestException) throwable.getCause();
@@ -140,5 +152,11 @@ JsonNode response = future
     })
     .get();
 ```
-
-        
+So, for the /predict_proba request with body:
+```json
+{"X":{"values":[{"sepal length (cm)":0,"sepal width (cm)":0,"petal length (cm)":0,"petal width (cm)":0}]}}```
+```
+The response will be:
+```json 
+[0]
+```
