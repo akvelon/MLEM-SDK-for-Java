@@ -41,7 +41,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
      */
     private final HttpClient httpClient;
     /**
-     * System.Logger instances log messages that will be routed to the underlying
+     * System.Logger instances log messages that will be routed to the underlying.
      * logging framework the LoggerFinder uses.
      */
     private final System.Logger logger;
@@ -71,17 +71,17 @@ class MlemHttpClientImpl implements MlemHttpClient {
     public MlemHttpClientImpl(ExecutorService executorService, String host, System.Logger logger) {
         //init the host
         this.host = host;
-        //create a builder for a httpClient
+        //create a builder for a httpClient.
         HttpClient.Builder builder = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1);
 
-        //check the executorService for null and set it to the httpClient
+        //check the executorService for null and set it to the httpClient.
         if (executorService != null) {
             builder.executor(executorService);
         }
 
-        //build the httpClient
+        //build the httpClient.
         this.httpClient = builder.build();
-        //init the logger
+        //init the logger.
         this.logger = logger;
     }
 
@@ -101,9 +101,9 @@ class MlemHttpClientImpl implements MlemHttpClient {
      *
      * @param requestBody the Json representation of the request.
      * @return a JsonNode response wrapped in the CompletableFuture object.
-     * @throws IOException          will be thrown if input can not be detected as JsonNode type
-     * @throws ExecutionException   if this future completed exceptionally
-     * @throws InterruptedException if the current thread was interrupted while waiting
+     * @throws IOException          will be thrown if input can not be detected as JsonNode type.
+     * @throws ExecutionException   if this future completed exceptionally.
+     * @throws InterruptedException if the current thread was interrupted while waiting.
      */
     @Override
     public CompletableFuture<JsonNode> predict(JsonNode requestBody) throws IOException, ExecutionException, InterruptedException {
@@ -119,9 +119,9 @@ class MlemHttpClientImpl implements MlemHttpClient {
      *
      * @param requestBody the representation of the Request class.
      * @return a String response wrapped in the CompletableFuture object.
-     * @throws IOException          will be thrown if input can not be detected as JsonNode type
-     * @throws ExecutionException   if this future completed exceptionally
-     * @throws InterruptedException if the current thread was interrupted while waiting
+     * @throws IOException          will be thrown if input can not be detected as JsonNode type.
+     * @throws ExecutionException   if this future completed exceptionally.
+     * @throws InterruptedException if the current thread was interrupted while waiting.
      */
     @Override
     public CompletableFuture<JsonNode> predict(Request requestBody) throws IOException, ExecutionException, InterruptedException {
@@ -136,9 +136,9 @@ class MlemHttpClientImpl implements MlemHttpClient {
      * @param methodName  the method name for the request.
      * @param requestBody the JsonNode representation of the request.
      * @return a JsonNode response wrapped in the CompletableFuture object.
-     * @throws IOException          will be thrown if input can not be detected as JsonNode type
-     * @throws ExecutionException   if this future completed exceptionally
-     * @throws InterruptedException if the current thread was interrupted while waiting
+     * @throws IOException          will be thrown if input can not be detected as JsonNode type.
+     * @throws ExecutionException   if this future completed exceptionally.
+     * @throws InterruptedException if the current thread was interrupted while waiting.
      */
     @Override
     public CompletableFuture<JsonNode> call(String methodName, JsonNode requestBody) throws IOException, ExecutionException, InterruptedException {
@@ -155,9 +155,9 @@ class MlemHttpClientImpl implements MlemHttpClient {
      * @param methodName  the method name for the request.
      * @param requestBody the Request representation of the request.
      * @return a JsonNode response wrapped in the CompletableFuture object.
-     * @throws IOException          will be thrown if input can not be detected as JsonNode type
-     * @throws ExecutionException   if this future completed exceptionally
-     * @throws InterruptedException if the current thread was interrupted while waiting
+     * @throws IOException          will be thrown if input can not be detected as JsonNode type.
+     * @throws ExecutionException   if this future completed exceptionally.
+     * @throws InterruptedException if the current thread was interrupted while waiting.
      */
     @Override
     public CompletableFuture<JsonNode> call(String methodName, Request requestBody) throws IOException, ExecutionException, InterruptedException {
@@ -169,11 +169,11 @@ class MlemHttpClientImpl implements MlemHttpClient {
      * Download and parse the schema if necessary. Then validate the request by schema and send the request.
      *
      * @param method  the method name for the request.
-     * @param request the Request representation of the request
+     * @param request the Request representation of the request.
      * @return a JsonNode response wrapped in the CompletableFuture object.
-     * @throws IOException          will be thrown if input can not be detected as JsonNode type
-     * @throws ExecutionException   if this future completed exceptionally
-     * @throws InterruptedException if the current thread was interrupted while waiting
+     * @throws IOException          will be thrown if input can not be detected as JsonNode type.
+     * @throws ExecutionException   if this future completed exceptionally.
+     * @throws InterruptedException if the current thread was interrupted while waiting.
      */
     private synchronized CompletableFuture<JsonNode> validateAndSendRequest(String method, Request request) throws IOException, ExecutionException, InterruptedException {
         // check schema for null.
@@ -221,19 +221,19 @@ class MlemHttpClientImpl implements MlemHttpClient {
             throw new NullPointerException();
         }
 
-        // Build a new post request
+        // Build a new post request.
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                 .uri(URI.create(host + method))
                 .header("Content-Type", "application/json")
                 .build();
 
-        //log the host
+        //log the host.
         logger.log(System.Logger.Level.INFO, "host: " + host);
-        //log the method
+        //log the method.
         logger.log(System.Logger.Level.INFO, "method: " + method);
 
-        // check response for exception and if true throw the exception
+        // check response for exception and if true throw the exception.
         return httpClient
                 // Sends the given request asynchronously using this client with the given response body handler.
                 .sendAsync(request, HttpResponse.BodyHandlers.ofString())
@@ -255,9 +255,9 @@ class MlemHttpClientImpl implements MlemHttpClient {
                 .uri(URI.create(host + method))
                 .build();
 
-        //log the host
+        //log the host.
         logger.log(System.Logger.Level.INFO, "host: " + host);
-        //log the method
+        //log the method.
         logger.log(System.Logger.Level.INFO, "method: " + method);
 
         return httpClient

@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The class represents the detail information about the error
+ * The class represents the detail information about the error.
  */
 public class Detail {
     /**
-     * The location of the error
+     * The location of the error.
      */
     private List<String> loc;
     /**
-     * The message of the error
+     * The message of the error.
      */
     private String msg;
     /**
-     * The type of the error
+     * The type of the error.
      */
     private String type;
 

@@ -10,9 +10,9 @@ public enum DataType {
     public final String type;
 
     /**
-     * Constructs a new DataType
+     * Constructs a new DataType.
      *
-     * @param type the representation of DataType
+     * @param type the representation of DataType.
      */
     DataType(String type) {
         this.type = type;

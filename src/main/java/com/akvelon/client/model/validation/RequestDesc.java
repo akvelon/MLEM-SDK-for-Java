@@ -7,7 +7,7 @@ import java.util.List;
  */
 public class RequestDesc {
     /**
-     * The request name
+     * The request name.
      */
     private final String name;
     /**
@@ -20,9 +20,9 @@ public class RequestDesc {
     private final DataType returnType;
 
     /**
-     * Construct a new RequestDesc
+     * Construct a new RequestDesc.
      *
-     * @param name              the request name
+     * @param name              the request name.
      * @param parameterDescList the request parameters description.
      * @param returnType        the request return type.
      */

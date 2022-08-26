@@ -1,4 +1,4 @@
-## Java MLEM Client
+## MLEM JClient
 
 ---
 
@@ -8,10 +8,10 @@ There is a MLEM technology that helps you package and deploy machine learning mo
 It saves ML models in a standard format that can be used in a variety of production scenarios such as real-time REST
 serving or batch processing.
 
-MlemClient is an unofficial Java library for the MLEM API.
-With MlemClient, you can easily integrate your Java application with the MLEM service.
+MLEM JClient is an unofficial Java library for the MLEM API.
+With JClient, you can easily integrate your Java application with the MLEM service.
 
-MlemClient is featuring:<br>
+MLEM JClient is featuring:<br>
 ✔ Works on any Java Platform version 5 or later<br>
 ✔ No additional jars required<br>
 ✔ Request validation support<br>
@@ -42,7 +42,7 @@ git clone https://git.akvelon.net:9443/internal/mlem-java.git
 
 ### Client description
 
-Java MlemClient provides API for using MLEM technologies in your code with given schema. There are two methods for
+MLEM JClient provides API for using MLEM technologies in your code with given schema. There are two methods for
 making requests: <br>
 1) **/interface.json**:
 

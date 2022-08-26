@@ -12,7 +12,7 @@ public class InterfaceDesc {
     private final List<RequestDesc> requestDescs;
 
     /**
-     * Constructs a new InterfaceDesc
+     * Constructs a new InterfaceDesc.
      *
      * @param requestDescs the list of request descriptions.
      */

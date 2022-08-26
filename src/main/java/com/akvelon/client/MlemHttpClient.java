@@ -23,9 +23,9 @@ public interface MlemHttpClient {
      *
      * @param requestBody the JsonNode representation of the request.
      * @return a JsonNode response wrapped in the CompletableFuture object.
-     * @throws IOException          will be thrown if input can not be detected as JsonNode type
-     * @throws ExecutionException   if this future completed exceptionally
-     * @throws InterruptedException if the current thread was interrupted while waiting
+     * @throws IOException          will be thrown if input can not be detected as JsonNode type.
+     * @throws ExecutionException   if this future completed exceptionally.
+     * @throws InterruptedException if the current thread was interrupted while waiting.
      */
     CompletableFuture<JsonNode> predict(JsonNode requestBody) throws IOException, ExecutionException, InterruptedException;
 
@@ -34,21 +34,21 @@ public interface MlemHttpClient {
      *
      * @param requestBody the representation of the Request class.
      * @return a JsonNode response wrapped in the CompletableFuture object.
-     * @throws IOException          will be thrown if input can not be detected as JsonNode type
-     * @throws ExecutionException   if this future completed exceptionally
-     * @throws InterruptedException if the current thread was interrupted while waiting
+     * @throws IOException          will be thrown if input can not be detected as JsonNode type.
+     * @throws ExecutionException   if this future completed exceptionally.
+     * @throws InterruptedException if the current thread was interrupted while waiting.
      */
     CompletableFuture<JsonNode> predict(Request requestBody) throws IOException, ExecutionException, InterruptedException;
 
     /**
      * The method sends the post request with given method and JsonNode body.
      *
-     * @param methodName  the method name for the request
+     * @param methodName  the method name for the request.
      * @param requestBody the JsonNode representation of the request.
      * @return a JsonNode response wrapped in the CompletableFuture object.
-     * @throws IOException          will be thrown if input can not be detected as JsonNode type
-     * @throws ExecutionException   if this future completed exceptionally
-     * @throws InterruptedException if the current thread was interrupted while waiting
+     * @throws IOException          will be thrown if input can not be detected as JsonNode type.
+     * @throws ExecutionException   if this future completed exceptionally.
+     * @throws InterruptedException if the current thread was interrupted while waiting.
      */
     CompletableFuture<JsonNode> call(String methodName, JsonNode requestBody) throws IOException, ExecutionException, InterruptedException;
 

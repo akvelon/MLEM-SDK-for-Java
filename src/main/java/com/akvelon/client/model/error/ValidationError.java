@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The class represents the validation error
+ * The class represents the validation error.
  */
 public class ValidationError {
     /**
-     * The error details
+     * The error details.
      */
     private final List<Detail> detail;
 
