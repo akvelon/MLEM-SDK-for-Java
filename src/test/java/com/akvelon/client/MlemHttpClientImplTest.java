@@ -1,6 +1,6 @@
 package com.akvelon.client;
 
-import com.akvelon.client.exception.RestException;
+import com.akvelon.client.exception.*;
 import com.akvelon.client.model.error.ValidationError;
 import com.akvelon.client.model.request.Request;
 import com.akvelon.client.model.validation.InterfaceDesc;
@@ -147,6 +147,54 @@ public class MlemHttpClientImplTest {
         }
 
         executorService.shutdown();
+    }
+
+    @Test
+    @DisplayName("Test post /predict method with wrong column value type")
+    public void testPredictRequestBadColumnType() throws IOException {
+        Request request = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongValue());
+        IllegalRecordException thrown = Assertions.assertThrows(IllegalRecordException.class, () -> clientWithExecutor.predict(request).get());
+        Assertions.assertNotNull(thrown);
+    }
+
+    @Test
+    @DisplayName("Test post /predict method with wrong column name")
+    public void testPredictRequestBadColumnName() throws IOException {
+        Request request = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongName());
+        IllegalRecordException thrown = Assertions.assertThrows(IllegalRecordException.class, () -> clientWithExecutor.predict(request).get());
+        Assertions.assertNotNull(thrown);
+    }
+
+    @Test
+    @DisplayName("Test post /predict method with wrong column name")
+    public void testPredictRequestBadColumnsCount() throws IOException {
+        Request request = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongCount());
+        IllegalColumnSizeException thrown = Assertions.assertThrows(IllegalColumnSizeException.class, () -> clientWithExecutor.predict(request).get());
+        Assertions.assertNotNull(thrown);
+    }
+
+    @Test
+    @DisplayName("Test post /predict method with wrong parameter name")
+    public void testPredictRequestBadParameterName() throws IOException {
+        Request request = TestDataFactory.buildRequest("data1", TestDataFactory.buildRecordSetWrongCount());
+        IllegalParameterException thrown = Assertions.assertThrows(IllegalParameterException.class, () -> clientWithExecutor.predict(request).get());
+        Assertions.assertNotNull(thrown);
+    }
+
+    @Test
+    @DisplayName("Test post /call method with wrong parameter name")
+    public void testPredictRequestBadRequestName() throws IOException {
+        Request request = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongCount());
+        IllegalMethodException thrown = Assertions.assertThrows(IllegalMethodException.class, () -> clientWithExecutor.call("illegalmethodname", request).get());
+        Assertions.assertNotNull(thrown);
+    }
+
+    @Test
+    @DisplayName("Test post /call empty method")
+    public void testCallEmptyMethod() throws IOException {
+        Request request = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongCount());
+        AssertionError thrown = Assertions.assertThrows(AssertionError.class, () -> clientWithExecutor.call("", request).get());
+        Assertions.assertNotNull(thrown);
     }
 
     private void assertResponseString(String response) {

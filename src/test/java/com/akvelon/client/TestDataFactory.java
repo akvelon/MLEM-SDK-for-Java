@@ -61,6 +61,48 @@ public class TestDataFactory {
         return recordSet;
     }
 
+    public static RecordSet buildRecordSetWrongValue() throws JsonProcessingException {
+        Record record = new Record();
+        record.addColumn("sepal length (cm)", 1);
+        record.addColumn("sepal width (cm)", 2.4);
+        record.addColumn("petal length (cm)", 3.3);
+        record.addColumn("petal width (cm)", 4.1);
+        JsonNode jsonNode = record.toJsonNode();
+        Assertions.assertNotNull(jsonNode);
+
+        RecordSet recordSet = new RecordSet();
+        recordSet.addRecord(record);
+
+        return recordSet;
+    }
+
+    public static RecordSet buildRecordSetWrongName() throws JsonProcessingException {
+        Record record = new Record();
+        record.addColumn("length (cm)", 1);
+        record.addColumn("sepal width (cm)", 2.4);
+        record.addColumn("petal length (cm)", 3.3);
+        record.addColumn("petal width (cm)", 4.1);
+        JsonNode jsonNode = record.toJsonNode();
+        Assertions.assertNotNull(jsonNode);
+
+        RecordSet recordSet = new RecordSet();
+        recordSet.addRecord(record);
+
+        return recordSet;
+    }
+
+    public static RecordSet buildRecordSetWrongCount() throws JsonProcessingException {
+        Record record = new Record();
+        record.addColumn("length (cm)", 1);
+        JsonNode jsonNode = record.toJsonNode();
+        Assertions.assertNotNull(jsonNode);
+
+        RecordSet recordSet = new RecordSet();
+        recordSet.addRecord(record);
+
+        return recordSet;
+    }
+
     public static Request buildRequest(String propertyName, RecordSet recordSet) {
         Request request = new Request();
         request.addParameter(propertyName, recordSet);

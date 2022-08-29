@@ -1,5 +1,7 @@
 package com.akvelon.client.util;
 
+import com.akvelon.client.exception.IllegalArgsTypeException;
+import com.akvelon.client.exception.IllegalRecordSetTypeException;
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.Request;
 import com.akvelon.client.model.validation.*;
@@ -62,7 +64,7 @@ public class RequestParser {
         JsonNode args = entry.getValue().get("args");
         // if args is not array, throw exception.
         if (!args.isArray()) {
-            throw new IOException();
+            throw new IllegalArgsTypeException("args is not array: " + args);
         }
 
         // access value of the "returns" of an object node.
@@ -100,7 +102,7 @@ public class RequestParser {
         String recordSetDescType = jsonNode.get("type").asText();
         // check recordSet type description.
         if (!recordSetDescType.equals("dataframe")) {
-            throw new IOException();
+            throw new IllegalRecordSetTypeException("RecordSet type is not dataframe: " + recordSetDescType);
         }
 
         // get columns.

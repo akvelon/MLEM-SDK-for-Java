@@ -35,7 +35,7 @@ The archive MlemClient.jar contains jar file along with source code.
 You can also browse the project repository at: <br>
 https://git.akvelon.net:9443/internal/mlem-java/-/tree/develop
 
-Or you can check out the latest source code anonymously as follows:<br>
+Or you can check out the latest source code as follows:<br>
 git clone https://git.akvelon.net:9443/internal/mlem-java.git
 
 ---

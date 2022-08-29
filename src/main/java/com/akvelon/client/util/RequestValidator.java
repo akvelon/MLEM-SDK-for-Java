@@ -1,5 +1,9 @@
 package com.akvelon.client.util;
 
+import com.akvelon.client.exception.IllegalColumnSizeException;
+import com.akvelon.client.exception.IllegalMethodException;
+import com.akvelon.client.exception.IllegalParameterException;
+import com.akvelon.client.exception.IllegalRecordException;
 import com.akvelon.client.model.request.Record;
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.Request;
@@ -21,6 +25,10 @@ public class RequestValidator {
      * @param interfaceDesc the schema represented in InterfaceDesc object.
      */
     public static void validateRequest(String method, Request request, InterfaceDesc interfaceDesc) {
+        assert method != null && !method.isEmpty() : "the method is null or empty";
+        assert request != null : "the request is null";
+        assert interfaceDesc != null : "the interfaceDesc is null";
+
         // get request descriptions.
         List<RequestDesc> requestDescs = interfaceDesc.getRequestDescs();
         boolean isMethodNameExist = false;
@@ -37,7 +45,7 @@ public class RequestValidator {
 
         // throw exception if the request is not exist in schema.
         if (!isMethodNameExist) {
-            throw new IllegalArgumentException();
+            throw new IllegalMethodException("the request " + method + " is not found in schema");
         }
     }
 
@@ -57,7 +65,7 @@ public class RequestValidator {
             Map<String, RecordSet> parameters = request.getParameters();
             // throw exception, if parameter name is not exist in description
             if (!parameters.containsKey(parameterDesc.getName())) {
-                throw new IllegalArgumentException();
+                throw new IllegalParameterException("the parameter " + parameterDesc.getName() + " is not found in the request");
             }
 
             // validate parameter by description.
@@ -104,18 +112,19 @@ public class RequestValidator {
         List<RecordSetColumn> columnsDesc = recordSetColumnDesc.getColumns();
         // check the column count.
         if (columns.size() != columnsDesc.size()) {
-            throw new IllegalArgumentException();
+            throw new IllegalColumnSizeException("Columns count " + columns.size()
+                    + " is not equal to columns count in schema " + columnsDesc.size());
         }
 
         // check every column in the loop.
         for (RecordSetColumn recordSetColumn : columnsDesc) {
             // throw exception if given column name is not exist in schema.
             if (!columns.containsKey(recordSetColumn.getName())) {
-                throw new IllegalArgumentException();
+                throw new IllegalRecordException("the column name " + recordSetColumn.getName() + " is not found in the request");
             }
 
             // validate record by schema
-            validateType(columns.get(recordSetColumn.getName()), recordSetColumn.getType());
+            validateType(columns.get(recordSetColumn.getName()), recordSetColumn.getName(), recordSetColumn.getType());
         }
     }
 
@@ -126,18 +135,20 @@ public class RequestValidator {
      * @param number   the number for validation.
      * @param typeDesc the type description provided by schema.
      */
-    private static void validateType(Number number, DataType typeDesc) {
+    private static void validateType(Number number, String name, DataType typeDesc) {
         // for type description Float64 the number must be Double.
         if (typeDesc.equals(DataType.Float64)) {
             // throw exception if number for Float64 is not Double
             if (!(number instanceof Double)) {
-                throw new IllegalArgumentException();
+                throw new IllegalRecordException("the column value " + number
+                        + " for name " + name + " must be " + DataType.Float64);
             }
             // for type description Int64 the number must be Integer.
         } else if (typeDesc.equals(DataType.Int64)) {
             // throw exception if number for Int64 is not Integer
             if (!(number instanceof Long)) {
-                throw new IllegalArgumentException();
+                throw new IllegalRecordException("the column value " + number
+                        + " for name " + name + " must be " + DataType.Int64);
             }
         }
     }
