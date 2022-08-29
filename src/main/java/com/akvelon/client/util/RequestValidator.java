@@ -17,6 +17,16 @@ import java.util.Map;
  */
 public class RequestValidator {
     /**
+     * System.Logger instances log messages that will be routed to the underlying.
+     * logging framework the LoggerFinder uses.
+     */
+    private final System.Logger logger;
+
+    public RequestValidator(System.Logger logger) {
+        this.logger = logger;
+    }
+
+    /**
      * Validate Request object by given schema represented in InterfaceDesc.
      * Throw exception if the specified method name is not exist.
      *
@@ -24,7 +34,7 @@ public class RequestValidator {
      * @param request       the Request object for validation.
      * @param interfaceDesc the schema represented in InterfaceDesc object.
      */
-    public static void validateRequest(String method, Request request, InterfaceDesc interfaceDesc) {
+    public void validateRequest(String method, Request request, InterfaceDesc interfaceDesc) {
         assert method != null && !method.isEmpty() : "the method is null or empty";
         assert request != null : "the request is null";
         assert interfaceDesc != null : "the interfaceDesc is null";
@@ -45,7 +55,9 @@ public class RequestValidator {
 
         // throw exception if the request is not exist in schema.
         if (!isMethodNameExist) {
-            throw new IllegalMethodException("the request " + method + " is not found in schema");
+            String exceptionMessage = "the request " + method + " is not found in schema";
+            logger.log(System.Logger.Level.ERROR, exceptionMessage);
+            throw new IllegalMethodException(exceptionMessage);
         }
     }
 
@@ -56,16 +68,23 @@ public class RequestValidator {
      * @param request     the Request object for validation.
      * @param requestDesc the request description provided by schema.
      */
-    private static void validateSingleRequest(Request request, RequestDesc requestDesc) {
+    private void validateSingleRequest(Request request, RequestDesc requestDesc) {
+        // get record sets for validation.
+        Map<String, RecordSet> parameters = request.getParameters();
+        if (parameters.isEmpty()) {
+            String exceptionMessage = "the parameters list is empty";
+            logger.log(System.Logger.Level.ERROR, exceptionMessage);
+            throw new IllegalParameterException(exceptionMessage);
+        }
         // get descriptions.
         List<ParameterDesc> parameterDescList = requestDesc.getParameterDescList();
         // validate parameters by descriptions.
         for (ParameterDesc parameterDesc : parameterDescList) {
-            // get record sets for validation.
-            Map<String, RecordSet> parameters = request.getParameters();
             // throw exception, if parameter name is not exist in description
             if (!parameters.containsKey(parameterDesc.getName())) {
-                throw new IllegalParameterException("the parameter " + parameterDesc.getName() + " is not found in the request");
+                String exceptionMessage = "the parameter " + parameterDesc.getName() + " is not found in the request";
+                logger.log(System.Logger.Level.ERROR, exceptionMessage);
+                throw new IllegalParameterException(exceptionMessage);
             }
 
             // validate parameter by description.
@@ -79,7 +98,7 @@ public class RequestValidator {
      * @param recordSet     the RecordSet object for validation.
      * @param parameterDesc the parameter description provided by schema.
      */
-    private static void validateParameter(RecordSet recordSet, ParameterDesc parameterDesc) {
+    private void validateParameter(RecordSet recordSet, ParameterDesc parameterDesc) {
         validateRecordSet(recordSet, parameterDesc.getType());
     }
 
@@ -89,7 +108,7 @@ public class RequestValidator {
      * @param recordSet the RecordSet object for validation.
      * @param typeDesc  the record set description provided by schema.
      */
-    private static void validateRecordSet(RecordSet recordSet, RecordSetDesc typeDesc) {
+    private void validateRecordSet(RecordSet recordSet, RecordSetDesc typeDesc) {
         // get records list.
         List<Record> recordList = recordSet.getRecords();
         // validate the records.
@@ -105,21 +124,25 @@ public class RequestValidator {
      * @param record              the Record object for validation.
      * @param recordSetColumnDesc the record description provided by schema.
      */
-    private static void validateRecord(Record record, RecordSetDesc recordSetColumnDesc) {
+    private void validateRecord(Record record, RecordSetDesc recordSetColumnDesc) {
         // get record columns.
         Map<String, Number> columns = record.getColumns();
         // get record columns description.
         List<RecordSetColumn> columnsDesc = recordSetColumnDesc.getColumns();
         // check the column count.
         if (columns.size() != columnsDesc.size()) {
-            throw new IllegalColumnSizeException("Columns count " + columns.size()
-                    + " is not equal to columns count in schema " + columnsDesc.size());
+            String exceptionMessage = "Columns count " + columns.size()
+                    + " is not equal to columns count in schema " + columnsDesc.size();
+            logger.log(System.Logger.Level.ERROR, exceptionMessage);
+            throw new IllegalColumnSizeException(exceptionMessage);
         }
 
         // check every column in the loop.
         for (RecordSetColumn recordSetColumn : columnsDesc) {
             // throw exception if given column name is not exist in schema.
             if (!columns.containsKey(recordSetColumn.getName())) {
+                String exceptionMessage = "the column name " + recordSetColumn.getName() + " is not found in the request";
+                logger.log(System.Logger.Level.ERROR, exceptionMessage);
                 throw new IllegalRecordException("the column name " + recordSetColumn.getName() + " is not found in the request");
             }
 
@@ -135,18 +158,23 @@ public class RequestValidator {
      * @param number   the number for validation.
      * @param typeDesc the type description provided by schema.
      */
-    private static void validateType(Number number, String name, DataType typeDesc) {
+    private void validateType(Number number, String name, DataType typeDesc) {
         // for type description Float64 the number must be Double.
         if (typeDesc.equals(DataType.Float64)) {
             // throw exception if number for Float64 is not Double
             if (!(number instanceof Double)) {
-                throw new IllegalRecordException("the column value " + number
-                        + " for name " + name + " must be " + DataType.Float64);
+                String exceptionMessage = "the column value " + number
+                        + " for name " + name + " must be " + DataType.Float64;
+                logger.log(System.Logger.Level.ERROR, exceptionMessage);
+                throw new IllegalRecordException(exceptionMessage);
             }
             // for type description Int64 the number must be Integer.
         } else if (typeDesc.equals(DataType.Int64)) {
             // throw exception if number for Int64 is not Integer
             if (!(number instanceof Long)) {
+                String exceptionMessage = "the column value " + number
+                        + " for name " + name + " must be " + DataType.Int64;
+                logger.log(System.Logger.Level.ERROR, exceptionMessage);
                 throw new IllegalRecordException("the column value " + number
                         + " for name " + name + " must be " + DataType.Int64);
             }

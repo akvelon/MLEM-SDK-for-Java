@@ -23,6 +23,7 @@ public class MlemHttpClientImplTest {
     private final static String HOST_URL = "http://example-mlem-get-started-app.herokuapp.com/";
     private final static ExecutorService executorService = Executors.newFixedThreadPool(10);
     private static final System.Logger LOGGER = System.getLogger(MlemHttpClientImplTest.class.getName());
+    private static final RequestParser requestParser = new RequestParser(LOGGER);
 
     private final MlemHttpClient clientWithExecutor = MlemHttpClientFactory.createMlemHttpClient(executorService, HOST_URL, LOGGER);
     private final MlemHttpClient clientWithOutExecutor = MlemHttpClientFactory.createMlemHttpClient(HOST_URL, LOGGER);
@@ -66,7 +67,7 @@ public class MlemHttpClientImplTest {
             return;
         }
 
-        InterfaceDesc methodDesc = RequestParser.parseInterfaceSchema(response);
+        InterfaceDesc methodDesc = requestParser.parseInterfaceSchema(response);
         Assertions.assertNotNull(methodDesc);
     }
 
@@ -194,6 +195,14 @@ public class MlemHttpClientImplTest {
     public void testCallEmptyMethod() throws IOException {
         Request request = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongCount());
         AssertionError thrown = Assertions.assertThrows(AssertionError.class, () -> clientWithExecutor.call("", request).get());
+        Assertions.assertNotNull(thrown);
+    }
+
+    @Test
+    @DisplayName("Test post /predict empty request")
+    public void testPredictEmptyRequest() {
+        Request request = new Request();
+        IllegalParameterException thrown = Assertions.assertThrows(IllegalParameterException.class, () -> clientWithExecutor.predict(request).get());
         Assertions.assertNotNull(thrown);
     }
 

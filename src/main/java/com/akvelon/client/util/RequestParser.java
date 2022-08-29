@@ -18,6 +18,16 @@ import java.util.Map;
  */
 public class RequestParser {
     /**
+     * System.Logger instances log messages that will be routed to the underlying.
+     * logging framework the LoggerFinder uses.
+     */
+    private final System.Logger logger;
+
+    public RequestParser(System.Logger logger) {
+        this.logger = logger;
+    }
+
+    /**
      * Method to deserialize a InterfaceDesc object from given JSON schema.
      *
      * @param schema the JsonNode representation of InterfaceDesc.
@@ -25,7 +35,7 @@ public class RequestParser {
      * @throws IOException signals that an I/O exception has occurred
      *                     or an illegal recordSetType has occurred or args is not array.
      */
-    public static InterfaceDesc parseInterfaceSchema(JsonNode schema) throws IOException {
+    public InterfaceDesc parseInterfaceSchema(JsonNode schema) throws IOException {
         Map<String, JsonNode> jsonNodeMap = JsonMapper.readMap(schema.get("methods"));
         ArrayList<RequestDesc> methods = parseMethod(jsonNodeMap);
 
@@ -39,7 +49,7 @@ public class RequestParser {
      * @return the ArrayList<RequestDesc> objects of the conversion.
      * @throws IOException signals that an illegal recordSetType has occurred or args is not array.
      */
-    private static ArrayList<RequestDesc> parseMethod(Map<String, JsonNode> jsonNodeMap) throws IOException {
+    private ArrayList<RequestDesc> parseMethod(Map<String, JsonNode> jsonNodeMap) throws IOException {
         ArrayList<RequestDesc> parameters = new ArrayList<>();
         // fill the parameters by created RequestDesc.
         for (Map.Entry<String, JsonNode> entry : jsonNodeMap.entrySet()) {
@@ -59,12 +69,14 @@ public class RequestParser {
      * @return the RequestDesc object of the conversion.
      * @throws IOException signals that an illegal recordSetType has occurred or args is not array.
      */
-    private static RequestDesc parseParameter(Map.Entry<String, JsonNode> entry) throws IOException {
+    private RequestDesc parseParameter(Map.Entry<String, JsonNode> entry) throws IOException {
         // access value of the "args" of an object node.
         JsonNode args = entry.getValue().get("args");
         // if args is not array, throw exception.
         if (!args.isArray()) {
-            throw new IllegalArgsTypeException("args is not array: " + args);
+            String exceptionMessage = "args is not array: " + args;
+            logger.log(System.Logger.Level.ERROR, exceptionMessage);
+            throw new IllegalArgsTypeException(exceptionMessage);
         }
 
         // access value of the "returns" of an object node.
@@ -97,12 +109,14 @@ public class RequestParser {
      * @return the RecordSetDesc object of the conversion.
      * @throws IOException signals that an illegal recordSetType has occurred.
      */
-    private static RecordSetDesc parseRecordSetDesc(JsonNode jsonNode) throws IOException {
+    private RecordSetDesc parseRecordSetDesc(JsonNode jsonNode) throws IOException {
         // get recordSet type description.
         String recordSetDescType = jsonNode.get("type").asText();
         // check recordSet type description.
         if (!recordSetDescType.equals("dataframe")) {
-            throw new IllegalRecordSetTypeException("RecordSet type is not dataframe: " + recordSetDescType);
+            String exceptionMessage = "RecordSet type is not dataframe: " + recordSetDescType;
+            logger.log(System.Logger.Level.ERROR, exceptionMessage);
+            throw new IllegalRecordSetTypeException(exceptionMessage);
         }
 
         // get columns.
@@ -135,7 +149,7 @@ public class RequestParser {
      * @return the Request object of the conversion.
      * @throws IOException signals that an I/O exception has occurred.
      */
-    public static Request parseRequest(JsonNode body) throws IOException {
+    public Request parseRequest(JsonNode body) throws IOException {
         // Convert results from given JSON tree into Map<String, JsonNode>.
         Map<String, JsonNode> parameters = JsonMapper.readMap(body);
         // create the request and add a parameters.
@@ -155,7 +169,7 @@ public class RequestParser {
      * @return the RecordSet object of the conversion.
      * @throws JsonProcessingException used to signal fatal problems with mapping of content.
      */
-    private static RecordSet parseRecordSet(JsonNode recordSetJson) throws JsonProcessingException {
+    private RecordSet parseRecordSet(JsonNode recordSetJson) throws JsonProcessingException {
         // deserialize RecordSet content from given JSON
         return JsonMapper.readValue(
                 recordSetJson.toString(),   //data

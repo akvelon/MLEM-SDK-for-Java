@@ -45,6 +45,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
      * logging framework the LoggerFinder uses.
      */
     private final System.Logger logger;
+    private final RequestParser requestParser;
 
     /**
      * Machine learning requests rules.
@@ -83,6 +84,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
         this.httpClient = builder.build();
         //init the logger.
         this.logger = logger;
+        this.requestParser = new RequestParser(logger);
     }
 
     /**
@@ -108,7 +110,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
     @Override
     public CompletableFuture<JsonNode> predict(JsonNode requestBody) throws IOException, ExecutionException, InterruptedException {
         // convert json body to Request representation.
-        Request body = RequestParser.parseRequest(requestBody);
+        Request body = requestParser.parseRequest(requestBody);
         // validate and send the /predict request with given body.
         return validateAndSendRequest(POST_PREDICT, body);
     }
@@ -143,7 +145,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
     @Override
     public CompletableFuture<JsonNode> call(String methodName, JsonNode requestBody) throws IOException, ExecutionException, InterruptedException {
         // convert json body to Request representation.
-        Request body = RequestParser.parseRequest(requestBody);
+        Request body = requestParser.parseRequest(requestBody);
         // validate and send /call request with given methodName and body.
         return validateAndSendRequest(methodName, body);
     }
@@ -196,11 +198,12 @@ class MlemHttpClientImpl implements MlemHttpClient {
                     .get(); // get the result from CompletableFuture.
 
             // convert json to InterfaceDesc.
-            interfaceDesc = RequestParser.parseInterfaceSchema(schema);
+            interfaceDesc = requestParser.parseInterfaceSchema(schema);
         }
 
         // validate request by given schema.
-        RequestValidator.validateRequest(method, request, interfaceDesc);
+        RequestValidator requestValidator = new RequestValidator(logger);
+        requestValidator.validateRequest(method, request, interfaceDesc);
 
         // send post request with given method and request.
         return sendPostRequest(method, request.toJson());
@@ -215,11 +218,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
      */
     private CompletableFuture<JsonNode> sendPostRequest(String method, JsonNode requestBody) {
         // check request body for null.
-        if (requestBody == null) {
-            //if true, log the error and throw exception.
-            logger.log(System.Logger.Level.ERROR, "The body is null for method: " + method);
-            throw new NullPointerException();
-        }
+        assert requestBody != null : "The body is null for method: " + method;
 
         // Build a new post request.
         HttpRequest request = HttpRequest.newBuilder()
@@ -269,7 +268,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
     }
 
     /**
-     * Checks the response for 2** status code and convert the string body to JsonNode.
+     * Checks the response for 200 status code and convert the string body to JsonNode.
      *
      * @param httpResponse contains the response status, headers, and body.
      * @return a response body.

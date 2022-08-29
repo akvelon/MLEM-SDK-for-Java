@@ -16,6 +16,8 @@ import java.util.Map;
 
 public class RequestParserTest {
     private static JsonNode typeJson;
+    private static final System.Logger LOGGER = System.getLogger(MlemHttpClientImplTest.class.getName());
+    private static final RequestParser requestParser = new RequestParser(LOGGER);
 
     @BeforeAll
     public static void initJson() throws JsonProcessingException {
@@ -28,7 +30,7 @@ public class RequestParserTest {
 
     @Test
     public void testRequest() throws IOException {
-        Request request = RequestParser.parseRequest(TestDataFactory.buildDataRequestBody());
+        Request request = requestParser.parseRequest(TestDataFactory.buildDataRequestBody());
         Assertions.assertNotNull(request);
 
         Map<String, RecordSet> parameters = request.getParameters();
