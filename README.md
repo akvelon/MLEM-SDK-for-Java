@@ -22,15 +22,15 @@ MLEM JClient is featuring:<br>
 
 ### How to use
 
-Just add MlemClient.jar to your application classpath.
+Just add MlemJClient.jar to your application classpath.
 If you are familiar with Java language, looking into the JavaDoc should be the shortest way for you to get started.
-MlemHttpClient interface is the one you may want to look at first.
+MlemJClient.java interface is the one you may want to look at first.
 
 ---
 
 ### Source Code
 
-The archive MlemClient.jar contains jar file along with source code.
+The archive MlemJClient.jar contains jar file along with source code.
 
 You can also browse the project repository at: <br>
 https://git.akvelon.net:9443/internal/mlem-java/-/tree/develop
@@ -42,7 +42,7 @@ git clone https://git.akvelon.net:9443/internal/mlem-java.git
 
 ### Client description
 
-MLEM JClient provides API for using MLEM technologies in your code with given schema. There are two methods for
+MLEM JClient provides API for using MLEM technologies in your code with given schema. There are three methods for
 making requests: <br>
 1) **/interface.json**:
 
@@ -54,6 +54,7 @@ making requests: <br>
 2) **/predict**:
 
 - sends /predict post request with given body;
+- can have a Json or Request object as a body;
 - can handle the exception;
 - returns a JsonNode response wrapped in the CompletableFuture object;
 - works asynchronously;
@@ -62,6 +63,7 @@ making requests: <br>
 3) **/call**:
 
 - sends post request with given method and body;
+- can have a Json or Request object as a body;
 - can handle the exception;
 - returns a JsonNode or Object response wrapped in the CompletableFuture object;
 - works asynchronously;
@@ -71,7 +73,7 @@ making requests: <br>
 
 ### Code Examples
 
-1) **Create a MlemHttpClient object:**<br>
+1) **Create a MlemJClient object:**<br>
 
 ```java
 // init host, create ExecutorService and :System.Logger implementation
@@ -79,7 +81,7 @@ String HOST_URL = "http://example-mlem-get-started-app.herokuapp.com/";
 ExecutorService executorService = Executors.newFixedThreadPool(10);
 System.Logger LOGGER = System.getLogger("logger name here");
 // create the client
-MlemHttpClient mlemClient = MlemHttpClientFactory.createMlemHttpClient(executorService,HOST_URL,LOGGER);
+MlemJClient mlemClient = MlemJClientFactory.createMlemJClient(executorService,HOST_URL,LOGGER);
 ```
 
 2) **Sends the /interface.json request**

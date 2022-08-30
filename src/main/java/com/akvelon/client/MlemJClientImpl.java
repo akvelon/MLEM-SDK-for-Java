@@ -21,7 +21,7 @@ import java.util.concurrent.ExecutorService;
 /**
  * Provides the functionality for Mlem API.
  */
-class MlemHttpClientImpl implements MlemHttpClient {
+class MlemJClientImpl implements MlemJClient {
     /**
      * /interface.json get-method.
      */
@@ -58,7 +58,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
      * @param host   the host URL.
      * @param logger the events logger.
      */
-    public MlemHttpClientImpl(String host, System.Logger logger) {
+    public MlemJClientImpl(String host, System.Logger logger) {
         this(null, host, logger);
     }
 
@@ -69,7 +69,7 @@ class MlemHttpClientImpl implements MlemHttpClient {
      * @param host            the host URL.
      * @param logger          the events logger.
      */
-    public MlemHttpClientImpl(ExecutorService executorService, String host, System.Logger logger) {
+    public MlemJClientImpl(ExecutorService executorService, String host, System.Logger logger) {
         //init the host
         this.host = host;
         //create a builder for a httpClient.

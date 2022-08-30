@@ -10,7 +10,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * Java MLEM client provides API for using MLEM technologies with given schema.
  */
-public interface MlemHttpClient {
+public interface MlemJClient {
     /**
      * The method sends the /inteface.json get request to obtain a validation schema.
      *

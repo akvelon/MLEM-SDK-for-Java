@@ -5,7 +5,7 @@ import java.util.concurrent.ExecutorService;
 /**
  * Factory class provides creating MlemHttpClient implementation.
  */
-public class MlemHttpClientFactory {
+public class MlemJClientFactory {
     /**
      * Create the implementation of MlemHttpClient.
      *
@@ -13,8 +13,8 @@ public class MlemHttpClientFactory {
      * @param logger the events logger.
      * @return the new MlemHttpClient.
      */
-    public static MlemHttpClient createMlemHttpClient(String host, System.Logger logger) {
-        return new MlemHttpClientImpl(host, logger);
+    public static MlemJClient createMlemHttpClient(String host, System.Logger logger) {
+        return new MlemJClientImpl(host, logger);
     }
 
     /**
@@ -25,7 +25,7 @@ public class MlemHttpClientFactory {
      * @param logger          the events logger.
      * @return the new MlemHttpClient.
      */
-    public static MlemHttpClient createMlemHttpClient(ExecutorService executorService, String host, System.Logger logger) {
-        return new MlemHttpClientImpl(executorService, host, logger);
+    public static MlemJClient createMlemHttpClient(ExecutorService executorService, String host, System.Logger logger) {
+        return new MlemJClientImpl(executorService, host, logger);
     }
 }
