@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +38,7 @@ public class RequestParser {
      */
     public InterfaceDesc parseInterfaceSchema(JsonNode schema) throws IOException {
         Map<String, JsonNode> jsonNodeMap = JsonMapper.readMap(schema.get("methods"));
-        ArrayList<RequestDesc> methods = parseMethod(jsonNodeMap);
+        Map<String, RequestDesc> methods = parseMethod(jsonNodeMap);
 
         return new InterfaceDesc(methods);
     }
@@ -49,14 +50,14 @@ public class RequestParser {
      * @return the ArrayList<RequestDesc> objects of the conversion.
      * @throws IOException signals that an illegal recordSetType has occurred or args is not array.
      */
-    private ArrayList<RequestDesc> parseMethod(Map<String, JsonNode> jsonNodeMap) throws IOException {
-        ArrayList<RequestDesc> parameters = new ArrayList<>();
+    private Map<String, RequestDesc> parseMethod(Map<String, JsonNode> jsonNodeMap) throws IOException {
+        Map<String, RequestDesc> parameters = new HashMap<>();
         // fill the parameters by created RequestDesc.
         for (Map.Entry<String, JsonNode> entry : jsonNodeMap.entrySet()) {
             // deserialize RequestDesc content from given JSON content.
             RequestDesc parameterDesc = parseParameter(entry);
-            // add parameterDesc to list.
-            parameters.add(parameterDesc);
+            // add parameterDesc to map.
+            parameters.put(entry.getKey(), parameterDesc);
         }
 
         return parameters;
@@ -82,22 +83,20 @@ public class RequestParser {
         // access value of the "returns" of an object node.
         JsonNode returnsJsonNode = entry.getValue().get("returns");
 
-        List<ParameterDesc> parameterDescList = new ArrayList<>();
+        Map<String, RecordSetDesc> parameterDescMap = new HashMap<>();
 
         // fill the parameterDescList by created items.
         for (JsonNode arg : args) {
             // deserialize RecordSetDesc content from a given JSON.
             RecordSetDesc recordSetDesc = parseRecordSetDesc(arg.get("type_"));
-            // create a new ParameterDesc with given name and RecordSetDesc.
-            ParameterDesc parameterDesc = new ParameterDesc(arg.get("name").asText(), recordSetDesc);
-            // add parameterDesc to list parameterDescList.
-            parameterDescList.add(parameterDesc);
+            // add parameterDesc to map.
+            parameterDescMap.put(arg.get("name").asText(), recordSetDesc);
         }
 
         // create new RequestDesc and return.
         return new RequestDesc(
-                entry.getKey(), //name
-                parameterDescList, //parameterDescList
+                //entry.getKey(), //name
+                parameterDescMap, //parameterDescMap
                 DataType.fromString(returnsJsonNode.get("dtype").asText()) //return type
         );
     }

@@ -84,7 +84,7 @@ System.Logger LOGGER = System.getLogger("logger name here");
 MlemJClient mlemClient = MlemJClientFactory.createMlemJClient(executorService,HOST_URL,LOGGER);
 ```
 
-2) **Sends the /interface.json request**
+2) **Send the /interface.json request**
 ```java
 // send the /inteface.json request.
 CompletableFuture<JsonNode> future = clientWithExecutor.interfaceJsonAsync();
@@ -118,7 +118,7 @@ Request request = new Request();
 request.addParameter(propertyName, recordSet);
  ```
 
-4) **Sends the /predict request:**
+4) **Send the /predict request:**
 
 ```java 
 // send the /predict request.
@@ -142,7 +142,7 @@ The response will be:
 [0]
 ```
 
-4) **Sends the /call request:**
+4) **Send the /call request:**
 ```java 
 // send the /predict_proba request.
 CompletableFuture<JsonNode> future = mlemClient.call("predict_proba", request);

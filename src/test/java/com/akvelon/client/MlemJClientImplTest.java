@@ -1,12 +1,9 @@
 package com.akvelon.client;
 
 import com.akvelon.client.exception.*;
-import com.akvelon.client.model.error.ValidationError;
 import com.akvelon.client.model.request.Request;
 import com.akvelon.client.model.validation.InterfaceDesc;
-import com.akvelon.client.util.JsonMapper;
 import com.akvelon.client.util.RequestParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -170,7 +167,7 @@ public class MlemJClientImplTest {
     @DisplayName("Test post /predict method with wrong column name")
     public void testPredictRequestBadColumnsCount() throws IOException {
         Request request = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongCount());
-        IllegalColumnSizeException thrown = Assertions.assertThrows(IllegalColumnSizeException.class, () -> clientWithExecutor.predict(request).get());
+        IllegalColumnsNumberException thrown = Assertions.assertThrows(IllegalColumnsNumberException.class, () -> clientWithExecutor.predict(request).get());
         Assertions.assertNotNull(thrown);
     }
 
@@ -202,7 +199,7 @@ public class MlemJClientImplTest {
     @DisplayName("Test post /predict empty request")
     public void testPredictEmptyRequest() {
         Request request = new Request();
-        IllegalParameterException thrown = Assertions.assertThrows(IllegalParameterException.class, () -> clientWithExecutor.predict(request).get());
+        IllegalParametersNumberException thrown = Assertions.assertThrows(IllegalParametersNumberException.class, () -> clientWithExecutor.predict(request).get());
         Assertions.assertNotNull(thrown);
     }
 
@@ -234,16 +231,5 @@ public class MlemJClientImplTest {
         Assertions.assertNotNull(restException);
         Assertions.assertNotNull(restException.getMessage(), restException.getMessage());
         assertResponseString(restException.getMessage());
-
-        if (restException.getStatusCode() == 422) {
-            ValidationError validationError;
-            try {
-                validationError = JsonMapper.readValue(restException.getMessage(), ValidationError.class);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-            Assertions.assertNotNull(validationError);
-            Assertions.assertNotNull(validationError.getDetail());
-        }
     }
 }

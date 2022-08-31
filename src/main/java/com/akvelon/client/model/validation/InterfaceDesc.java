@@ -1,6 +1,6 @@
 package com.akvelon.client.model.validation;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * Class represents the schema for validation the requests.
@@ -9,21 +9,21 @@ public class InterfaceDesc {
     /**
      * The list of request descriptions.
      */
-    private final List<RequestDesc> requestDescs;
+    private final Map<String, RequestDesc> requestDescs;
 
     /**
      * Constructs a new InterfaceDesc.
      *
      * @param requestDescs the list of request descriptions.
      */
-    public InterfaceDesc(List<RequestDesc> requestDescs) {
+    public InterfaceDesc(Map<String, RequestDesc> requestDescs) {
         this.requestDescs = requestDescs;
     }
 
     /**
      * @return the list of request descriptions.
      */
-    public List<RequestDesc> getRequestDescs() {
+    public Map<String, RequestDesc> getRequestDescs() {
         return requestDescs;
     }
 }

@@ -1,9 +1,6 @@
 package com.akvelon.client.util;
 
-import com.akvelon.client.exception.IllegalColumnSizeException;
-import com.akvelon.client.exception.IllegalMethodException;
-import com.akvelon.client.exception.IllegalParameterException;
-import com.akvelon.client.exception.IllegalRecordException;
+import com.akvelon.client.exception.*;
 import com.akvelon.client.model.request.Record;
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.Request;
@@ -40,25 +37,17 @@ public class RequestValidator {
         assert interfaceDesc != null : "the interfaceDesc is null";
 
         // get request descriptions.
-        List<RequestDesc> requestDescs = interfaceDesc.getRequestDescs();
-        boolean isMethodNameExist = false;
-        // find given request in schema by name and validate it.
-        for (RequestDesc requestDesc : requestDescs) {
-            // get method name in the description.
-            String name = requestDesc.getName();
-            // if request found in schema, validate it.
-            if (method.equals(name)) {
-                isMethodNameExist = true;
-                validateSingleRequest(request, requestDesc);
-            }
-        }
-
-        // throw exception if the request is not exist in schema.
-        if (!isMethodNameExist) {
+        Map<String, RequestDesc> requestDescs = interfaceDesc.getRequestDescs();
+        // find given request in schema
+        if (!requestDescs.containsKey(method)) {
+            // throw exception if the request is not exist in schema.
             String exceptionMessage = "the request " + method + " is not found in schema";
             logger.log(System.Logger.Level.ERROR, exceptionMessage);
             throw new IllegalMethodException(exceptionMessage);
         }
+
+        // if request found in schema, validate it.
+        validateSingleRequest(request, requestDescs.get(method));
     }
 
     /**
@@ -71,35 +60,28 @@ public class RequestValidator {
     private void validateSingleRequest(Request request, RequestDesc requestDesc) {
         // get record sets for validation.
         Map<String, RecordSet> parameters = request.getParameters();
-        if (parameters.isEmpty()) {
-            String exceptionMessage = "the parameters list is empty";
-            logger.log(System.Logger.Level.ERROR, exceptionMessage);
-            throw new IllegalParameterException(exceptionMessage);
-        }
         // get descriptions.
-        List<ParameterDesc> parameterDescList = requestDesc.getParameterDescList();
+        Map<String, RecordSetDesc> parameterDescMap = requestDesc.getParameterDescMap();
+        // check the column count.
+        if (parameters.size() != parameterDescMap.size()) {
+            String exceptionMessage = "Parameters number " + parameters.size()
+                    + " is not equal to Parameters number in schema " + parameterDescMap.size();
+            logger.log(System.Logger.Level.ERROR, exceptionMessage);
+            throw new IllegalParametersNumberException(exceptionMessage);
+        }
+
         // validate parameters by descriptions.
-        for (ParameterDesc parameterDesc : parameterDescList) {
+        for (Map.Entry<String, RecordSetDesc> entryDesc : parameterDescMap.entrySet()) {
             // throw exception, if parameter name is not exist in description
-            if (!parameters.containsKey(parameterDesc.getName())) {
-                String exceptionMessage = "the parameter " + parameterDesc.getName() + " is not found in the request";
+            if (!parameters.containsKey(entryDesc.getKey())) {
+                String exceptionMessage = "the parameter " + entryDesc.getKey() + " is not found in the request";
                 logger.log(System.Logger.Level.ERROR, exceptionMessage);
                 throw new IllegalParameterException(exceptionMessage);
             }
 
             // validate parameter by description.
-            validateParameter(parameters.get(parameterDesc.getName()), parameterDesc);
+            validateRecordSet(parameters.get(entryDesc.getKey()), entryDesc.getValue());
         }
-    }
-
-    /**
-     * Validate RecordSet object by given parameter description.
-     *
-     * @param recordSet     the RecordSet object for validation.
-     * @param parameterDesc the parameter description provided by schema.
-     */
-    private void validateParameter(RecordSet recordSet, ParameterDesc parameterDesc) {
-        validateRecordSet(recordSet, parameterDesc.getType());
     }
 
     /**
@@ -134,7 +116,7 @@ public class RequestValidator {
             String exceptionMessage = "Columns count " + columns.size()
                     + " is not equal to columns count in schema " + columnsDesc.size();
             logger.log(System.Logger.Level.ERROR, exceptionMessage);
-            throw new IllegalColumnSizeException(exceptionMessage);
+            throw new IllegalColumnsNumberException(exceptionMessage);
         }
 
         // check every column in the loop.

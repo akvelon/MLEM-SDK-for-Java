@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.Map;
 
 public class RequestParserTest {
-    private static JsonNode typeJson;
     private static final System.Logger LOGGER = System.getLogger(MlemJClientImplTest.class.getName());
     private static final RequestParser requestParser = new RequestParser(LOGGER);
+    private static JsonNode typeJson;
 
     @BeforeAll
     public static void initJson() throws JsonProcessingException {
