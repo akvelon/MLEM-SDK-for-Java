@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Class represents list of the records.
+ * A class that provides the list of records.
  */
 public class RecordSet {
     /**

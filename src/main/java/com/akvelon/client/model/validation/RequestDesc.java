@@ -3,15 +3,9 @@ package com.akvelon.client.model.validation;
 import java.util.Map;
 
 /**
- * Class represents the request description for validation the requests objects.
+ * A class that provides the request description.
  */
 public class RequestDesc {
-    /**
-     * The request name.
-     */
-/*
-    private final String name;
-*/
     /**
      * The request parameters description.
      */
@@ -24,21 +18,13 @@ public class RequestDesc {
     /**
      * Construct a new RequestDesc.
      *
-     * @param //name           the request name.
      * @param parameterDescMap the request parameters description.
      * @param returnType       the request return type.
      */
-    public RequestDesc(/*String name, */Map<String, RecordSetDesc> parameterDescMap, DataType returnType) {
-/*
-        this.name = name;
-*/
+    public RequestDesc(Map<String, RecordSetDesc> parameterDescMap, DataType returnType) {
         this.parameterDescMap = parameterDescMap;
         this.returnType = returnType;
     }
-/*
-    public String getName() {
-        return name;
-    }*/
 
     public Map<String, RecordSetDesc> getParameterDescMap() {
         return parameterDescMap;

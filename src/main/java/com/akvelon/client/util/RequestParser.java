@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Provides functionality for deserialization JSON schema to descriptions objects.
+ * A parser that provides functionality for deserialization JSON schema to descriptions objects.
  */
 public class RequestParser {
     /**

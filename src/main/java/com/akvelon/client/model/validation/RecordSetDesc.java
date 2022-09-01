@@ -3,7 +3,7 @@ package com.akvelon.client.model.validation;
 import java.util.List;
 
 /**
- * Class represents the record set description for validation the RecordSet objects.
+ * A class that represents the record set description.
  */
 public class RecordSetDesc {
     /**

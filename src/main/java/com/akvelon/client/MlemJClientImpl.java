@@ -19,7 +19,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 
 /**
- * Provides the functionality for Mlem API.
+ * An implementation of the MlemJClient.
  */
 class MlemJClientImpl implements MlemJClient {
     /**

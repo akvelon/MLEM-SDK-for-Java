@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Class represents numbers with their names.
+ * A class that provides numbers with their names.
  */
 public class Record {
     /**

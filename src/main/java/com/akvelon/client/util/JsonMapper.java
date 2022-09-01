@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Provides functionality for reading and writing JSON, either to and from basic POJOs.
+ * A mapper that provides functionality for reading and writing JSON, either to and from basic POJOs.
  */
 public class JsonMapper {
 

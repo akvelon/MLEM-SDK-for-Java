@@ -1,7 +1,7 @@
 package com.akvelon.client.model.validation;
 
 /**
- * Enumeration provides available data types.
+ * An enumeration that provides available data types.
  */
 public enum DataType {
     Int64("int64"), //integer type.

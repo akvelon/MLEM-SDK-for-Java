@@ -1,7 +1,7 @@
 package com.akvelon.client.exception;
 
 /**
- * The class represent the custom exception to store the status code and message.
+ * A class that provides the HTTP status code exception.
  */
 public class RestException extends RuntimeException {
     /**

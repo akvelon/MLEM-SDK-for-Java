@@ -1,7 +1,7 @@
 package com.akvelon.client.model.validation;
 
 /**
- * Class represents the record set column description for validation the RecordSet  objects.
+ * A class that provides the record set column description.
  */
 public class RecordSetColumn {
     /**

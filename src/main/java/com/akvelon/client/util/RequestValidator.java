@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Provides functionality for validation the request by given schema.
+ * A validator that provides functionality to validate the request by given schema.
  */
 public class RequestValidator {
     /**
@@ -28,7 +28,7 @@ public class RequestValidator {
      * Throw exception if the specified method name is not exist.
      *
      * @param method        the method name for the request.
-     * @param request       the Request object for validation.
+     * @param request       the Request object to validate.
      * @param interfaceDesc the schema represented in InterfaceDesc object.
      */
     public void validateRequest(String method, Request request, InterfaceDesc interfaceDesc) {
@@ -54,11 +54,11 @@ public class RequestValidator {
      * Validate Request object by given request description.
      * Throw exception if the specified parameters is not equal to the schema.
      *
-     * @param request     the Request object for validation.
+     * @param request     the Request object to validate.
      * @param requestDesc the request description provided by schema.
      */
     private void validateSingleRequest(Request request, RequestDesc requestDesc) {
-        // get record sets for validation.
+        // get record sets to validate.
         Map<String, RecordSet> parameters = request.getParameters();
         // get descriptions.
         Map<String, RecordSetDesc> parameterDescMap = requestDesc.getParameterDescMap();
@@ -67,7 +67,7 @@ public class RequestValidator {
             String exceptionMessage = "Parameters number " + parameters.size()
                     + " is not equal to Parameters number in schema " + parameterDescMap.size();
             logger.log(System.Logger.Level.ERROR, exceptionMessage);
-            throw new IllegalParametersNumberException(exceptionMessage);
+            throw new IllegalParameterNumberException(exceptionMessage);
         }
 
         // validate parameters by descriptions.
@@ -76,7 +76,7 @@ public class RequestValidator {
             if (!parameters.containsKey(entryDesc.getKey())) {
                 String exceptionMessage = "the parameter " + entryDesc.getKey() + " is not found in the request";
                 logger.log(System.Logger.Level.ERROR, exceptionMessage);
-                throw new IllegalParameterException(exceptionMessage);
+                throw new IllegalParameterTypeException(exceptionMessage);
             }
 
             // validate parameter by description.
@@ -87,7 +87,7 @@ public class RequestValidator {
     /**
      * Validate RecordSet object by given description.
      *
-     * @param recordSet the RecordSet object for validation.
+     * @param recordSet the RecordSet object to validate.
      * @param typeDesc  the record set description provided by schema.
      */
     private void validateRecordSet(RecordSet recordSet, RecordSetDesc typeDesc) {
@@ -103,7 +103,7 @@ public class RequestValidator {
      * Validate Record object by given schema.
      * Throw exception if the specified parameters is not equal to record schema.
      *
-     * @param record              the Record object for validation.
+     * @param record              the Record object to validate.
      * @param recordSetColumnDesc the record description provided by schema.
      */
     private void validateRecord(Record record, RecordSetDesc recordSetColumnDesc) {
@@ -137,7 +137,7 @@ public class RequestValidator {
      * Validate data type by given schema.
      * Throw exception if the specified number is not equal to type description.
      *
-     * @param number   the number for validation.
+     * @param number   the number to validate.
      * @param typeDesc the type description provided by schema.
      */
     private void validateType(Number number, String name, DataType typeDesc) {

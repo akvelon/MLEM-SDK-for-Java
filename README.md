@@ -4,14 +4,14 @@
 
 ### Introduction
 
-There is a MLEM technology that helps you package and deploy machine learning models.
+Welcome to MLEM JClient - a MLEM technology that helps you package and deploy machine learning models.
 It saves ML models in a standard format that can be used in a variety of production scenarios such as real-time REST
 serving or batch processing.
 
 MLEM JClient is an unofficial Java library for the MLEM API.
 With JClient, you can easily integrate your Java application with the MLEM service.
 
-MLEM JClient is featuring:<br>
+Features of MLEM JClient:<br>
 ✔ Works on any Java Platform version 5 or later<br>
 ✔ No additional jars required<br>
 ✔ Request validation support<br>
@@ -58,7 +58,7 @@ making requests: <br>
 - can handle the exception;
 - returns a JsonNode response wrapped in the CompletableFuture object;
 - works asynchronously;
-- validates the parameters by schema;
+- get the validation rules that apply to the request;
 
 3) **/call**:
 
@@ -67,13 +67,13 @@ making requests: <br>
 - can handle the exception;
 - returns a JsonNode or Object response wrapped in the CompletableFuture object;
 - works asynchronously;
-- validates the parameters by schema;
+- get the validation rules that apply to the request;
 
 ---
 
 ### Code Examples
 
-1) **Create a MlemJClient object:**<br>
+1) **Create the MlemJClient object:**<br>
 
 ```java
 // init host, create ExecutorService and :System.Logger implementation
@@ -98,12 +98,12 @@ JsonNode response = future
     .get();
 ```
         
-3) **Build a request**
+3) **Build the request**
 
 ```java 
-// create a Record object:
+// create the Record object:
 Record record = new Record();
-// add test data
+// add the test data
 record.addColumn("sepal length (cm)", 1.2);
 record.addColumn("sepal width (cm)", 2.4);
 record.addColumn("petal length (cm)", 3.3);
@@ -113,7 +113,7 @@ record.addColumn("petal width (cm)", 4.1);
 RecordSet recordSet = new RecordSet();
 recordSet.addRecord(record);
  
-// create a Request object and add a recordSet object with propertyName:
+// create the Request object and add the recordSet object with propertyName:
 Request request = new Request();
 request.addParameter(propertyName, recordSet);
  ```

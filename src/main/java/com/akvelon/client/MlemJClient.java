@@ -8,11 +8,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Java MLEM client provides API for using MLEM technologies with given schema.
+ * A MlemJClient that provides API for using MLEM technologies with given rules.
  */
 public interface MlemJClient {
     /**
-     * The method sends the /inteface.json get request to obtain a validation schema.
+     * The method sends the /inteface.json get request to obtain a validation rules.
      *
      * @return a schema wrapped in the CompletableFuture object.
      */

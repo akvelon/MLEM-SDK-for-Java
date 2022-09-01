@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Class maps the requests parameters.
+ * A class that maps the requests parameters.
  */
 public class Request {
     /**

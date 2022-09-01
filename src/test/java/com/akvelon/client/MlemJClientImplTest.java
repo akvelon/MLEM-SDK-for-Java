@@ -22,8 +22,8 @@ public class MlemJClientImplTest {
     private static final System.Logger LOGGER = System.getLogger(MlemJClientImplTest.class.getName());
     private static final RequestParser requestParser = new RequestParser(LOGGER);
 
-    private final MlemJClient clientWithExecutor = MlemJClientFactory.createMlemHttpClient(executorService, HOST_URL, LOGGER);
-    private final MlemJClient clientWithOutExecutor = MlemJClientFactory.createMlemHttpClient(HOST_URL, LOGGER);
+    private final MlemJClient clientWithExecutor = MlemJClientFactory.createMlemJClient(executorService, HOST_URL, LOGGER);
+    private final MlemJClient clientWithOutExecutor = MlemJClientFactory.createMlemJClient(HOST_URL, LOGGER);
 
     /**
      * /predict post-methods
@@ -121,9 +121,9 @@ public class MlemJClientImplTest {
     @Test
     @DisplayName("Test post /predict method with executorService = null")
     public void testGetInterfaceExecutorNull() throws ExecutionException, InterruptedException, IOException {
-        MlemJClientImpl mlemHttpClientImpl = new MlemJClientImpl(null, HOST_URL, LOGGER);
+        MlemJClientImpl MlemJClientImpl = new MlemJClientImpl(null, HOST_URL, LOGGER);
 
-        CompletableFuture<JsonNode> future = mlemHttpClientImpl.predict(TestDataFactory.buildDataRequestBody());
+        CompletableFuture<JsonNode> future = MlemJClientImpl.predict(TestDataFactory.buildDataRequestBody());
         assertResponseJsonOrHandleException(future);
     }
 
@@ -132,11 +132,11 @@ public class MlemJClientImplTest {
     public void testListRequests() throws ExecutionException, InterruptedException, IOException {
         ExecutorService executorService = Executors.newFixedThreadPool(3);
 
-        MlemJClientImpl mlemHttpClientImpl = new MlemJClientImpl(executorService, HOST_URL, LOGGER);
+        MlemJClientImpl MlemJClientImpl = new MlemJClientImpl(executorService, HOST_URL, LOGGER);
         List<JsonNode> dataRequestList = Arrays.asList(TestDataFactory.buildDataRequestBody(), TestDataFactory.buildDataRequestBody(), TestDataFactory.buildDataRequestBody());
         List<CompletableFuture<JsonNode>> completableFutures = new ArrayList<>();
         for (JsonNode jsonNode : dataRequestList) {
-            CompletableFuture<JsonNode> predict = mlemHttpClientImpl.predict(jsonNode);
+            CompletableFuture<JsonNode> predict = MlemJClientImpl.predict(jsonNode);
             completableFutures.add(predict);
         }
 
@@ -175,7 +175,7 @@ public class MlemJClientImplTest {
     @DisplayName("Test post /predict method with wrong parameter name")
     public void testPredictRequestBadParameterName() throws IOException {
         Request request = TestDataFactory.buildRequest("data1", TestDataFactory.buildRecordSetWrongCount());
-        IllegalParameterException thrown = Assertions.assertThrows(IllegalParameterException.class, () -> clientWithExecutor.predict(request).get());
+        IllegalParameterTypeException thrown = Assertions.assertThrows(IllegalParameterTypeException.class, () -> clientWithExecutor.predict(request).get());
         Assertions.assertNotNull(thrown);
     }
 
@@ -199,7 +199,7 @@ public class MlemJClientImplTest {
     @DisplayName("Test post /predict empty request")
     public void testPredictEmptyRequest() {
         Request request = new Request();
-        IllegalParametersNumberException thrown = Assertions.assertThrows(IllegalParametersNumberException.class, () -> clientWithExecutor.predict(request).get());
+        IllegalParameterNumberException thrown = Assertions.assertThrows(IllegalParameterNumberException.class, () -> clientWithExecutor.predict(request).get());
         Assertions.assertNotNull(thrown);
     }
 
