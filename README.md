@@ -14,6 +14,7 @@ With JClient, you can easily integrate your Java application with the MLEM servi
 Features of MLEM JClient:<br>
 ✔ Works on any Java Platform version 5 or later<br>
 ✔ No additional jars required<br>
+✔ Standard java logger support<br>
 ✔ Request validation support<br>
 ✔ 100% MLEM API compatible<br>
 ✔ JavaDoc ready
@@ -76,11 +77,14 @@ making requests: <br>
 1) **Create the MlemJClient object:**<br>
 
 ```java
-// init host, create ExecutorService and :System.Logger implementation
+// init host.
 String HOST_URL = "http://example-mlem-get-started-app.herokuapp.com/";
+// create ExecutorService.
 ExecutorService executorService = Executors.newFixedThreadPool(10);
+// create the simple implementation of System.Logger.
+// you can use other libraries for logging: log4j and slf4j.        
 System.Logger LOGGER = System.getLogger("logger name here");
-// create the client
+// create the client.
 MlemJClient mlemClient = MlemJClientFactory.createMlemJClient(executorService,HOST_URL,LOGGER);
 ```
 
@@ -103,17 +107,17 @@ JsonNode response = future
 ```java 
 // create the Record object:
 Record record = new Record();
-// add the test data
+// add the test data.
 record.addColumn("sepal length (cm)", 1.2);
 record.addColumn("sepal width (cm)", 2.4);
 record.addColumn("petal length (cm)", 3.3);
 record.addColumn("petal width (cm)", 4.1);
    
-//add it to RecordSet:
+//add it to RecordSet.
 RecordSet recordSet = new RecordSet();
 recordSet.addRecord(record);
  
-// create the Request object and add the recordSet object with propertyName:
+// create the Request object and add the recordSet object with propertyName.
 Request request = new Request();
 request.addParameter(propertyName, recordSet);
  ```
@@ -123,9 +127,9 @@ request.addParameter(propertyName, recordSet);
 ```java 
 // send the /predict request.
 CompletableFuture<JsonNode> future = mlemClient.predict(request);
-// get the response
+// get the response.
 JsonNode response1 = future.get();
-//to handle an exception use exceptionally method
+//to handle an exception use exceptionally method.
 JsonNode response2 = future
     .exceptionally(throwable -> {
         RestException restException = (RestException) throwable.getCause();
@@ -146,7 +150,7 @@ The response will be:
 ```java 
 // send the /predict_proba request.
 CompletableFuture<JsonNode> future = mlemClient.call("predict_proba", request);
-// get the response and handle the exception
+// get the response and handle the exception.
 JsonNode response = future
     .exceptionally(throwable -> {
         RestException restException = (RestException) throwable.getCause();

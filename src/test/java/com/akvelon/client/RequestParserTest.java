@@ -17,16 +17,6 @@ import java.util.Map;
 public class RequestParserTest {
     private static final System.Logger LOGGER = System.getLogger(MlemJClientImplTest.class.getName());
     private static final RequestParser requestParser = new RequestParser(LOGGER);
-    private static JsonNode typeJson;
-
-    @BeforeAll
-    public static void initJson() throws JsonProcessingException {
-        typeJson = TestDataFactory.buildType_();
-
-        Assertions.assertNotNull(typeJson);
-
-        Assertions.assertNotNull(typeJson);
-    }
 
     @Test
     public void testRequest() throws IOException {

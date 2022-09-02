@@ -109,8 +109,4 @@ public class TestDataFactory {
 
         return request;
     }
-
-    public static JsonNode buildType_() throws JsonProcessingException {
-        return JsonMapper.readValue(type_, JsonNode.class);
-    }
 }
