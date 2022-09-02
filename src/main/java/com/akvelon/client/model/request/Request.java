@@ -40,4 +40,13 @@ public class Request {
     public Map<String, RecordSet> getParameters() {
         return parameters;
     }
+
+    @Override
+    public String toString() {
+        try {
+            return JsonMapper.writeValueAsString(getParameters());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -3,6 +3,7 @@ package com.akvelon.client;
 import com.akvelon.client.exception.RestException;
 import com.akvelon.client.model.request.Request;
 import com.akvelon.client.model.request.typical.Iris;
+import com.akvelon.client.model.request.typical.RegModel;
 import com.akvelon.client.model.validation.InterfaceDesc;
 import com.akvelon.client.util.JsonMapper;
 import com.akvelon.client.util.RequestParser;
@@ -146,6 +147,18 @@ final class MlemJClientImpl implements MlemJClient {
         });
     }
 
+    @Override
+    public CompletableFuture<List<Long>> predict(RegModel requestBody) throws IOException, ExecutionException, InterruptedException {
+        CompletableFuture<JsonNode> jsonNodeCompletableFuture = validateAndSendRequest(POST_PREDICT, requestBody);
+        return jsonNodeCompletableFuture.thenApply(jsonNode -> {
+            try {
+                return JsonMapper.readValues(jsonNode);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
     /**
      * Validates the requestBody by the given schema and sends the post request asynchronously.
      * The method can catch the exception via exceptionally method.
@@ -184,6 +197,19 @@ final class MlemJClientImpl implements MlemJClient {
 
     @Override
     public CompletableFuture<List<Long>> call(String methodName, Iris requestBody) throws IOException, ExecutionException, InterruptedException {
+        CompletableFuture<JsonNode> jsonNodeCompletableFuture = validateAndSendRequest(methodName, requestBody);
+
+        return jsonNodeCompletableFuture.thenApply(jsonNode -> {
+            try {
+                return JsonMapper.readValues(jsonNode);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<Long>> call(String methodName, RegModel requestBody) throws IOException, ExecutionException, InterruptedException {
         CompletableFuture<JsonNode> jsonNodeCompletableFuture = validateAndSendRequest(methodName, requestBody);
 
         return jsonNodeCompletableFuture.thenApply(jsonNode -> {
