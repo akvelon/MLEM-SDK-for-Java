@@ -5,7 +5,7 @@ import java.util.concurrent.ExecutorService;
 /**
  * A Factory that provides creating MlemJClient implementation.
  */
-public class MlemJClientFactory {
+public final class MlemJClientFactory {
     /**
      * Create the implementation of MlemJClient.
      *

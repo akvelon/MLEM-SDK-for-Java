@@ -2,6 +2,7 @@ package com.akvelon.client;
 
 import com.akvelon.client.exception.RestException;
 import com.akvelon.client.model.request.Request;
+import com.akvelon.client.model.request.typical.Iris;
 import com.akvelon.client.model.validation.InterfaceDesc;
 import com.akvelon.client.util.JsonMapper;
 import com.akvelon.client.util.RequestParser;
@@ -14,6 +15,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -21,7 +23,7 @@ import java.util.concurrent.ExecutorService;
 /**
  * An implementation of the MlemJClient.
  */
-class MlemJClientImpl implements MlemJClient {
+final class MlemJClientImpl implements MlemJClient {
     /**
      * /interface.json get-method.
      */
@@ -131,6 +133,19 @@ class MlemJClientImpl implements MlemJClient {
         return validateAndSendRequest(POST_PREDICT, requestBody);
     }
 
+    @Override
+    public CompletableFuture<List<Long>> predict(Iris requestBody) throws IOException, ExecutionException, InterruptedException {
+        // validate and send /predict request with given body.
+        CompletableFuture<JsonNode> jsonNodeCompletableFuture = validateAndSendRequest(POST_PREDICT, requestBody);
+        return jsonNodeCompletableFuture.thenApply(jsonNode -> {
+            try {
+                return JsonMapper.readValues(jsonNode);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
     /**
      * Validates the requestBody by the given schema and sends the post request asynchronously.
      * The method can catch the exception via exceptionally method.
@@ -165,6 +180,19 @@ class MlemJClientImpl implements MlemJClient {
     public CompletableFuture<JsonNode> call(String methodName, Request requestBody) throws IOException, ExecutionException, InterruptedException {
         // validate and send /call request with given methodName and body.
         return validateAndSendRequest(methodName, requestBody);
+    }
+
+    @Override
+    public CompletableFuture<List<Long>> call(String methodName, Iris requestBody) throws IOException, ExecutionException, InterruptedException {
+        CompletableFuture<JsonNode> jsonNodeCompletableFuture = validateAndSendRequest(methodName, requestBody);
+
+        return jsonNodeCompletableFuture.thenApply(jsonNode -> {
+            try {
+                return JsonMapper.readValues(jsonNode);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     /**

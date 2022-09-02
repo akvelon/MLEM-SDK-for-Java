@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * A parser that provides functionality for deserialization JSON schema to descriptions objects.
  */
-public class RequestParser {
+public final class RequestParser {
     /**
      * System.Logger instances log messages that will be routed to the underlying.
      * logging framework the LoggerFinder uses.

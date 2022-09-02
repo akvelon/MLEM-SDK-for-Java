@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * A class that represents the record set description.
  */
-public class RecordSetDesc {
+public final class RecordSetDesc {
     /**
      * The record set description type.
      */

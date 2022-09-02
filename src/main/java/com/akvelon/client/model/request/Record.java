@@ -13,7 +13,7 @@ import java.util.Objects;
 /**
  * A class that provides numbers with their names.
  */
-public class Record {
+public final class Record {
     /**
      * Map of number values with string name key.
      */

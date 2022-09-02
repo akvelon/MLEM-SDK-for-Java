@@ -12,7 +12,7 @@ import java.util.Objects;
 /**
  * A class that provides the list of records.
  */
-public class RecordSet {
+public final class RecordSet {
     /**
      * The records list.
      */

@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * A validator that provides functionality to validate the request by given schema.
  */
-public class RequestValidator {
+public final class RequestValidator {
     /**
      * System.Logger instances log messages that will be routed to the underlying.
      * logging framework the LoggerFinder uses.

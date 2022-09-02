@@ -3,7 +3,7 @@ package com.akvelon.client.model.validation;
 /**
  * A class that provides the record set column description.
  */
-public class RecordSetColumn {
+public final class RecordSetColumn {
     /**
      * The column name.
      */

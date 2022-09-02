@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * A mapper that provides functionality for reading and writing JSON, either to and from basic POJOs.
  */
-public class JsonMapper {
+public final class JsonMapper {
 
     /**
      * Provides reading and writing JSON, either to and from basic POJOs.

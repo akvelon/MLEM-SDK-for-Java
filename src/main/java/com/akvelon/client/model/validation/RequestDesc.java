@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * A class that provides the request description.
  */
-public class RequestDesc {
+public final class RequestDesc {
     /**
      * The request parameters description.
      */

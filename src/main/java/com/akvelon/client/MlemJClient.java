@@ -1,9 +1,11 @@
 package com.akvelon.client;
 
 import com.akvelon.client.model.request.Request;
+import com.akvelon.client.model.request.typical.Iris;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -41,6 +43,18 @@ public interface MlemJClient {
     CompletableFuture<JsonNode> predict(Request requestBody) throws IOException, ExecutionException, InterruptedException;
 
     /**
+     * The method sends the /predict post request with given Iris object.
+     *
+     * @param requestBody the representation of the Iris class.
+     * @return a List<Long> response wrapped in the CompletableFuture object.
+     * @throws IOException          will be thrown if input can not be detected as JsonNode type.
+     * @throws ExecutionException   if this future completed exceptionally.
+     * @throws InterruptedException if the current thread was interrupted while waiting.
+     */
+    CompletableFuture<List<Long>> predict(Iris requestBody) throws IOException, ExecutionException, InterruptedException;
+
+
+    /**
      * The method sends the post request with given method and JsonNode body.
      *
      * @param methodName  the method name for the request.
@@ -63,4 +77,17 @@ public interface MlemJClient {
      * @throws InterruptedException if the current thread was interrupted while waiting
      */
     CompletableFuture<JsonNode> call(String methodName, Request requestBody) throws IOException, ExecutionException, InterruptedException;
+
+    /**
+     * The method sends the post request with given method and Iris body.
+     *
+     * @param methodName  the method name for the request
+     * @param requestBody the Iris representation of the request.
+     * @return a List<Long> response wrapped in the CompletableFuture object.
+     * @throws IOException          will be thrown if input can not be detected as JsonNode type
+     * @throws ExecutionException   if this future completed exceptionally
+     * @throws InterruptedException if the current thread was interrupted while waiting
+     */
+    CompletableFuture<List<Long>> call(String methodName, Iris requestBody) throws IOException, ExecutionException, InterruptedException;
+
 }

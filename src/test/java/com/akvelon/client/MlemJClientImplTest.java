@@ -2,6 +2,7 @@ package com.akvelon.client;
 
 import com.akvelon.client.exception.*;
 import com.akvelon.client.model.request.Request;
+import com.akvelon.client.model.request.typical.Iris;
 import com.akvelon.client.model.validation.InterfaceDesc;
 import com.akvelon.client.util.RequestParser;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -203,6 +204,20 @@ public class MlemJClientImplTest {
         Assertions.assertNotNull(thrown);
     }
 
+    @Test
+    @DisplayName("Test post /predict method with Iris request and Json response")
+    public void testPredictIris() throws ExecutionException, InterruptedException, IOException {
+        Iris iris = new Iris("data", 0.1f, 1.2f, 3.4f, 5.5f);
+        assertResponseListOrHandleException(clientWithExecutor.predict(iris));
+    }
+
+    @Test
+    @DisplayName("Test post /sklearn_predict method with Iris request and Json response")
+    public void testCallIris() throws ExecutionException, InterruptedException, IOException {
+        Iris iris = new Iris("X", 0.1f, 1.2f, 3.4f, 5.5f);
+        assertResponseListOrHandleException(clientWithExecutor.call(POST_SKLEARN_PREDICT_PROBA, iris));
+    }
+
     private void assertResponseString(String response) {
         Assertions.assertNotNull(response);
         Assertions.assertFalse(response.isEmpty());
@@ -212,6 +227,25 @@ public class MlemJClientImplTest {
         Assertions.assertNotNull(future);
 
         JsonNode response = future
+                .exceptionally(throwable -> {
+                    RestException restException = (RestException) throwable.getCause();
+                    assertResponseException(restException);
+                    return null;
+                })
+                .get();
+
+        if (response == null) {
+            return;
+        }
+
+        Assertions.assertNotNull(response);
+        Assertions.assertFalse(response.isEmpty());
+    }
+
+    private void assertResponseListOrHandleException(CompletableFuture<List<Long>> future) throws ExecutionException, InterruptedException {
+        Assertions.assertNotNull(future);
+
+        List<Long> response = future
                 .exceptionally(throwable -> {
                     RestException restException = (RestException) throwable.getCause();
                     assertResponseException(restException);

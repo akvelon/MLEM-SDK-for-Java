@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * A class that represents the rules(schema) for the request validation.
  */
-public class InterfaceDesc {
+public final class InterfaceDesc {
     /**
      * The list of request descriptions.
      */
