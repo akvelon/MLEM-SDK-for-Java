@@ -1,6 +1,6 @@
 package com.akvelon.client;
 
-import com.akvelon.client.exception.RestException;
+import com.akvelon.client.exception.InvalidHttpStatusCodeException;
 import com.akvelon.client.model.request.Request;
 import com.akvelon.client.model.request.typical.Iris;
 import com.akvelon.client.model.request.typical.RegModel;
@@ -240,12 +240,12 @@ final class MlemJClientImpl implements MlemJClient {
                             // in case of exception.
                             throwable -> {
                                 // create the instance of RestException.
-                                RestException restException = (RestException) throwable.getCause();
+                                InvalidHttpStatusCodeException invalidHttpStatusCodeException = (InvalidHttpStatusCodeException) throwable.getCause();
                                 // log the exception.
                                 logger.log(
                                         System.Logger.Level.ERROR,
                                         "an exception in /interface.json request",
-                                        restException
+                                        invalidHttpStatusCodeException
                                 );
                                 return null;
                             })
@@ -351,7 +351,7 @@ final class MlemJClientImpl implements MlemJClient {
         // check the status code for 200.
         if (httpResponse.statusCode() != 200) {
             //if true, throw the RestException.
-            throw new RestException(httpResponse.body(), httpResponse.statusCode());
+            throw new InvalidHttpStatusCodeException(httpResponse.body(), httpResponse.statusCode());
         }
 
         // log the status code.

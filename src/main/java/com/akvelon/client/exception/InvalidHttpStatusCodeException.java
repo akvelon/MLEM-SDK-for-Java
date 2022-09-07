@@ -3,7 +3,7 @@ package com.akvelon.client.exception;
 /**
  * A class that provides the HTTP status code exception.
  */
-public class RestException extends RuntimeException {
+public class InvalidHttpStatusCodeException extends RuntimeException {
     /**
      * HTTP status code.
      */
@@ -19,7 +19,7 @@ public class RestException extends RuntimeException {
      * @param message    is the exception message.
      * @param statusCode is the status code.
      */
-    public RestException(String message, int statusCode) {
+    public InvalidHttpStatusCodeException(String message, int statusCode) {
         super(message);
         this.message = message;
         this.statusCode = statusCode;

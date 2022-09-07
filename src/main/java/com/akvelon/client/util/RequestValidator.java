@@ -78,7 +78,7 @@ public final class RequestValidator {
                 String exceptionMessage = "Actual parameters: " + parameters.keySet().toString().replaceAll("[\\[\\],]", "")
                         + ", expected: " + entryDesc.getKey();
                 logger.log(System.Logger.Level.ERROR, exceptionMessage);
-                throw new IllegalParameterTypeException(exceptionMessage);
+                throw new InvalidParameterTypeException(exceptionMessage);
             }
 
             // validate parameter by description.

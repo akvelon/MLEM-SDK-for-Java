@@ -1,7 +1,7 @@
 package com.akvelon.client.util;
 
-import com.akvelon.client.exception.IllegalArgsTypeException;
-import com.akvelon.client.exception.IllegalRecordSetTypeException;
+import com.akvelon.client.exception.InvalidArgsTypeException;
+import com.akvelon.client.exception.InvalidRecordSetTypeException;
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.Request;
 import com.akvelon.client.model.validation.*;
@@ -77,7 +77,7 @@ public final class RequestParser {
         if (!args.isArray()) {
             String exceptionMessage = "args is not array: " + args;
             logger.log(System.Logger.Level.ERROR, exceptionMessage);
-            throw new IllegalArgsTypeException(exceptionMessage);
+            throw new InvalidArgsTypeException(exceptionMessage);
         }
 
         // access value of the "returns" of an object node.
@@ -115,7 +115,7 @@ public final class RequestParser {
         if (!recordSetDescType.equals("dataframe")) {
             String exceptionMessage = "RecordSet type is not dataframe: " + recordSetDescType;
             logger.log(System.Logger.Level.ERROR, exceptionMessage);
-            throw new IllegalRecordSetTypeException(exceptionMessage);
+            throw new InvalidRecordSetTypeException(exceptionMessage);
         }
 
         // get columns.
@@ -169,10 +169,10 @@ public final class RequestParser {
      * @throws JsonProcessingException used to signal fatal problems with mapping of content.
      */
     private RecordSet parseRecordSet(JsonNode recordSetJson) throws JsonProcessingException {
-        // deserialize RecordSet content from given JSON
+        // deserialize RecordSet content from given JSON.
         return JsonMapper.readValue(
-                recordSetJson.toString(),   //data
-                RecordSet.class             //class
+                recordSetJson.toString(),   //data.
+                RecordSet.class             //class.
         );
     }
 }

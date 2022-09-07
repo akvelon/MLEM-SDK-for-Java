@@ -95,8 +95,8 @@ CompletableFuture<JsonNode> future = clientWithExecutor.interfaceJsonAsync();
 // handle the exception and get the response
 JsonNode response = future
     .exceptionally(throwable -> {
-        RestException restException = (RestException) throwable.getCause();
-        assertResponseException(restException);
+        RestException invalidHttpStatusCodeException = (RestException) throwable.getCause();
+        assertResponseException(invalidHttpStatusCodeException);
         return null;
     })
     .get();
@@ -132,7 +132,7 @@ JsonNode response1 = future.get();
 //to handle an exception use exceptionally method.
 JsonNode response2 = future
     .exceptionally(throwable -> {
-        RestException restException = (RestException) throwable.getCause();
+        RestException invalidHttpStatusCodeException = (RestException) throwable.getCause();
         return null;
     })
     .get();
@@ -153,7 +153,7 @@ CompletableFuture<JsonNode> future = mlemClient.call("predict_proba", request);
 // get the response and handle the exception.
 JsonNode response = future
     .exceptionally(throwable -> {
-        RestException restException = (RestException) throwable.getCause();
+        RestException invalidHttpStatusCodeException = (RestException) throwable.getCause();
         return null;
     })
     .get();

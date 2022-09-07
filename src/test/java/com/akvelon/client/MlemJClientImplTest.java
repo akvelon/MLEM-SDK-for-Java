@@ -56,8 +56,8 @@ public class MlemJClientImplTest {
     @DisplayName("Test get /interface.json method with json response")
     public void testGetInterfaceRequest() throws ExecutionException, InterruptedException, IOException {
         JsonNode response = clientWithExecutor.interfaceJsonAsync().exceptionally(throwable -> {
-            RestException restException = (RestException) throwable.getCause();
-            assertResponseException(restException);
+            InvalidHttpStatusCodeException invalidHttpStatusCodeException = (InvalidHttpStatusCodeException) throwable.getCause();
+            assertResponseException(invalidHttpStatusCodeException);
             return null;
         }).get();
 
@@ -100,8 +100,8 @@ public class MlemJClientImplTest {
     @DisplayName("Test post /predictProba method with null request body")
     public void testPredictProbaEmptyString() {
         IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> clientWithExecutor.call(POST_PREDICT_PROBA, (JsonNode) null).exceptionally(throwable -> {
-            RestException restException = (RestException) throwable.getCause();
-            assertResponseException(restException);
+            InvalidHttpStatusCodeException invalidHttpStatusCodeException = (InvalidHttpStatusCodeException) throwable.getCause();
+            assertResponseException(invalidHttpStatusCodeException);
             return null;
         }).get());
         Assertions.assertNotNull(thrown);
@@ -176,7 +176,7 @@ public class MlemJClientImplTest {
     @DisplayName("Test post /predict method with wrong parameter name")
     public void testPredictRequestBadParameterName() throws IOException {
         Request request = TestDataFactory.buildRequest("data1", TestDataFactory.buildRecordSetWrongCount());
-        IllegalParameterTypeException thrown = Assertions.assertThrows(IllegalParameterTypeException.class, () -> clientWithExecutor.predict(request).get());
+        InvalidParameterTypeException thrown = Assertions.assertThrows(InvalidParameterTypeException.class, () -> clientWithExecutor.predict(request).get());
         Assertions.assertNotNull(thrown);
     }
 
@@ -228,8 +228,8 @@ public class MlemJClientImplTest {
 
         JsonNode response = future
                 .exceptionally(throwable -> {
-                    RestException restException = (RestException) throwable.getCause();
-                    assertResponseException(restException);
+                    InvalidHttpStatusCodeException invalidHttpStatusCodeException = (InvalidHttpStatusCodeException) throwable.getCause();
+                    assertResponseException(invalidHttpStatusCodeException);
                     return null;
                 })
                 .get();
@@ -247,8 +247,8 @@ public class MlemJClientImplTest {
 
         List<Long> response = future
                 .exceptionally(throwable -> {
-                    RestException restException = (RestException) throwable.getCause();
-                    assertResponseException(restException);
+                    InvalidHttpStatusCodeException invalidHttpStatusCodeException = (InvalidHttpStatusCodeException) throwable.getCause();
+                    assertResponseException(invalidHttpStatusCodeException);
                     return null;
                 })
                 .get();
@@ -261,9 +261,9 @@ public class MlemJClientImplTest {
         Assertions.assertFalse(response.isEmpty());
     }
 
-    private void assertResponseException(RestException restException) {
-        Assertions.assertNotNull(restException);
-        Assertions.assertNotNull(restException.getMessage(), restException.getMessage());
-        assertResponseString(restException.getMessage());
+    private void assertResponseException(InvalidHttpStatusCodeException invalidHttpStatusCodeException) {
+        Assertions.assertNotNull(invalidHttpStatusCodeException);
+        Assertions.assertNotNull(invalidHttpStatusCodeException.getMessage(), invalidHttpStatusCodeException.getMessage());
+        assertResponseString(invalidHttpStatusCodeException.getMessage());
     }
 }
