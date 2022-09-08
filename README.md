@@ -95,8 +95,7 @@ CompletableFuture<JsonNode> future = clientWithExecutor.interfaceJsonAsync();
 // handle the exception and get the response
 JsonNode response = future
     .exceptionally(throwable -> {
-        RestException invalidHttpStatusCodeException = (RestException) throwable.getCause();
-        assertResponseException(invalidHttpStatusCodeException);
+        InvalidHttpStatusCodeException invalidHttpStatusCodeException = (InvalidHttpStatusCodeException) throwable.getCause();
         return null;
     })
     .get();
@@ -132,7 +131,7 @@ JsonNode response1 = future.get();
 //to handle an exception use exceptionally method.
 JsonNode response2 = future
     .exceptionally(throwable -> {
-        RestException invalidHttpStatusCodeException = (RestException) throwable.getCause();
+        InvalidHttpStatusCodeException invalidHttpStatusCodeException = (InvalidHttpStatusCodeException) throwable.getCause();
         return null;
     })
     .get();
@@ -153,7 +152,7 @@ CompletableFuture<JsonNode> future = mlemClient.call("predict_proba", request);
 // get the response and handle the exception.
 JsonNode response = future
     .exceptionally(throwable -> {
-        RestException invalidHttpStatusCodeException = (RestException) throwable.getCause();
+        InvalidHttpStatusCodeException invalidHttpStatusCodeException = (InvalidHttpStatusCodeException) throwable.getCause();
         return null;
     })
     .get();
@@ -165,4 +164,56 @@ So, for the /predict_proba request with body:
 The response will be:
 ```json 
 [0]
+```
+
+---
+
+### Validation
+1) Method name
+```java 
+// send the /predict_proba123 request.
+CompletableFuture<JsonNode> future = mlemClient.call("predict_proba123", request);
+```
+The response will be:
+```text 
+error text: The method predict_proba123 is not found in schema; Available methods: [sklearn_predict, predict_proba, predict, sklearn_predict_proba].
+```
+2) Parameter name
+```java 
+// send the /predict request.
+CompletableFuture<JsonNode> future = mlemClient.predict(request);
+```
+So, for the /predict request with body:
+```json
+{"X":{"values":[{"sepal length (cm)":1.3,"sepal width (cm)":2.3,"petal length (cm)":3.4,"petal width (cm)":4.7}]}}
+```
+The response will be:
+```text 
+error text: Actual parameters: X, expected: data
+```
+3) Record name
+```java 
+// send the /predict request.
+CompletableFuture<JsonNode> future = mlemClient.predict(request);
+```
+So, for the /predict request with body:
+```json
+{"data":{"values":[{"sepal length ":1.1,"sepal width (cm)":2.1,"petal length (cm)":3.1,"petal width (cm)":4.1}]}}
+```
+The response will be:
+```text 
+error text: Column name not found: sepal length (cm), for given data: [sepal length =1.1, sepal width (cm)=2.1, petal length (cm)=3.1, petal width (cm)=4.1]
+```
+4) Record type
+```java 
+// send the /predict request.
+CompletableFuture<JsonNode> future = mlemClient.predict(request);
+```
+So, for the /predict request with body:
+```json
+{"data":{"values":[{"sepal length (cm)":1,"sepal width (cm)":2.1,"petal length (cm)":3.1,"petal width (cm)":4.1}]}}
+```
+The response will be:
+```text 
+error text: Expected type for column: sepal length (cm) with value: 1, must be: Float64
 ```
