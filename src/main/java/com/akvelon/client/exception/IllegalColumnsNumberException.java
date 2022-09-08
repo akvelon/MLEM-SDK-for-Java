@@ -1,7 +1,8 @@
 package com.akvelon.client.exception;
 
 /**
- * A class that provides the illegal column number exception.
+ * Specialized class specifically used to indicate problems related to validation
+ * of the parameter columns number.
  */
 public class IllegalColumnsNumberException extends RuntimeException {
 

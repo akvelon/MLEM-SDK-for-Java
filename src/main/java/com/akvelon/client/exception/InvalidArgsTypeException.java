@@ -1,7 +1,8 @@
 package com.akvelon.client.exception;
 
 /**
- * A class that provides the illegal argument type exception.
+ * Specialized class specifically used to indicate problems related to validation
+ * of the Arguments type.
  */
 public class InvalidArgsTypeException extends RuntimeException {
 

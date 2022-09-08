@@ -1,7 +1,8 @@
 package com.akvelon.client.exception;
 
 /**
- * A class that provides the illegal parameter type exception.
+ * Specialized class specifically used to indicate problems related to validation
+ * of the Parameter type property.
  */
 public class InvalidParameterTypeException extends RuntimeException {
 

@@ -3,7 +3,8 @@ package com.akvelon.client.model.validation;
 import java.util.Map;
 
 /**
- * A class that represents the rules(schema) for the request validation.
+ * Container for the application rules(schema).
+ * Schema data is used for the request validation.
  */
 public final class InterfaceDesc {
     /**

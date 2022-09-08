@@ -1,7 +1,8 @@
 package com.akvelon.client.exception;
 
 /**
- * A class that provides the illegal record exception.
+ * Specialized class specifically used to indicate problems related to validation
+ * of the Record property.
  */
 public class IllegalRecordException extends RuntimeException {
 

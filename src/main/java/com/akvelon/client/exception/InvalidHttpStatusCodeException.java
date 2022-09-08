@@ -1,7 +1,7 @@
 package com.akvelon.client.exception;
 
 /**
- * A class that provides the HTTP status code exception.
+ * Specialized class specifically used to indicate problems related to http status code.
  */
 public class InvalidHttpStatusCodeException extends RuntimeException {
     /**
