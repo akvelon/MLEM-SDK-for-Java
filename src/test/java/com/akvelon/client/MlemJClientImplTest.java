@@ -122,9 +122,9 @@ public class MlemJClientImplTest {
     @Test
     @DisplayName("Test post /predict method with executorService = null")
     public void testGetInterfaceExecutorNull() throws ExecutionException, InterruptedException, IOException {
-        MlemJClientImpl MlemJClientImpl = new MlemJClientImpl(null, HOST_URL, LOGGER);
+        MlemJClientImpl mlemJClient = new MlemJClientImpl(null, HOST_URL, LOGGER);
 
-        CompletableFuture<JsonNode> future = MlemJClientImpl.predict(TestDataFactory.buildDataRequestBody());
+        CompletableFuture<JsonNode> future = mlemJClient.predict(TestDataFactory.buildDataRequestBody());
         assertResponseJsonOrHandleException(future);
     }
 
@@ -133,11 +133,11 @@ public class MlemJClientImplTest {
     public void testListRequests() throws ExecutionException, InterruptedException, IOException {
         ExecutorService executorService = Executors.newFixedThreadPool(3);
 
-        MlemJClientImpl MlemJClientImpl = new MlemJClientImpl(executorService, HOST_URL, LOGGER);
+        MlemJClientImpl mlemJClient = new MlemJClientImpl(executorService, HOST_URL, LOGGER);
         List<JsonNode> dataRequestList = Arrays.asList(TestDataFactory.buildDataRequestBody(), TestDataFactory.buildDataRequestBody(), TestDataFactory.buildDataRequestBody());
         List<CompletableFuture<JsonNode>> completableFutures = new ArrayList<>();
         for (JsonNode jsonNode : dataRequestList) {
-            CompletableFuture<JsonNode> predict = MlemJClientImpl.predict(jsonNode);
+            CompletableFuture<JsonNode> predict = mlemJClient.predict(jsonNode);
             completableFutures.add(predict);
         }
 
@@ -216,6 +216,17 @@ public class MlemJClientImplTest {
     public void testCallIris() throws ExecutionException, InterruptedException, IOException {
         Iris iris = new Iris("X", 0.1d, 1.2d, 3.4d, 5.5d);
         assertResponseListOrHandleException(clientWithExecutor.call(POST_SKLEARN_PREDICT_PROBA, iris));
+    }
+
+    @Test
+    @DisplayName("Test post /predict method illegal host")
+    public void testIllegalHost() {
+        MlemJClientImpl mlemJClientImpl = new MlemJClientImpl(null, HOST_URL + 1, LOGGER);
+
+        ExecutionException thrown = Assertions.assertThrows(ExecutionException.class,
+                () -> mlemJClientImpl.predict(TestDataFactory.buildDataRequestBody()).get());
+
+        Assertions.assertNotNull(thrown);
     }
 
     private void assertResponseString(String response) {

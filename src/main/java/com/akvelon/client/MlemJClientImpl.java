@@ -247,7 +247,7 @@ final class MlemJClientImpl implements MlemJClient {
                                         "an exception in /interface.json request",
                                         invalidHttpStatusCodeException
                                 );
-                                return null;
+                                throw invalidHttpStatusCodeException;
                             })
                     .get(); // get the result from CompletableFuture.
 
