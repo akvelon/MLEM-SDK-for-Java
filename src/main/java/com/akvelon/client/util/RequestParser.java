@@ -2,6 +2,7 @@ package com.akvelon.client.util;
 
 import com.akvelon.client.exception.InvalidArgsTypeException;
 import com.akvelon.client.exception.InvalidRecordSetTypeException;
+import com.akvelon.client.exception.InvalidValuesException;
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.Request;
 import com.akvelon.client.model.validation.*;
@@ -168,7 +169,14 @@ public final class RequestParser {
      * @return the RecordSet object of the conversion.
      * @throws JsonProcessingException used to signal fatal problems with mapping of content.
      */
-    private RecordSet parseRecordSet(JsonNode recordSetJson) throws JsonProcessingException {
+    private RecordSet parseRecordSet(JsonNode recordSetJson) throws IOException {
+        // find values property.
+        JsonNode jsonNode = recordSetJson.findValue("values");
+        if (jsonNode == null) {
+            // if values not found, throw exception.
+            throw new InvalidValuesException("Can not find property values in data: " + recordSetJson);
+        }
+
         // deserialize RecordSet content from given JSON.
         return JsonMapper.readValue(
                 recordSetJson.toString(),   //data.

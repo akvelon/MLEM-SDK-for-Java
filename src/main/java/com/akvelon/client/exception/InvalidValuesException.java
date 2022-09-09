@@ -2,11 +2,11 @@ package com.akvelon.client.exception;
 
 /**
  * Specialized class specifically used to indicate problems related to deserialization
- * of the RecordSet type property.
+ * of the "values" property.
  */
-public class InvalidRecordSetTypeException extends RuntimeException {
+public class InvalidValuesException extends RuntimeException {
 
-    public InvalidRecordSetTypeException(String message) {
+    public InvalidValuesException(String message) {
         super(message);
     }
 }

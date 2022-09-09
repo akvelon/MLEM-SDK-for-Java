@@ -229,6 +229,15 @@ public class MlemJClientImplTest {
         Assertions.assertNotNull(thrown);
     }
 
+    @Test
+    @DisplayName("Test post /predict method with invalid values property")
+    public void testPredictJsonInvalidValues() {
+        InvalidValuesException thrown = Assertions.assertThrows(InvalidValuesException.class,
+                () -> clientWithExecutor.predict(TestDataFactory.buildDataRequestBodyInvalidValues()));
+
+        Assertions.assertNotNull(thrown);
+    }
+
     private void assertResponseString(String response) {
         Assertions.assertNotNull(response);
         Assertions.assertFalse(response.isEmpty());
