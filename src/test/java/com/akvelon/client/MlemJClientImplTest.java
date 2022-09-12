@@ -4,7 +4,7 @@ import com.akvelon.client.exception.*;
 import com.akvelon.client.model.request.Request;
 import com.akvelon.client.model.request.typical.Iris;
 import com.akvelon.client.model.validation.InterfaceDesc;
-import com.akvelon.client.util.RequestParser;
+import com.akvelon.client.util.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -21,7 +21,7 @@ public class MlemJClientImplTest {
     private final static String HOST_URL = "http://example-mlem-get-started-app.herokuapp.com/";
     private final static ExecutorService executorService = Executors.newFixedThreadPool(10);
     private static final System.Logger LOGGER = System.getLogger(MlemJClientImplTest.class.getName());
-    private static final RequestParser requestParser = new RequestParser(LOGGER);
+    private static final JsonParser JSON_PARSER = new JsonParser(LOGGER);
 
     private final MlemJClient clientWithExecutor = MlemJClientFactory.createMlemJClient(executorService, HOST_URL, LOGGER);
     private final MlemJClient clientWithOutExecutor = MlemJClientFactory.createMlemJClient(HOST_URL, LOGGER);
@@ -65,7 +65,7 @@ public class MlemJClientImplTest {
             return;
         }
 
-        InterfaceDesc methodDesc = requestParser.parseInterfaceSchema(response);
+        InterfaceDesc methodDesc = JSON_PARSER.parseInterfaceSchema(response);
         Assertions.assertNotNull(methodDesc);
     }
 

@@ -8,21 +8,21 @@ import java.util.Map;
  */
 public final class InterfaceDesc {
     /**
-     * The list of request descriptions.
+     * The request descriptions.
      */
     private final Map<String, RequestDesc> requestDescs;
 
     /**
      * Constructs a new InterfaceDesc.
      *
-     * @param requestDescs the list of request descriptions.
+     * @param requestDescs the request descriptions.
      */
     public InterfaceDesc(Map<String, RequestDesc> requestDescs) {
         this.requestDescs = requestDescs;
     }
 
     /**
-     * @return the list of request descriptions.
+     * @return the request descriptions.
      */
     public Map<String, RequestDesc> getRequestDescs() {
         return requestDescs;

@@ -16,7 +16,7 @@ public final class RecordSetDesc {
     private final List<RecordSetColumn> columns;
 
     /**
-     * Construct a new RecordSetDesc
+     * Construct a new RecordSetDesc.
      *
      * @param type    the record set description type.
      * @param columns the record set description columns.

@@ -40,7 +40,6 @@ public final class RequestValidator {
         Map<String, RequestDesc> requestDescs = interfaceDesc.getRequestDescs();
         // find given request in schema
         if (!requestDescs.containsKey(method)) {
-            // throw exception if the request is not exist in schema.
             String exceptionMessage = "The method " + method
                     + " is not found in schema; Available methods: " + requestDescs.keySet() + ".";
             logger.log(System.Logger.Level.ERROR, exceptionMessage);
@@ -81,7 +80,6 @@ public final class RequestValidator {
                 throw new InvalidParameterTypeException(exceptionMessage);
             }
 
-            // validate parameter by description.
             validateRecordSet(parameters.get(entryDesc.getKey()), entryDesc.getValue());
         }
     }
@@ -93,7 +91,6 @@ public final class RequestValidator {
      * @param typeDesc  the record set description provided by schema.
      */
     private void validateRecordSet(RecordSet recordSet, RecordSetDesc typeDesc) {
-        // get records list.
         List<Record> recordList = recordSet.getRecords();
         // validate the records.
         for (Record record : recordList) {
@@ -109,7 +106,6 @@ public final class RequestValidator {
      * @param recordSetColumnDesc the record description provided by schema.
      */
     private void validateRecord(Record record, RecordSetDesc recordSetColumnDesc) {
-        // get record columns.
         Map<String, Number> columns = record.getColumns();
         // get record columns description.
         List<RecordSetColumn> columnsDesc = recordSetColumnDesc.getColumns();
@@ -131,7 +127,6 @@ public final class RequestValidator {
                 throw new IllegalRecordException(exceptionMessage);
             }
 
-            // validate record by schema
             validateType(columns.get(recordSetColumn.getName()), recordSetColumn.getName(), recordSetColumn.getType());
         }
     }
@@ -146,7 +141,6 @@ public final class RequestValidator {
     private void validateType(Number number, String name, DataType typeDesc) {
         // for type description Float64 the number must be Double.
         if (typeDesc.equals(DataType.Float64)) {
-            // throw exception if number for Float64 is not Double
             if (!(number instanceof Double)) {
                 String exceptionMessage = "Expected type for column: " + name
                         + " with value: " + number + ", must be: " + DataType.Float64;
@@ -155,7 +149,6 @@ public final class RequestValidator {
             }
             // for type description Int64 the number must be Integer.
         } else if (typeDesc.equals(DataType.Int64)) {
-            // throw exception if number for Int64 is not Integer
             if (!(number instanceof Long)) {
                 String exceptionMessage = "Expected type for the column: " + name
                         + " with value: " + number + ", must be: " + DataType.Int64;

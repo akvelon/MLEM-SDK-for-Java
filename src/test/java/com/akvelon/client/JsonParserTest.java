@@ -3,24 +3,21 @@ package com.akvelon.client;
 import com.akvelon.client.model.request.Record;
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.Request;
-import com.akvelon.client.util.RequestParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.akvelon.client.util.JsonParser;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-public class RequestParserTest {
+public class JsonParserTest {
     private static final System.Logger LOGGER = System.getLogger(MlemJClientImplTest.class.getName());
-    private static final RequestParser requestParser = new RequestParser(LOGGER);
+    private static final JsonParser JSON_PARSER = new JsonParser(LOGGER);
 
     @Test
     public void testRequest() throws IOException {
-        Request request = requestParser.parseRequest(TestDataFactory.buildDataRequestBody());
+        Request request = JSON_PARSER.parseRequest(TestDataFactory.buildDataRequestBody());
         Assertions.assertNotNull(request);
 
         Map<String, RecordSet> parameters = request.getParameters();

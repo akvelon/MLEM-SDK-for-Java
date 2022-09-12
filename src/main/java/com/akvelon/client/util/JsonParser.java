@@ -1,5 +1,6 @@
 package com.akvelon.client.util;
 
+import com.akvelon.client.exception.IllegalColumnsNumberException;
 import com.akvelon.client.exception.InvalidArgsTypeException;
 import com.akvelon.client.exception.InvalidRecordSetTypeException;
 import com.akvelon.client.exception.InvalidValuesException;
@@ -18,14 +19,14 @@ import java.util.Map;
 /**
  * A parser that provides functionality for deserialization JSON schema to descriptions objects.
  */
-public final class RequestParser {
+public final class JsonParser {
     /**
      * System.Logger instances log messages that will be routed to the underlying.
      * logging framework the LoggerFinder uses.
      */
     private final System.Logger logger;
 
-    public RequestParser(System.Logger logger) {
+    public JsonParser(System.Logger logger) {
         this.logger = logger;
     }
 
@@ -48,16 +49,14 @@ public final class RequestParser {
      * Method to deserialize a list of RequestDesc object from given JSON schema.
      *
      * @param jsonNodeMap a map with string-json representation of RequestDesc list.
-     * @return the ArrayList<RequestDesc> objects of the conversion.
+     * @return the mapped objects of the conversion.
      * @throws IOException signals that an illegal recordSetType has occurred or args is not array.
      */
     private Map<String, RequestDesc> parseMethod(Map<String, JsonNode> jsonNodeMap) throws IOException {
         Map<String, RequestDesc> parameters = new HashMap<>();
         // fill the parameters by created RequestDesc.
         for (Map.Entry<String, JsonNode> entry : jsonNodeMap.entrySet()) {
-            // deserialize RequestDesc content from given JSON content.
             RequestDesc parameterDesc = parseParameter(entry);
-            // add parameterDesc to map.
             parameters.put(entry.getKey(), parameterDesc);
         }
 
@@ -74,7 +73,6 @@ public final class RequestParser {
     private RequestDesc parseParameter(Map.Entry<String, JsonNode> entry) throws IOException {
         // access value of the "args" of an object node.
         JsonNode args = entry.getValue().get("args");
-        // if args is not array, throw exception.
         if (!args.isArray()) {
             String exceptionMessage = "args is not array: " + args;
             logger.log(System.Logger.Level.ERROR, exceptionMessage);
@@ -88,17 +86,13 @@ public final class RequestParser {
 
         // fill the parameterDescList by created items.
         for (JsonNode arg : args) {
-            // deserialize RecordSetDesc content from a given JSON.
             RecordSetDesc recordSetDesc = parseRecordSetDesc(arg.get("type_"));
-            // add parameterDesc to map.
             parameterDescMap.put(arg.get("name").asText(), recordSetDesc);
         }
 
-        // create new RequestDesc and return.
         return new RequestDesc(
-                //entry.getKey(), //name
-                parameterDescMap, //parameterDescMap
-                DataType.fromString(returnsJsonNode.get("dtype").asText()) //return type
+                parameterDescMap,
+                DataType.fromString(returnsJsonNode.get("dtype").asText())
         );
     }
 
@@ -112,33 +106,31 @@ public final class RequestParser {
     private RecordSetDesc parseRecordSetDesc(JsonNode jsonNode) throws IOException {
         // get recordSet type description.
         String recordSetDescType = jsonNode.get("type").asText();
-        // check recordSet type description.
         if (!recordSetDescType.equals("dataframe")) {
             String exceptionMessage = "RecordSet type is not dataframe: " + recordSetDescType;
             logger.log(System.Logger.Level.ERROR, exceptionMessage);
             throw new InvalidRecordSetTypeException(exceptionMessage);
         }
 
-        // get columns.
         JsonNode columns = jsonNode.get("columns");
-        // get dtypes.
         JsonNode dtypes = jsonNode.get("dtypes");
 
-        ArrayList<RecordSetColumn> recordSetColumns = new ArrayList<>();
-        // convert results from given columns into List<String>.
         List<String> names = JsonMapper.readValues(columns);
-        // convert results from given dtypes into List<String>.
         List<String> dTypes = JsonMapper.readValues(dtypes);
+        if (names.size() != dTypes.size()) {
+            throw new IllegalColumnsNumberException("Columns size must be equal to dtypes. " +
+                    "Actual columns size: " + names.size() + ", actual dtypes size: " + dTypes.size() + ".");
+        }
 
+        ArrayList<RecordSetColumn> recordSetColumns = new ArrayList<>();
         // fill the recordSetColumns by names and dTypes.
         for (int i = 0; i < names.size(); i++) {
             recordSetColumns.add(new RecordSetColumn(names.get(i), DataType.fromString(dTypes.get(i))));
         }
 
-        // create new RecordSetDesc and return.
         return new RecordSetDesc(
-                recordSetDescType, //type
-                recordSetColumns    //columns
+                recordSetDescType,
+                recordSetColumns
         );
     }
 
@@ -155,7 +147,6 @@ public final class RequestParser {
         // create the request and add a parameters.
         Request request = new Request();
         for (Map.Entry<String, JsonNode> entry : parameters.entrySet()) {
-            // parse recordSet and add to parameter.
             request.addParameter(entry.getKey(), parseRecordSet(entry.getValue()));
         }
 
@@ -173,14 +164,12 @@ public final class RequestParser {
         // find values property.
         JsonNode jsonNode = recordSetJson.findValue("values");
         if (jsonNode == null) {
-            // if values not found, throw exception.
             throw new InvalidValuesException("Can not find property values in data: " + recordSetJson);
         }
 
-        // deserialize RecordSet content from given JSON.
         return JsonMapper.readValue(
-                recordSetJson.toString(),   //data.
-                RecordSet.class             //class.
+                recordSetJson.toString(),
+                RecordSet.class
         );
     }
 }
