@@ -21,10 +21,10 @@ public final class Iris extends Request {
         // create an empty records
         Record record = new Record();
         // add typical Iris columns
-        record.addColumn("sepal length (cm)", sepalLength);
-        record.addColumn("sepal width (cm)", petalLength);
-        record.addColumn("petal length (cm)", sepalWidth);
-        record.addColumn("petal width (cm)", petalWidth);
+        record.addColumn(IrisProperty.SEPAL_LENGTH, sepalLength);
+        record.addColumn(IrisProperty.PETAL_LENGTH, petalLength);
+        record.addColumn(IrisProperty.SEPAL_WIDTH, sepalWidth);
+        record.addColumn(IrisProperty.PETAL_WIDTH, petalWidth);
 
         RecordSet recordSet = new RecordSet();
         recordSet.addRecord(record);

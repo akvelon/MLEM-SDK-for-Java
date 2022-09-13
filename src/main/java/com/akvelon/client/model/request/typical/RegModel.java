@@ -16,7 +16,7 @@ public final class RegModel extends Request {
      */
     public RegModel(String propertyName, double value) {
         Record record = new Record();
-        record.addColumn("0", value);
+        record.addColumn(RegModelProperty.VALUE, value);
 
         RecordSet recordSet = new RecordSet();
         recordSet.addRecord(record);
