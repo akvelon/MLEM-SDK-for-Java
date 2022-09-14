@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * A class that represents the record set description.
  */
-public final class RecordSetDesc {
+public final class RecordSetSchema {
     /**
      * The record set description type.
      */
@@ -13,7 +13,7 @@ public final class RecordSetDesc {
     /**
      * The record set description columns.
      */
-    private final List<RecordSetColumn> columns;
+    private final List<RecordSetColumnSchema> columns;
 
     /**
      * Construct a new RecordSetDesc.
@@ -21,7 +21,7 @@ public final class RecordSetDesc {
      * @param type    the record set description type.
      * @param columns the record set description columns.
      */
-    public RecordSetDesc(String type, List<RecordSetColumn> columns) {
+    public RecordSetSchema(String type, List<RecordSetColumnSchema> columns) {
         this.type = type;
         this.columns = columns;
     }
@@ -30,7 +30,7 @@ public final class RecordSetDesc {
         return type;
     }
 
-    public List<RecordSetColumn> getColumns() {
+    public List<RecordSetColumnSchema> getColumns() {
         return columns;
     }
 }

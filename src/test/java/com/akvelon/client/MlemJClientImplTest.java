@@ -1,9 +1,9 @@
 package com.akvelon.client;
 
 import com.akvelon.client.exception.*;
-import com.akvelon.client.model.request.Request;
-import com.akvelon.client.model.request.typical.Iris;
-import com.akvelon.client.model.validation.InterfaceDesc;
+import com.akvelon.client.model.request.RequestBody;
+import com.akvelon.client.model.request.typical.IrisBody;
+import com.akvelon.client.model.validation.ApiSchema;
 import com.akvelon.client.util.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.AfterAll;
@@ -65,7 +65,7 @@ public class MlemJClientImplTest {
             return;
         }
 
-        InterfaceDesc methodDesc = JSON_PARSER.parseInterfaceSchema(response);
+        ApiSchema methodDesc = JSON_PARSER.parseInterfaceSchema(response);
         Assertions.assertNotNull(methodDesc);
     }
 
@@ -78,8 +78,8 @@ public class MlemJClientImplTest {
     @Test
     @DisplayName("Test post /predict method with Request request and Json response")
     public void testPredictRequest() throws ExecutionException, InterruptedException, IOException {
-        Request request = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet());
-        assertResponseJsonOrHandleException(clientWithExecutor.predict(request));
+        RequestBody requestBody = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet());
+        assertResponseJsonOrHandleException(clientWithExecutor.predict(requestBody));
     }
 
     @Test
@@ -91,9 +91,9 @@ public class MlemJClientImplTest {
     @Test
     @DisplayName("Test post /predictProba method with Request request and Json response")
     public void testPredictProbaRequest() throws ExecutionException, InterruptedException, IOException {
-        Request request = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet());
+        RequestBody requestBody = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet());
 
-        assertResponseJsonOrHandleException(clientWithExecutor.call(POST_PREDICT_PROBA, request));
+        assertResponseJsonOrHandleException(clientWithExecutor.call(POST_PREDICT_PROBA, requestBody));
     }
 
     @Test()
@@ -151,71 +151,71 @@ public class MlemJClientImplTest {
     @Test
     @DisplayName("Test post /predict method with wrong column value type")
     public void testPredictRequestBadColumnType() throws IOException {
-        Request request = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongValue());
-        IllegalRecordException thrown = Assertions.assertThrows(IllegalRecordException.class, () -> clientWithExecutor.predict(request).get());
+        RequestBody requestBody = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongValue());
+        IllegalRecordException thrown = Assertions.assertThrows(IllegalRecordException.class, () -> clientWithExecutor.predict(requestBody).get());
         Assertions.assertNotNull(thrown);
     }
 
     @Test
     @DisplayName("Test post /predict method with wrong column name")
     public void testPredictRequestBadColumnName() throws IOException {
-        Request request = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongName());
-        IllegalRecordException thrown = Assertions.assertThrows(IllegalRecordException.class, () -> clientWithExecutor.predict(request).get());
+        RequestBody requestBody = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongName());
+        IllegalRecordException thrown = Assertions.assertThrows(IllegalRecordException.class, () -> clientWithExecutor.predict(requestBody).get());
         Assertions.assertNotNull(thrown);
     }
 
     @Test
     @DisplayName("Test post /predict method with wrong column name")
     public void testPredictRequestBadColumnsCount() throws IOException {
-        Request request = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongCount());
-        IllegalColumnsNumberException thrown = Assertions.assertThrows(IllegalColumnsNumberException.class, () -> clientWithExecutor.predict(request).get());
+        RequestBody requestBody = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongCount());
+        IllegalColumnsNumberException thrown = Assertions.assertThrows(IllegalColumnsNumberException.class, () -> clientWithExecutor.predict(requestBody).get());
         Assertions.assertNotNull(thrown);
     }
 
     @Test
     @DisplayName("Test post /predict method with wrong parameter name")
     public void testPredictRequestBadParameterName() throws IOException {
-        Request request = TestDataFactory.buildRequest("data1", TestDataFactory.buildRecordSetWrongCount());
-        InvalidParameterTypeException thrown = Assertions.assertThrows(InvalidParameterTypeException.class, () -> clientWithExecutor.predict(request).get());
+        RequestBody requestBody = TestDataFactory.buildRequest("data1", TestDataFactory.buildRecordSetWrongCount());
+        InvalidParameterTypeException thrown = Assertions.assertThrows(InvalidParameterTypeException.class, () -> clientWithExecutor.predict(requestBody).get());
         Assertions.assertNotNull(thrown);
     }
 
     @Test
     @DisplayName("Test post /call method with wrong parameter name")
     public void testPredictRequestBadRequestName() throws IOException {
-        Request request = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongCount());
-        IllegalMethodException thrown = Assertions.assertThrows(IllegalMethodException.class, () -> clientWithExecutor.call("illegalmethodname", request).get());
+        RequestBody requestBody = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongCount());
+        IllegalMethodException thrown = Assertions.assertThrows(IllegalMethodException.class, () -> clientWithExecutor.call("illegalmethodname", requestBody).get());
         Assertions.assertNotNull(thrown);
     }
 
     @Test
     @DisplayName("Test post /call empty method")
     public void testCallEmptyMethod() throws IOException {
-        Request request = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongCount());
-        AssertionError thrown = Assertions.assertThrows(AssertionError.class, () -> clientWithExecutor.call("", request).get());
+        RequestBody requestBody = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongCount());
+        AssertionError thrown = Assertions.assertThrows(AssertionError.class, () -> clientWithExecutor.call("", requestBody).get());
         Assertions.assertNotNull(thrown);
     }
 
     @Test
     @DisplayName("Test post /predict empty request")
     public void testPredictEmptyRequest() {
-        Request request = new Request();
-        IllegalParameterNumberException thrown = Assertions.assertThrows(IllegalParameterNumberException.class, () -> clientWithExecutor.predict(request).get());
+        RequestBody requestBody = new RequestBody();
+        IllegalParameterNumberException thrown = Assertions.assertThrows(IllegalParameterNumberException.class, () -> clientWithExecutor.predict(requestBody).get());
         Assertions.assertNotNull(thrown);
     }
 
     @Test
     @DisplayName("Test post /predict method with Iris request and Json response")
     public void testPredictIris() throws ExecutionException, InterruptedException, IOException {
-        Iris iris = new Iris("data", 0.1d, 1.2d, 3.4d, 5.5d);
-        assertResponseListOrHandleException(clientWithExecutor.predict(iris));
+        IrisBody irisParameters = new IrisBody("data", 0.1d, 1.2d, 3.4d, 5.5d);
+        assertResponseListOrHandleException(clientWithExecutor.predict(irisParameters));
     }
 
     @Test
     @DisplayName("Test post /sklearn_predict method with Iris request and Json response")
     public void testCallIris() throws ExecutionException, InterruptedException, IOException {
-        Iris iris = new Iris("X", 0.1d, 1.2d, 3.4d, 5.5d);
-        assertResponseListOrHandleException(clientWithExecutor.call(POST_SKLEARN_PREDICT_PROBA, iris));
+        IrisBody irisParameters = new IrisBody("X", 0.1d, 1.2d, 3.4d, 5.5d);
+        assertResponseListOrHandleException(clientWithExecutor.call(POST_SKLEARN_PREDICT_PROBA, irisParameters));
     }
 
     @Test

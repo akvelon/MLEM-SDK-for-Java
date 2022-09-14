@@ -2,7 +2,7 @@ package com.akvelon.client;
 
 import com.akvelon.client.model.request.Record;
 import com.akvelon.client.model.request.RecordSet;
-import com.akvelon.client.model.request.Request;
+import com.akvelon.client.model.request.RequestBody;
 import com.akvelon.client.util.JsonParser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -17,10 +17,10 @@ public class JsonParserTest {
 
     @Test
     public void testRequest() throws IOException {
-        Request request = JSON_PARSER.parseRequest(TestDataFactory.buildDataRequestBody());
-        Assertions.assertNotNull(request);
+        RequestBody requestBody = JSON_PARSER.parseRequest(TestDataFactory.buildDataRequestBody());
+        Assertions.assertNotNull(requestBody);
 
-        Map<String, RecordSet> parameters = request.getParameters();
+        Map<String, RecordSet> parameters = requestBody.getParameters();
         Assertions.assertNotNull(parameters);
         Assertions.assertFalse(parameters.isEmpty());
         for (Map.Entry<String, RecordSet> entry : parameters.entrySet()) {

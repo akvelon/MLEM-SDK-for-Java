@@ -2,7 +2,7 @@ package com.akvelon.client;
 
 import com.akvelon.client.model.request.Record;
 import com.akvelon.client.model.request.RecordSet;
-import com.akvelon.client.model.request.Request;
+import com.akvelon.client.model.request.RequestBody;
 import com.akvelon.client.util.JsonMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -117,10 +117,10 @@ public class TestDataFactory {
         return recordSet;
     }
 
-    public static Request buildRequest(String propertyName, RecordSet recordSet) {
-        Request request = new Request();
-        request.addParameter(propertyName, recordSet);
+    public static RequestBody buildRequest(String propertyName, RecordSet recordSet) {
+        RequestBody requestBody = new RequestBody();
+        requestBody.addParameter(propertyName, recordSet);
 
-        return request;
+        return requestBody;
     }
 }

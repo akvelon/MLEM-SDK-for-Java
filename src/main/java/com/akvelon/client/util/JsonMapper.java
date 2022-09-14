@@ -45,8 +45,7 @@ public final class JsonMapper {
      * @throws IOException signals that an I/O exception has occurred.
      */
     public static <T> List<T> readValues(JsonNode json) throws IOException {
-        ObjectReader reader = mapper.readerFor(new TypeReference<List<T>>() {
-        });
+        ObjectReader reader = mapper.readerFor(new TypeReference<List<T>>() {});
         return reader.readValue(json);
     }
 
@@ -59,8 +58,7 @@ public final class JsonMapper {
      * @throws IOException signals that an I/O exception has occurred.
      */
     public static Map<String, JsonNode> readMap(JsonNode json) throws IOException {
-        ObjectReader reader = mapper.readerFor(new TypeReference<Map<String, JsonNode>>() {
-        });
+        ObjectReader reader = mapper.readerFor(new TypeReference<Map<String, JsonNode>>() {});
         return reader.readValue(json);
     }
 

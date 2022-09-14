@@ -1,10 +1,10 @@
 package com.akvelon.client;
 
 import com.akvelon.client.exception.InvalidHttpStatusCodeException;
-import com.akvelon.client.model.request.Request;
-import com.akvelon.client.model.request.typical.Iris;
-import com.akvelon.client.model.request.typical.RegModel;
-import com.akvelon.client.model.validation.InterfaceDesc;
+import com.akvelon.client.model.request.RequestBody;
+import com.akvelon.client.model.request.typical.IrisBody;
+import com.akvelon.client.model.request.typical.RegModelBody;
+import com.akvelon.client.model.validation.ApiSchema;
 import com.akvelon.client.util.JsonMapper;
 import com.akvelon.client.util.JsonParser;
 import com.akvelon.client.util.RequestValidator;
@@ -26,11 +26,11 @@ import java.util.concurrent.ExecutorService;
  */
 final class MlemJClientImpl implements MlemJClient {
     /**
-     * /interface.json get-method.
+     * /interface.json path.
      */
     private final String GET_INTERFACE = "interface.json";
     /**
-     * /predict post-method.
+     * /predict path.
      */
     private final String POST_PREDICT = "predict";
 
@@ -51,9 +51,9 @@ final class MlemJClientImpl implements MlemJClient {
     private final JsonParser jsonParser;
 
     /**
-     * Machine learning requests rules.
+     * Requests bodies schema.
      */
-    private InterfaceDesc interfaceDesc;
+    private ApiSchema apiSchema;
 
     /**
      * Constructor for creating the implementation of Mlem HttpClient.
@@ -98,7 +98,7 @@ final class MlemJClientImpl implements MlemJClient {
      * Validates the requestBody by the given schema and sends the /predict request asynchronously.
      * The method can catch the exception via exceptionally method.
      *
-     * @param requestBody the Json representation of the request.
+     * @param requestBody the Json representation of the request body.
      * @return a JsonNode response wrapped in the CompletableFuture object.
      * @throws IOException          will be thrown if input can not be detected as JsonNode type.
      * @throws ExecutionException   if this future completed exceptionally.
@@ -106,7 +106,7 @@ final class MlemJClientImpl implements MlemJClient {
      */
     @Override
     public CompletableFuture<JsonNode> predict(JsonNode requestBody) throws IOException, ExecutionException, InterruptedException {
-        Request body = jsonParser.parseRequest(requestBody);
+        RequestBody body = jsonParser.parseRequest(requestBody);
         return validateAndSendRequest(POST_PREDICT, body);
     }
 
@@ -114,19 +114,29 @@ final class MlemJClientImpl implements MlemJClient {
      * Validates the requestBody by the given schema and sends the /predict request asynchronously.
      * The method can catch the exception via exceptionally method.
      *
-     * @param requestBody the representation of the Request class.
+     * @param requestBody the body provided by RequestBody class.
      * @return a String response wrapped in the CompletableFuture object.
      * @throws IOException          will be thrown if input can not be detected as JsonNode type.
      * @throws ExecutionException   if this future completed exceptionally.
      * @throws InterruptedException if the current thread was interrupted while waiting.
      */
     @Override
-    public CompletableFuture<JsonNode> predict(Request requestBody) throws IOException, ExecutionException, InterruptedException {
+    public CompletableFuture<JsonNode> predict(RequestBody requestBody) throws IOException, ExecutionException, InterruptedException {
         return validateAndSendRequest(POST_PREDICT, requestBody);
     }
 
+    /**
+     * Validates the request body by the given schema and sends the /predict request asynchronously.
+     * The method can catch the exception via exceptionally method.
+     *
+     * @param requestBody the body provided by IrisBody class.
+     * @return a List of numbers wrapped in the CompletableFuture object.
+     * @throws IOException          will be thrown if input can not be detected as JsonNode type.
+     * @throws ExecutionException   if this future completed exceptionally.
+     * @throws InterruptedException if the current thread was interrupted while waiting.
+     */
     @Override
-    public CompletableFuture<List<Long>> predict(Iris requestBody) throws IOException, ExecutionException, InterruptedException {
+    public CompletableFuture<List<Long>> predict(IrisBody requestBody) throws IOException, ExecutionException, InterruptedException {
         CompletableFuture<JsonNode> jsonNodeCompletableFuture = validateAndSendRequest(POST_PREDICT, requestBody);
         return jsonNodeCompletableFuture.thenApply(jsonNode -> {
             try {
@@ -137,8 +147,18 @@ final class MlemJClientImpl implements MlemJClient {
         });
     }
 
+    /**
+     * Validates the request body by the given schema and sends the /predict request asynchronously.
+     * The method can catch the exception via exceptionally method.
+     *
+     * @param requestBody the body provided by RegModelBody class.
+     * @return a List of numbers wrapped in the CompletableFuture object.
+     * @throws IOException          will be thrown if input can not be detected as JsonNode type.
+     * @throws ExecutionException   if this future completed exceptionally.
+     * @throws InterruptedException if the current thread was interrupted while waiting.
+     */
     @Override
-    public CompletableFuture<List<Long>> predict(RegModel requestBody) throws IOException, ExecutionException, InterruptedException {
+    public CompletableFuture<List<Long>> predict(RegModelBody requestBody) throws IOException, ExecutionException, InterruptedException {
         CompletableFuture<JsonNode> jsonNodeCompletableFuture = validateAndSendRequest(POST_PREDICT, requestBody);
         return jsonNodeCompletableFuture.thenApply(jsonNode -> {
             try {
@@ -153,7 +173,7 @@ final class MlemJClientImpl implements MlemJClient {
      * Validates the requestBody by the given schema and sends the post request asynchronously.
      * The method can catch the exception via exceptionally method.
      *
-     * @param methodName  the method name for the request.
+     * @param path        the method name for the request.
      * @param requestBody the JsonNode representation of the request.
      * @return a JsonNode response wrapped in the CompletableFuture object.
      * @throws IOException          will be thrown if input can not be detected as JsonNode type.
@@ -161,32 +181,32 @@ final class MlemJClientImpl implements MlemJClient {
      * @throws InterruptedException if the current thread was interrupted while waiting.
      */
     @Override
-    public CompletableFuture<JsonNode> call(String methodName, JsonNode requestBody) throws IOException, ExecutionException, InterruptedException {
-        Request body = jsonParser.parseRequest(requestBody);
-        return validateAndSendRequest(methodName, body);
+    public CompletableFuture<JsonNode> call(String path, JsonNode requestBody) throws IOException, ExecutionException, InterruptedException {
+        RequestBody body = jsonParser.parseRequest(requestBody);
+        return validateAndSendRequest(path, body);
     }
 
     /**
      * Validates the requestBody by the given schema and sends the post request asynchronously.
      * The method can catch the exception via exceptionally method.
      *
-     * @param methodName  the method name for the request.
-     * @param requestBody the Request representation of the request.
+     * @param path            the method name for the request.
+     * @param requestBodyBody the Request representation of the request.
      * @return a JsonNode response wrapped in the CompletableFuture object.
      * @throws IOException          will be thrown if input can not be detected as JsonNode type.
      * @throws ExecutionException   if this future completed exceptionally.
      * @throws InterruptedException if the current thread was interrupted while waiting.
      */
     @Override
-    public CompletableFuture<JsonNode> call(String methodName, Request requestBody) throws IOException, ExecutionException, InterruptedException {
-        return validateAndSendRequest(methodName, requestBody);
+    public CompletableFuture<JsonNode> call(String path, RequestBody requestBodyBody) throws IOException, ExecutionException, InterruptedException {
+        return validateAndSendRequest(path, requestBodyBody);
     }
 
     /**
      * Validates the Iris requestBody by the given schema and sends the post request asynchronously.
      * The method can catch the exception via exceptionally method.
      *
-     * @param methodName  the method name for the request.
+     * @param path        the location of the specific data.
      * @param requestBody the Iris representation of the request.
      * @return a List of numbers wrapped in the CompletableFuture object.
      * @throws IOException          will be thrown if input can not be detected as JsonNode type.
@@ -194,8 +214,8 @@ final class MlemJClientImpl implements MlemJClient {
      * @throws InterruptedException if the current thread was interrupted while waiting.
      */
     @Override
-    public CompletableFuture<List<Long>> call(String methodName, Iris requestBody) throws IOException, ExecutionException, InterruptedException {
-        CompletableFuture<JsonNode> jsonNodeCompletableFuture = validateAndSendRequest(methodName, requestBody);
+    public CompletableFuture<List<Long>> call(String path, IrisBody requestBody) throws IOException, ExecutionException, InterruptedException {
+        CompletableFuture<JsonNode> jsonNodeCompletableFuture = validateAndSendRequest(path, requestBody);
 
         return jsonNodeCompletableFuture.thenApply(jsonNode -> {
             try {
@@ -210,7 +230,7 @@ final class MlemJClientImpl implements MlemJClient {
      * Validates the Iris requestBody by the given schema and sends the post request asynchronously.
      * The method can catch the exception via exceptionally method.
      *
-     * @param methodName  the method name for the request.
+     * @param path        the location of the specific data.
      * @param requestBody the RegModel representation of the request.
      * @return a List of numbers wrapped in the CompletableFuture object.
      * @throws IOException          will be thrown if input can not be detected as JsonNode type.
@@ -218,8 +238,8 @@ final class MlemJClientImpl implements MlemJClient {
      * @throws InterruptedException if the current thread was interrupted while waiting.
      */
     @Override
-    public CompletableFuture<List<Long>> call(String methodName, RegModel requestBody) throws IOException, ExecutionException, InterruptedException {
-        CompletableFuture<JsonNode> jsonNodeCompletableFuture = validateAndSendRequest(methodName, requestBody);
+    public CompletableFuture<List<Long>> call(String path, RegModelBody requestBody) throws IOException, ExecutionException, InterruptedException {
+        CompletableFuture<JsonNode> jsonNodeCompletableFuture = validateAndSendRequest(path, requestBody);
 
         return jsonNodeCompletableFuture.thenApply(jsonNode -> {
             try {
@@ -233,19 +253,21 @@ final class MlemJClientImpl implements MlemJClient {
     /**
      * Download and parse the schema if necessary. Then validate the request by schema and send the request.
      *
-     * @param method  the method name for the request.
-     * @param request the Request representation of the request.
+     * @param path        the location of the specific data.
+     * @param requestBody the Request representation of the request.
      * @return a JsonNode response wrapped in the CompletableFuture object.
      * @throws IOException          will be thrown if input can not be detected as JsonNode type.
      * @throws ExecutionException   if this future completed exceptionally.
      * @throws InterruptedException if the current thread was interrupted while waiting.
      */
-    private synchronized CompletableFuture<JsonNode> validateAndSendRequest(String method, Request request) throws IOException, ExecutionException, InterruptedException {
-        if (interfaceDesc == null) {
+    private synchronized CompletableFuture<JsonNode> validateAndSendRequest(String path, RequestBody requestBody) throws IOException, ExecutionException, InterruptedException {
+        assert path != null && !path.isEmpty() : "the path is null or empty";
+        assert requestBody != null : "the request is null";
+
+        if (apiSchema == null) {
             // if true, send /interface.json request to obtain the schema.
             JsonNode schema = interfaceJsonAsync()
                     .exceptionally(
-                            // in case of exception.
                             throwable -> {
                                 InvalidHttpStatusCodeException invalidHttpStatusCodeException = (InvalidHttpStatusCodeException) throwable.getCause();
                                 logger.log(
@@ -257,38 +279,35 @@ final class MlemJClientImpl implements MlemJClient {
                             })
                     .get();
 
-            interfaceDesc = jsonParser.parseInterfaceSchema(schema);
+            apiSchema = jsonParser.parseInterfaceSchema(schema);
         }
 
         RequestValidator requestValidator = new RequestValidator(logger);
-        requestValidator.validateRequest(method, request, interfaceDesc);
+        requestValidator.validateRequestBody(path, requestBody, apiSchema);
 
-        return sendPostRequest(method, request.toJson());
+        return sendPostRequest(path, requestBody.toJson());
     }
 
     /**
      * Send the async post request asynchronously for given method name and request body.
      *
-     * @param method      the name of request params.
+     * @param path        the location of the specific data.
      * @param requestBody the JsonNode representation of the request.
      * @return a JsonNode response wrapped in the CompletableFuture object.
      */
-    private CompletableFuture<JsonNode> sendPostRequest(String method, JsonNode requestBody) {
-        assert requestBody != null : "The body is null for method: " + method;
+    private CompletableFuture<JsonNode> sendPostRequest(String path, JsonNode requestBody) {
+        assert requestBody != null : "The body is null for path: " + path;
 
-        // Build a new post request.
+        String url = host + path;
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
-                .uri(URI.create(host + method))
+                .uri(URI.create(url))
                 .header("Content-Type", "application/json")
                 .build();
 
-        logger.log(System.Logger.Level.INFO, "host: " + host);
-        logger.log(System.Logger.Level.INFO, "method: " + method);
+        logger.log(System.Logger.Level.INFO, "url: " + url);
 
-        // check response for exception and if true throw the exception.
         return httpClient
-                // Sends the given request asynchronously using this client with the given response body handler.
                 .sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 // Returns a new CompletionStage that, when this stage completes normally,
                 // is executed with this stage's result as the argument to the supplied function.
@@ -298,21 +317,19 @@ final class MlemJClientImpl implements MlemJClient {
     /**
      * Send the get request asynchronously for given method name.
      *
-     * @param method the name of request params.
+     * @param path the location of the specific data.
      * @return a JsonNode response wrapped in the CompletableFuture object.
      */
-    private CompletableFuture<JsonNode> sendGetRequest(String method) {
-        // Build a new get request
+    private CompletableFuture<JsonNode> sendGetRequest(String path) {
+        String url = host + path;
         HttpRequest request = HttpRequest.newBuilder()
                 .GET()
-                .uri(URI.create(host + method))
+                .uri(URI.create(url))
                 .build();
 
-        logger.log(System.Logger.Level.INFO, "host: " + host);
-        logger.log(System.Logger.Level.INFO, "method: " + method);
+        logger.log(System.Logger.Level.INFO, "url: " + url);
 
         return httpClient
-                // Sends the given request asynchronously.
                 .sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 // Returns a new CompletionStage that, when this stage completes normally,
                 // is executed with this stage's result as the argument to the supplied function.
@@ -326,11 +343,9 @@ final class MlemJClientImpl implements MlemJClient {
      * @return a response body.
      */
     private JsonNode checkAndReadResponse(HttpResponse<String> httpResponse) {
-        // check http response status code.
         checkStatusCode(httpResponse);
 
         try {
-            // convert the http response to json and return.
             return JsonMapper.readValue(httpResponse.body(), JsonNode.class);
         } catch (JsonProcessingException e) {
             logger.log(System.Logger.Level.ERROR, "JsonMapper read body exception", e);
@@ -344,7 +359,6 @@ final class MlemJClientImpl implements MlemJClient {
      * @param httpResponse is the http response to check.
      */
     private void checkStatusCode(HttpResponse<String> httpResponse) {
-        // check the status code for 200.
         if (httpResponse.statusCode() != 200) {
             throw new InvalidHttpStatusCodeException(httpResponse.body(), httpResponse.statusCode());
         }

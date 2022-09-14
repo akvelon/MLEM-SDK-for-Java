@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * A class that maps the requests parameters.
  */
-public class Request {
+public class RequestBody {
     /**
      * The map of record set as a value and name as a key.
      */
@@ -19,11 +19,11 @@ public class Request {
     /**
      * Associates the specified record set with the specified name.
      *
-     * @param propertyName the name.
+     * @param property the property name.
      * @param recordSet    the RecordSet object.
      */
-    public void addParameter(String propertyName, RecordSet recordSet) {
-        parameters.put(propertyName, recordSet);
+    public void addParameter(String property, RecordSet recordSet) {
+        parameters.put(property, recordSet);
     }
 
     /**

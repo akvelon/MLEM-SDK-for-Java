@@ -3,7 +3,7 @@ package com.akvelon.client.util;
 import com.akvelon.client.exception.*;
 import com.akvelon.client.model.request.Record;
 import com.akvelon.client.model.request.RecordSet;
-import com.akvelon.client.model.request.Request;
+import com.akvelon.client.model.request.RequestBody;
 import com.akvelon.client.model.validation.*;
 
 import java.util.List;
@@ -24,45 +24,36 @@ public final class RequestValidator {
     }
 
     /**
-     * Validate Request object by given schema represented in InterfaceDesc.
-     * Throw exception if the specified method name is not exist.
+     * Validate Request object by given schema represented in ApiSchema.
+     * Throw exception if the specified path is not exist.
      *
-     * @param method        the method name for the request.
-     * @param request       the Request object to validate.
-     * @param interfaceDesc the schema represented in InterfaceDesc object.
+     * @param path        the method name for the request.
+     * @param requestBody the Request object to validate.
+     * @param apiSchema   the schema represented in ApiSchema object.
      */
-    public void validateRequest(String method, Request request, InterfaceDesc interfaceDesc) {
-        assert method != null && !method.isEmpty() : "the method is null or empty";
-        assert request != null : "the request is null";
-        assert interfaceDesc != null : "the interfaceDesc is null";
-
-        // get request descriptions.
-        Map<String, RequestDesc> requestDescs = interfaceDesc.getRequestDescs();
+    public void validateRequestBody(String path, RequestBody requestBody, ApiSchema apiSchema) {
+        Map<String, RequestBodySchema> requestDescriptions = apiSchema.getRequestBodySchemas();
         // find given request in schema
-        if (!requestDescs.containsKey(method)) {
-            String exceptionMessage = "The method " + method
-                    + " is not found in schema; Available methods: " + requestDescs.keySet() + ".";
+        if (!requestDescriptions.containsKey(path)) {
+            String exceptionMessage = "The method " + path
+                    + " is not found in schema; Available methods: " + requestDescriptions.keySet() + ".";
             logger.log(System.Logger.Level.ERROR, exceptionMessage);
             throw new IllegalMethodException(exceptionMessage);
         }
 
-        // if request found in schema, validate it.
-        validateSingleRequest(request, requestDescs.get(method));
+        validateSingleRequest(requestBody, requestDescriptions.get(path));
     }
 
     /**
      * Validate Request object by given request description.
      * Throw exception if the specified parameters is not equal to the schema.
      *
-     * @param request     the Request object to validate.
-     * @param requestDesc the request description provided by schema.
+     * @param requestBody       the Request object to validate.
+     * @param requestBodySchema the request description provided by schema.
      */
-    private void validateSingleRequest(Request request, RequestDesc requestDesc) {
-        // get record sets to validate.
-        Map<String, RecordSet> parameters = request.getParameters();
-        // get descriptions.
-        Map<String, RecordSetDesc> parameterDescMap = requestDesc.getParameterDescMap();
-        // check the column count.
+    private void validateSingleRequest(RequestBody requestBody, RequestBodySchema requestBodySchema) {
+        Map<String, RecordSet> parameters = requestBody.getParameters();
+        Map<String, RecordSetSchema> parameterDescMap = requestBodySchema.getParameterDescMap();
         if (parameters.size() != parameterDescMap.size()) {
             String exceptionMessage = "Actual parameters number: " + parameters.size()
                     + ", expected: " + parameterDescMap.size();
@@ -71,8 +62,7 @@ public final class RequestValidator {
         }
 
         // validate parameters by descriptions.
-        for (Map.Entry<String, RecordSetDesc> entryDesc : parameterDescMap.entrySet()) {
-            // throw exception, if parameter name is not exist in description
+        for (Map.Entry<String, RecordSetSchema> entryDesc : parameterDescMap.entrySet()) {
             if (!parameters.containsKey(entryDesc.getKey())) {
                 String exceptionMessage = "Actual parameters: " + parameters.keySet().toString().replaceAll("[\\[\\],]", "")
                         + ", expected: " + entryDesc.getKey();
@@ -90,9 +80,8 @@ public final class RequestValidator {
      * @param recordSet the RecordSet object to validate.
      * @param typeDesc  the record set description provided by schema.
      */
-    private void validateRecordSet(RecordSet recordSet, RecordSetDesc typeDesc) {
+    private void validateRecordSet(RecordSet recordSet, RecordSetSchema typeDesc) {
         List<Record> recordList = recordSet.getRecords();
-        // validate the records.
         for (Record record : recordList) {
             validateRecord(record, typeDesc);
         }
@@ -105,11 +94,9 @@ public final class RequestValidator {
      * @param record              the Record object to validate.
      * @param recordSetColumnDesc the record description provided by schema.
      */
-    private void validateRecord(Record record, RecordSetDesc recordSetColumnDesc) {
+    private void validateRecord(Record record, RecordSetSchema recordSetColumnDesc) {
         Map<String, Number> columns = record.getColumns();
-        // get record columns description.
-        List<RecordSetColumn> columnsDesc = recordSetColumnDesc.getColumns();
-        // check the column count.
+        List<RecordSetColumnSchema> columnsDesc = recordSetColumnDesc.getColumns();
         if (columns.size() != columnsDesc.size()) {
             String exceptionMessage = "Actual columns number: " + columns.size()
                     + ", expected: " + columnsDesc.size();
@@ -117,17 +104,15 @@ public final class RequestValidator {
             throw new IllegalColumnsNumberException(exceptionMessage);
         }
 
-        // check every column in the loop.
-        for (RecordSetColumn recordSetColumn : columnsDesc) {
-            // throw exception if given column name is not exist in schema.
-            if (!columns.containsKey(recordSetColumn.getName())) {
-                String exceptionMessage = "Column name not found: " + recordSetColumn.getName() +
+        for (RecordSetColumnSchema recordSetColumnSchema : columnsDesc) {
+            if (!columns.containsKey(recordSetColumnSchema.getName())) {
+                String exceptionMessage = "Column name not found: " + recordSetColumnSchema.getName() +
                         ", for given data: " + columns.entrySet();
                 logger.log(System.Logger.Level.ERROR, exceptionMessage);
                 throw new IllegalRecordException(exceptionMessage);
             }
 
-            validateType(columns.get(recordSetColumn.getName()), recordSetColumn.getName(), recordSetColumn.getType());
+            validateType(columns.get(recordSetColumnSchema.getName()), recordSetColumnSchema.getName(), recordSetColumnSchema.getType());
         }
     }
 
@@ -139,7 +124,6 @@ public final class RequestValidator {
      * @param typeDesc the type description provided by schema.
      */
     private void validateType(Number number, String name, DataType typeDesc) {
-        // for type description Float64 the number must be Double.
         if (typeDesc.equals(DataType.Float64)) {
             if (!(number instanceof Double)) {
                 String exceptionMessage = "Expected type for column: " + name
@@ -147,7 +131,6 @@ public final class RequestValidator {
                 logger.log(System.Logger.Level.ERROR, exceptionMessage);
                 throw new IllegalRecordException(exceptionMessage);
             }
-            // for type description Int64 the number must be Integer.
         } else if (typeDesc.equals(DataType.Int64)) {
             if (!(number instanceof Long)) {
                 String exceptionMessage = "Expected type for the column: " + name

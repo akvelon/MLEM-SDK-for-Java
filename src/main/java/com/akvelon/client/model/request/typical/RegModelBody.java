@@ -2,19 +2,19 @@ package com.akvelon.client.model.request.typical;
 
 import com.akvelon.client.model.request.Record;
 import com.akvelon.client.model.request.RecordSet;
-import com.akvelon.client.model.request.Request;
+import com.akvelon.client.model.request.RequestBody;
 
 /**
- * A class that provides the RegModel request.
+ * A class that provides the RegModel request parameters.
  */
-public final class RegModel extends Request {
+public final class RegModelBody extends RequestBody {
     /**
-     * Create new RegModel request
+     * Create new RegModel request parameters.
      *
-     * @param propertyName a parameter property name
-     * @param value        a value for "0"
+     * @param propertyName a parameter property name.
+     * @param value        a value for "0".
      */
-    public RegModel(String propertyName, double value) {
+    public RegModelBody(String propertyName, double value) {
         Record record = new Record();
         record.addColumn(RegModelProperty.VALUE, value);
 

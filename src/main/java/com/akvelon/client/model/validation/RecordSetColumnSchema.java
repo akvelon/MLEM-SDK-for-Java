@@ -3,7 +3,7 @@ package com.akvelon.client.model.validation;
 /**
  * A class that provides the record set column description.
  */
-public final class RecordSetColumn {
+public final class RecordSetColumnSchema {
     /**
      * The column name.
      */
@@ -19,7 +19,7 @@ public final class RecordSetColumn {
      * @param name the column name.
      * @param type the column type.
      */
-    public RecordSetColumn(String name, DataType type) {
+    public RecordSetColumnSchema(String name, DataType type) {
         this.name = name;
         this.type = type;
     }

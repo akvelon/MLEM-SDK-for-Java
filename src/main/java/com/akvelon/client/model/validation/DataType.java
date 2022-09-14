@@ -4,8 +4,8 @@ package com.akvelon.client.model.validation;
  * An enumeration that provides available data types.
  */
 public enum DataType {
-    Int64("int64"), //integer type.
-    Float64("float64"); //float type.
+    Int64("int64"),
+    Float64("float64");
 
     public final String type;
 
@@ -25,9 +25,7 @@ public enum DataType {
      * @return DataType object.
      */
     public static DataType fromString(String type) {
-        // find given parameter in the enumeration.
         for (DataType dataType : values()) {
-            // if data type found, return it.
             if (dataType.type.equals(type)) {
                 return dataType;
             }

@@ -1,8 +1,8 @@
 package com.akvelon.client;
 
-import com.akvelon.client.model.request.Request;
-import com.akvelon.client.model.request.typical.Iris;
-import com.akvelon.client.model.request.typical.RegModel;
+import com.akvelon.client.model.request.RequestBody;
+import com.akvelon.client.model.request.typical.IrisBody;
+import com.akvelon.client.model.request.typical.RegModelBody;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
@@ -35,13 +35,13 @@ public interface MlemJClient {
     /**
      * The method sends the /predict post request with given Request object body.
      *
-     * @param requestBody the representation of the Request class.
+     * @param requestBodyBody the representation of the Request class.
      * @return a JsonNode response wrapped in the CompletableFuture object.
      * @throws IOException          will be thrown if input can not be detected as JsonNode type.
      * @throws ExecutionException   if this future completed exceptionally.
      * @throws InterruptedException if the current thread was interrupted while waiting.
      */
-    CompletableFuture<JsonNode> predict(Request requestBody) throws IOException, ExecutionException, InterruptedException;
+    CompletableFuture<JsonNode> predict(RequestBody requestBodyBody) throws IOException, ExecutionException, InterruptedException;
 
     /**
      * The method sends the /predict post request with given Iris object.
@@ -52,7 +52,7 @@ public interface MlemJClient {
      * @throws ExecutionException   if this future completed exceptionally.
      * @throws InterruptedException if the current thread was interrupted while waiting.
      */
-    CompletableFuture<List<Long>> predict(Iris requestBody) throws IOException, ExecutionException, InterruptedException;
+    CompletableFuture<List<Long>> predict(IrisBody requestBody) throws IOException, ExecutionException, InterruptedException;
 
     /**
      * The method sends the /predict post request with given RegModel object.
@@ -63,7 +63,7 @@ public interface MlemJClient {
      * @throws ExecutionException   if this future completed exceptionally.
      * @throws InterruptedException if the current thread was interrupted while waiting.
      */
-    CompletableFuture<List<Long>> predict(RegModel requestBody) throws IOException, ExecutionException, InterruptedException;
+    CompletableFuture<List<Long>> predict(RegModelBody requestBody) throws IOException, ExecutionException, InterruptedException;
 
 
     /**
@@ -82,13 +82,13 @@ public interface MlemJClient {
      * The method sends the post request with given method and Request body.
      *
      * @param methodName  the method name for the request
-     * @param requestBody the Request representation of the request.
+     * @param requestBodyBody the Request representation of the request.
      * @return a JsonNode response wrapped in the CompletableFuture object.
      * @throws IOException          will be thrown if input can not be detected as JsonNode type
      * @throws ExecutionException   if this future completed exceptionally
      * @throws InterruptedException if the current thread was interrupted while waiting
      */
-    CompletableFuture<JsonNode> call(String methodName, Request requestBody) throws IOException, ExecutionException, InterruptedException;
+    CompletableFuture<JsonNode> call(String methodName, RequestBody requestBodyBody) throws IOException, ExecutionException, InterruptedException;
 
     /**
      * The method sends the post request with given method and Iris body.
@@ -100,7 +100,7 @@ public interface MlemJClient {
      * @throws ExecutionException   if this future completed exceptionally
      * @throws InterruptedException if the current thread was interrupted while waiting
      */
-    CompletableFuture<List<Long>> call(String methodName, Iris requestBody) throws IOException, ExecutionException, InterruptedException;
+    CompletableFuture<List<Long>> call(String methodName, IrisBody requestBody) throws IOException, ExecutionException, InterruptedException;
 
     /**
      * The method sends the post request with given method and RegModel body.
@@ -112,6 +112,6 @@ public interface MlemJClient {
      * @throws ExecutionException   if this future completed exceptionally
      * @throws InterruptedException if the current thread was interrupted while waiting
      */
-    CompletableFuture<List<Long>> call(String methodName, RegModel requestBody) throws IOException, ExecutionException, InterruptedException;
+    CompletableFuture<List<Long>> call(String methodName, RegModelBody requestBody) throws IOException, ExecutionException, InterruptedException;
 
 }
