@@ -17,7 +17,7 @@ public class JsonParserTest {
 
     @Test
     public void testRequest() throws IOException {
-        RequestBody requestBody = JSON_PARSER.parseRequest(TestDataFactory.buildDataRequestBody());
+        RequestBody requestBody = JSON_PARSER.parseRequestBody(TestDataFactory.buildDataRequestBody());
         Assertions.assertNotNull(requestBody);
 
         Map<String, RecordSet> parameters = requestBody.getParameters();

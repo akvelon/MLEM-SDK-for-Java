@@ -44,7 +44,7 @@ public final class JsonMapper {
      * @return the list of given type T.
      * @throws IOException signals that an I/O exception has occurred.
      */
-    public static <T> List<T> readValues(JsonNode json) throws IOException {
+    public static <T> List<T> readList(JsonNode json) throws IOException {
         ObjectReader reader = mapper.readerFor(new TypeReference<List<T>>() {});
         return reader.readValue(json);
     }
@@ -74,18 +74,18 @@ public final class JsonMapper {
     }
 
     /**
-     * @param propertyName the name of property to set value.
+     * @param property the name of property to set value.
      * @param records      the list of record values.
      * @return This node after adding property value.
      * @throws JsonProcessingException caused when processing JSON finished with a problem.
      */
-    public static JsonNode createObjectNodeWithArray(String propertyName, List<Record> records) throws JsonProcessingException {
+    public static JsonNode createObjectNodeWithArray(String property, List<Record> records) throws JsonProcessingException {
         ArrayNode arrayNode = mapper.createArrayNode();
 
         for (Record record : records) {
             arrayNode.add(record.toJsonNode());
         }
 
-        return mapper.createObjectNode().set(propertyName, arrayNode);
+        return mapper.createObjectNode().set(property, arrayNode);
     }
 }

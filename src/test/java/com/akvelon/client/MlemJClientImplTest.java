@@ -65,7 +65,7 @@ public class MlemJClientImplTest {
             return;
         }
 
-        ApiSchema methodDesc = JSON_PARSER.parseInterfaceSchema(response);
+        ApiSchema methodDesc = JSON_PARSER.parseApiSchema(response);
         Assertions.assertNotNull(methodDesc);
     }
 
@@ -152,7 +152,7 @@ public class MlemJClientImplTest {
     @DisplayName("Test post /predict method with wrong column value type")
     public void testPredictRequestBadColumnType() throws IOException {
         RequestBody requestBody = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongValue());
-        IllegalRecordException thrown = Assertions.assertThrows(IllegalRecordException.class, () -> clientWithExecutor.predict(requestBody).get());
+        IllegalRecordTypeException thrown = Assertions.assertThrows(IllegalRecordTypeException.class, () -> clientWithExecutor.predict(requestBody).get());
         Assertions.assertNotNull(thrown);
     }
 
@@ -160,7 +160,7 @@ public class MlemJClientImplTest {
     @DisplayName("Test post /predict method with wrong column name")
     public void testPredictRequestBadColumnName() throws IOException {
         RequestBody requestBody = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongName());
-        IllegalRecordException thrown = Assertions.assertThrows(IllegalRecordException.class, () -> clientWithExecutor.predict(requestBody).get());
+        IllegalRecordTypeException thrown = Assertions.assertThrows(IllegalRecordTypeException.class, () -> clientWithExecutor.predict(requestBody).get());
         Assertions.assertNotNull(thrown);
     }
 
@@ -176,7 +176,7 @@ public class MlemJClientImplTest {
     @DisplayName("Test post /predict method with wrong parameter name")
     public void testPredictRequestBadParameterName() throws IOException {
         RequestBody requestBody = TestDataFactory.buildRequest("data1", TestDataFactory.buildRecordSetWrongCount());
-        InvalidParameterTypeException thrown = Assertions.assertThrows(InvalidParameterTypeException.class, () -> clientWithExecutor.predict(requestBody).get());
+        InvalidParameterNameException thrown = Assertions.assertThrows(InvalidParameterNameException.class, () -> clientWithExecutor.predict(requestBody).get());
         Assertions.assertNotNull(thrown);
     }
 
@@ -184,7 +184,7 @@ public class MlemJClientImplTest {
     @DisplayName("Test post /call method with wrong parameter name")
     public void testPredictRequestBadRequestName() throws IOException {
         RequestBody requestBody = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongCount());
-        IllegalMethodException thrown = Assertions.assertThrows(IllegalMethodException.class, () -> clientWithExecutor.call("illegalmethodname", requestBody).get());
+        IllegalPathException thrown = Assertions.assertThrows(IllegalPathException.class, () -> clientWithExecutor.call("illegalmethodname", requestBody).get());
         Assertions.assertNotNull(thrown);
     }
 

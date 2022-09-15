@@ -101,7 +101,7 @@ JsonNode response = future
     .get();
 ```
         
-3) **Build the request**
+3) **Create the request body**
 
 ```java 
 // create the Record object:
@@ -112,20 +112,20 @@ record.addColumn("sepal width (cm)", 2.4);
 record.addColumn("petal length (cm)", 3.3);
 record.addColumn("petal width (cm)", 4.1);
    
-//add it to RecordSet.
+// add it to RecordSet.
 RecordSet recordSet = new RecordSet();
 recordSet.addRecord(record);
  
-// create the Request object and add the recordSet object with propertyName.
-Request request = new Request();
-request.addParameter(propertyName, recordSet);
+// create the RequestBody object and add the recordSet object with property "data".
+RequestBody requestBody = new RequestBody();
+requestBody.addParameter("data", recordSet);
  ```
 
 4) **Send the /predict request:**
 
 ```java 
 // send the /predict request.
-CompletableFuture<JsonNode> future = mlemClient.predict(request);
+CompletableFuture<JsonNode> future = mlemClient.predict(requestBody);
 // get the response.
 JsonNode response1 = future.get();
 //to handle an exception use exceptionally method.
@@ -138,7 +138,7 @@ JsonNode response2 = future
 ```
 So, for the /predict request with body:
 ```json
-{"data":{"values":[{"sepal length (cm)":0,"sepal width (cm)":0,"petal length (cm)":0,"petal width (cm)":0}]}}
+{"data":{"values":[{"sepal length (cm)":0.0,"sepal width (cm)":0.0,"petal length (cm)":0.0,"petal width (cm)":0.0}]}}
 ```
 The response will be: 
 ```json 
@@ -148,7 +148,7 @@ The response will be:
 4) **Send the /call request:**
 ```java 
 // send the /predict_proba request.
-CompletableFuture<JsonNode> future = mlemClient.call("predict_proba", request);
+CompletableFuture<JsonNode> future = mlemClient.call("predict_proba", requestBody);
 // get the response and handle the exception.
 JsonNode response = future
     .exceptionally(throwable -> {
@@ -159,7 +159,7 @@ JsonNode response = future
 ```
 So, for the /predict_proba request with body:
 ```json
-{"X":{"values":[{"sepal length (cm)":0,"sepal width (cm)":0,"petal length (cm)":0,"petal width (cm)":0}]}}
+{"X":{"values":[{"sepal length (cm)":0.0,"sepal width (cm)":0.0,"petal length (cm)":0.0,"petal width (cm)":0.0}]}}
 ```
 The response will be:
 ```json 
@@ -169,19 +169,19 @@ The response will be:
 ---
 
 ### Validation
-1) Method name
+1) Illegal path name
 ```java 
 // send the /predict_proba123 request.
-CompletableFuture<JsonNode> future = mlemClient.call("predict_proba123", request);
+CompletableFuture<JsonNode> future = mlemClient.call("predict_proba123", requestBody);
 ```
 The response will be:
 ```text 
-error text: The method predict_proba123 is not found in schema; Available methods: [sklearn_predict, predict_proba, predict, sklearn_predict_proba].
+error text: The path predict_proba123 is not found in schema; Available path list: [sklearn_predict, predict_proba, predict, sklearn_predict_proba].
 ```
-2) Parameter name
+2) Invalid parameter name
 ```java 
 // send the /predict request.
-CompletableFuture<JsonNode> future = mlemClient.predict(request);
+CompletableFuture<JsonNode> future = mlemClient.predict(requestBody);
 ```
 So, for the /predict request with body:
 ```json
@@ -191,10 +191,10 @@ The response will be:
 ```text 
 error text: Actual parameters: X, expected: data
 ```
-3) Record name
+3) Illegal record name
 ```java 
 // send the /predict request.
-CompletableFuture<JsonNode> future = mlemClient.predict(request);
+CompletableFuture<JsonNode> future = mlemClient.predict(requestBody);
 ```
 So, for the /predict request with body:
 ```json
@@ -204,10 +204,10 @@ The response will be:
 ```text 
 error text: Column name not found: sepal length (cm), for given data: [sepal length =1.1, sepal width (cm)=2.1, petal length (cm)=3.1, petal width (cm)=4.1]
 ```
-4) Record type
+4) Invalid record type
 ```java 
 // send the /predict request.
-CompletableFuture<JsonNode> future = mlemClient.predict(request);
+CompletableFuture<JsonNode> future = mlemClient.predict(requestBody);
 ```
 So, for the /predict request with body:
 ```json

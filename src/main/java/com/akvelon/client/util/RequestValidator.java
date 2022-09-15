@@ -35,13 +35,13 @@ public final class RequestValidator {
         Map<String, RequestBodySchema> requestDescriptions = apiSchema.getRequestBodySchemas();
         // find given request in schema
         if (!requestDescriptions.containsKey(path)) {
-            String exceptionMessage = "The method " + path
-                    + " is not found in schema; Available methods: " + requestDescriptions.keySet() + ".";
+            String exceptionMessage = "The path " + path
+                    + " is not found in schema; Available path list: " + requestDescriptions.keySet() + ".";
             logger.log(System.Logger.Level.ERROR, exceptionMessage);
-            throw new IllegalMethodException(exceptionMessage);
+            throw new IllegalPathException(exceptionMessage);
         }
 
-        validateSingleRequest(requestBody, requestDescriptions.get(path));
+        validateSingleRequestBody(requestBody, requestDescriptions.get(path));
     }
 
     /**
@@ -51,7 +51,7 @@ public final class RequestValidator {
      * @param requestBody       the Request object to validate.
      * @param requestBodySchema the request description provided by schema.
      */
-    private void validateSingleRequest(RequestBody requestBody, RequestBodySchema requestBodySchema) {
+    private void validateSingleRequestBody(RequestBody requestBody, RequestBodySchema requestBodySchema) {
         Map<String, RecordSet> parameters = requestBody.getParameters();
         Map<String, RecordSetSchema> parameterDescMap = requestBodySchema.getParameterDescMap();
         if (parameters.size() != parameterDescMap.size()) {
@@ -67,7 +67,7 @@ public final class RequestValidator {
                 String exceptionMessage = "Actual parameters: " + parameters.keySet().toString().replaceAll("[\\[\\],]", "")
                         + ", expected: " + entryDesc.getKey();
                 logger.log(System.Logger.Level.ERROR, exceptionMessage);
-                throw new InvalidParameterTypeException(exceptionMessage);
+                throw new InvalidParameterNameException(exceptionMessage);
             }
 
             validateRecordSet(parameters.get(entryDesc.getKey()), entryDesc.getValue());
@@ -77,13 +77,13 @@ public final class RequestValidator {
     /**
      * Validate RecordSet object by given description.
      *
-     * @param recordSet the RecordSet object to validate.
-     * @param typeDesc  the record set description provided by schema.
+     * @param recordSet       the RecordSet object to validate.
+     * @param recordSetSchema the record set description provided by schema.
      */
-    private void validateRecordSet(RecordSet recordSet, RecordSetSchema typeDesc) {
+    private void validateRecordSet(RecordSet recordSet, RecordSetSchema recordSetSchema) {
         List<Record> recordList = recordSet.getRecords();
         for (Record record : recordList) {
-            validateRecord(record, typeDesc);
+            validateRecord(record, recordSetSchema);
         }
     }
 
@@ -91,12 +91,12 @@ public final class RequestValidator {
      * Validate Record object by given schema.
      * Throw exception if the specified parameters is not equal to record schema.
      *
-     * @param record              the Record object to validate.
-     * @param recordSetColumnDesc the record description provided by schema.
+     * @param record          the Record object to validate.
+     * @param recordSetSchema the record description provided by schema.
      */
-    private void validateRecord(Record record, RecordSetSchema recordSetColumnDesc) {
+    private void validateRecord(Record record, RecordSetSchema recordSetSchema) {
         Map<String, Number> columns = record.getColumns();
-        List<RecordSetColumnSchema> columnsDesc = recordSetColumnDesc.getColumns();
+        List<RecordSetColumnSchema> columnsDesc = recordSetSchema.getColumns();
         if (columns.size() != columnsDesc.size()) {
             String exceptionMessage = "Actual columns number: " + columns.size()
                     + ", expected: " + columnsDesc.size();
@@ -109,10 +109,10 @@ public final class RequestValidator {
                 String exceptionMessage = "Column name not found: " + recordSetColumnSchema.getName() +
                         ", for given data: " + columns.entrySet();
                 logger.log(System.Logger.Level.ERROR, exceptionMessage);
-                throw new IllegalRecordException(exceptionMessage);
+                throw new IllegalRecordTypeException(exceptionMessage);
             }
 
-            validateType(columns.get(recordSetColumnSchema.getName()), recordSetColumnSchema.getName(), recordSetColumnSchema.getType());
+            validateNumberType(columns.get(recordSetColumnSchema.getName()), recordSetColumnSchema.getType(), recordSetColumnSchema.getName());
         }
     }
 
@@ -120,23 +120,24 @@ public final class RequestValidator {
      * Validate data type by given schema.
      * Throw exception if the specified number is not equal to type description.
      *
-     * @param number   the number to validate.
-     * @param typeDesc the type description provided by schema.
+     * @param actualNumber the number to validate.
+     * @param property     the property name.
+     * @param expectedType the type description provided by schema.
      */
-    private void validateType(Number number, String name, DataType typeDesc) {
-        if (typeDesc.equals(DataType.Float64)) {
-            if (!(number instanceof Double)) {
-                String exceptionMessage = "Expected type for column: " + name
-                        + " with value: " + number + ", must be: " + DataType.Float64;
+    private void validateNumberType(Number actualNumber, DataType expectedType, String property) {
+        if (expectedType.equals(DataType.Float64)) {
+            if (!(actualNumber instanceof Double)) {
+                String exceptionMessage = "Expected type for column: " + property
+                        + " with value: " + actualNumber + ", must be: " + DataType.Float64;
                 logger.log(System.Logger.Level.ERROR, exceptionMessage);
-                throw new IllegalRecordException(exceptionMessage);
+                throw new IllegalRecordTypeException(exceptionMessage);
             }
-        } else if (typeDesc.equals(DataType.Int64)) {
-            if (!(number instanceof Long)) {
-                String exceptionMessage = "Expected type for the column: " + name
-                        + " with value: " + number + ", must be: " + DataType.Int64;
+        } else if (expectedType.equals(DataType.Int64)) {
+            if (!(actualNumber instanceof Long)) {
+                String exceptionMessage = "Expected type for the column: " + property
+                        + " with value: " + actualNumber + ", must be: " + DataType.Int64;
                 logger.log(System.Logger.Level.ERROR, exceptionMessage);
-                throw new IllegalRecordException(exceptionMessage);
+                throw new IllegalRecordTypeException(exceptionMessage);
             }
         }
     }

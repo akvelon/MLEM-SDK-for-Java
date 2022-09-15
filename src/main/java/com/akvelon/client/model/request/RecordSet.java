@@ -27,8 +27,8 @@ public final class RecordSet {
         records.add(record);
     }
 
-    public JsonNode toJson(String propertyName) throws JsonProcessingException {
-        return JsonMapper.createObjectNodeWithArray(propertyName, records);
+    public JsonNode toJson(String property) throws JsonProcessingException {
+        return JsonMapper.createObjectNodeWithArray(property, records);
     }
 
     @Override

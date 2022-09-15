@@ -24,8 +24,8 @@ public interface MlemJClient {
     /**
      * The method sends the /predict post request with given JSON body.
      *
-     * @param requestBody the JsonNode representation of the request.
-     * @return a JsonNode response wrapped in the CompletableFuture object.
+     * @param requestBody the requests data.
+     * @return a response wrapped in the CompletableFuture object.
      * @throws IOException          will be thrown if input can not be detected as JsonNode type.
      * @throws ExecutionException   if this future completed exceptionally.
      * @throws InterruptedException if the current thread was interrupted while waiting.
@@ -33,20 +33,20 @@ public interface MlemJClient {
     CompletableFuture<JsonNode> predict(JsonNode requestBody) throws IOException, ExecutionException, InterruptedException;
 
     /**
-     * The method sends the /predict post request with given Request object body.
+     * The method sends the /predict post request with given body.
      *
-     * @param requestBodyBody the representation of the Request class.
-     * @return a JsonNode response wrapped in the CompletableFuture object.
+     * @param requestBody the requests data represented in RequestBody class.
+     * @return a response wrapped in the CompletableFuture object.
      * @throws IOException          will be thrown if input can not be detected as JsonNode type.
      * @throws ExecutionException   if this future completed exceptionally.
      * @throws InterruptedException if the current thread was interrupted while waiting.
      */
-    CompletableFuture<JsonNode> predict(RequestBody requestBodyBody) throws IOException, ExecutionException, InterruptedException;
+    CompletableFuture<JsonNode> predict(RequestBody requestBody) throws IOException, ExecutionException, InterruptedException;
 
     /**
-     * The method sends the /predict post request with given Iris object.
+     * The method sends the /predict post request with given body.
      *
-     * @param requestBody the representation of the Iris class.
+     * @param requestBody the requests data represented in IrisBody class.
      * @return a List<Long> response wrapped in the CompletableFuture object.
      * @throws IOException          will be thrown if input can not be detected as JsonNode type.
      * @throws ExecutionException   if this future completed exceptionally.
@@ -57,7 +57,7 @@ public interface MlemJClient {
     /**
      * The method sends the /predict post request with given RegModel object.
      *
-     * @param requestBody the representation of the Iris class.
+     * @param requestBody the representation of the RegModel class.
      * @return a List<Long> response wrapped in the CompletableFuture object.
      * @throws IOException          will be thrown if input can not be detected as JsonNode type.
      * @throws ExecutionException   if this future completed exceptionally.
@@ -69,49 +69,49 @@ public interface MlemJClient {
     /**
      * The method sends the post request with given method and JsonNode body.
      *
-     * @param methodName  the method name for the request.
-     * @param requestBody the JsonNode representation of the request.
+     * @param path        the specific resource in the host that the client wants to access.
+     * @param requestBody the requests data represented in JsonNode class
      * @return a JsonNode response wrapped in the CompletableFuture object.
      * @throws IOException          will be thrown if input can not be detected as JsonNode type.
      * @throws ExecutionException   if this future completed exceptionally.
      * @throws InterruptedException if the current thread was interrupted while waiting.
      */
-    CompletableFuture<JsonNode> call(String methodName, JsonNode requestBody) throws IOException, ExecutionException, InterruptedException;
+    CompletableFuture<JsonNode> call(String path, JsonNode requestBody) throws IOException, ExecutionException, InterruptedException;
 
     /**
      * The method sends the post request with given method and Request body.
      *
-     * @param methodName  the method name for the request
-     * @param requestBodyBody the Request representation of the request.
+     * @param path        the specific resource in the host that the client wants to access.
+     * @param requestBody the requests data represented in RequestBody class.
      * @return a JsonNode response wrapped in the CompletableFuture object.
      * @throws IOException          will be thrown if input can not be detected as JsonNode type
      * @throws ExecutionException   if this future completed exceptionally
      * @throws InterruptedException if the current thread was interrupted while waiting
      */
-    CompletableFuture<JsonNode> call(String methodName, RequestBody requestBodyBody) throws IOException, ExecutionException, InterruptedException;
+    CompletableFuture<JsonNode> call(String path, RequestBody requestBody) throws IOException, ExecutionException, InterruptedException;
 
     /**
      * The method sends the post request with given method and Iris body.
      *
-     * @param methodName  the method name for the request
-     * @param requestBody the Iris representation of the request.
+     * @param path        the specific resource in the host that the client wants to access.
+     * @param requestBody the requests data represented in IrisBody class.
      * @return a List<Long> response wrapped in the CompletableFuture object.
-     * @throws IOException          will be thrown if input can not be detected as JsonNode type
-     * @throws ExecutionException   if this future completed exceptionally
-     * @throws InterruptedException if the current thread was interrupted while waiting
+     * @throws IOException          will be thrown if input can not be detected as JsonNode type.
+     * @throws ExecutionException   if this future completed exceptionally.
+     * @throws InterruptedException if the current thread was interrupted while waiting.
      */
-    CompletableFuture<List<Long>> call(String methodName, IrisBody requestBody) throws IOException, ExecutionException, InterruptedException;
+    CompletableFuture<List<Long>> call(String path, IrisBody requestBody) throws IOException, ExecutionException, InterruptedException;
 
     /**
      * The method sends the post request with given method and RegModel body.
      *
-     * @param methodName  the method name for the request
-     * @param requestBody the Iris representation of the request.
+     * @param path        the specific resource in the host that the client wants to access.
+     * @param requestBody the requests data represented in RegModelBody class.
      * @return a List<Long> response wrapped in the CompletableFuture object.
-     * @throws IOException          will be thrown if input can not be detected as JsonNode type
-     * @throws ExecutionException   if this future completed exceptionally
-     * @throws InterruptedException if the current thread was interrupted while waiting
+     * @throws IOException          will be thrown if input can not be detected as JsonNode type.
+     * @throws ExecutionException   if this future completed exceptionally.
+     * @throws InterruptedException if the current thread was interrupted while waiting.
      */
-    CompletableFuture<List<Long>> call(String methodName, RegModelBody requestBody) throws IOException, ExecutionException, InterruptedException;
+    CompletableFuture<List<Long>> call(String path, RegModelBody requestBody) throws IOException, ExecutionException, InterruptedException;
 
 }

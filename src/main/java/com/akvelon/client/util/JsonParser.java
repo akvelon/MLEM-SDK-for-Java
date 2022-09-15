@@ -38,9 +38,9 @@ public final class JsonParser {
      * @throws IOException signals that an I/O exception has occurred
      *                     or an illegal recordSetType has occurred or args is not array.
      */
-    public ApiSchema parseInterfaceSchema(JsonNode schema) throws IOException {
+    public ApiSchema parseApiSchema(JsonNode schema) throws IOException {
         Map<String, JsonNode> jsonNodeMap = JsonMapper.readMap(schema.get("methods"));
-        Map<String, RequestBodySchema> methods = parseMethod(jsonNodeMap);
+        Map<String, RequestBodySchema> methods = parseMethods(jsonNodeMap);
 
         return new ApiSchema(methods);
     }
@@ -52,11 +52,11 @@ public final class JsonParser {
      * @return the mapped objects of the conversion.
      * @throws IOException signals that an illegal recordSetType has occurred or args is not array.
      */
-    private Map<String, RequestBodySchema> parseMethod(Map<String, JsonNode> jsonNodeMap) throws IOException {
+    private Map<String, RequestBodySchema> parseMethods(Map<String, JsonNode> jsonNodeMap) throws IOException {
         Map<String, RequestBodySchema> parameters = new HashMap<>();
 
         for (Map.Entry<String, JsonNode> entry : jsonNodeMap.entrySet()) {
-            RequestBodySchema parameterDesc = parseParameter(entry);
+            RequestBodySchema parameterDesc = parseRequestBodySchema(entry);
             parameters.put(entry.getKey(), parameterDesc);
         }
 
@@ -70,7 +70,7 @@ public final class JsonParser {
      * @return the RequestDesc object of the conversion.
      * @throws IOException signals that an illegal recordSetType has occurred or args is not array.
      */
-    private RequestBodySchema parseParameter(Map.Entry<String, JsonNode> entry) throws IOException {
+    private RequestBodySchema parseRequestBodySchema(Map.Entry<String, JsonNode> entry) throws IOException {
         JsonNode args = entry.getValue().get("args");
 
         if (!args.isArray()) {
@@ -84,7 +84,7 @@ public final class JsonParser {
         Map<String, RecordSetSchema> parameterDescMap = new HashMap<>();
 
         for (JsonNode arg : args) {
-            RecordSetSchema recordSetSchema = parseRecordSetDesc(arg.get("type_"));
+            RecordSetSchema recordSetSchema = parseRecordSetSchema(arg.get("type_"));
             parameterDescMap.put(arg.get("name").asText(), recordSetSchema);
         }
 
@@ -101,7 +101,7 @@ public final class JsonParser {
      * @return the RecordSetDesc object of the conversion.
      * @throws IOException signals that an illegal recordSetType has occurred.
      */
-    private RecordSetSchema parseRecordSetDesc(JsonNode jsonNode) throws IOException {
+    private RecordSetSchema parseRecordSetSchema(JsonNode jsonNode) throws IOException {
         String recordSetDescType = jsonNode.get("type").asText();
 
         if (!recordSetDescType.equals("dataframe")) {
@@ -113,8 +113,8 @@ public final class JsonParser {
         JsonNode columns = jsonNode.get("columns");
         JsonNode dtypes = jsonNode.get("dtypes");
 
-        List<String> names = JsonMapper.readValues(columns);
-        List<String> dTypes = JsonMapper.readValues(dtypes);
+        List<String> names = JsonMapper.readList(columns);
+        List<String> dTypes = JsonMapper.readList(dtypes);
         if (names.size() != dTypes.size()) {
             throw new IllegalColumnsNumberException("Columns size must be equal to dtypes. " +
                     "Actual columns size: " + names.size() + ", actual dtypes size: " + dTypes.size() + ".");
@@ -132,11 +132,11 @@ public final class JsonParser {
     /**
      * Method to deserialize Request object from given JSON schema.
      *
-     * @param body the JsonNode representation of Request parameters.
+     * @param body the JsonNode representation of request body.
      * @return the Request object of the conversion.
      * @throws IOException signals that an I/O exception has occurred.
      */
-    public RequestBody parseRequest(JsonNode body) throws IOException {
+    public RequestBody parseRequestBody(JsonNode body) throws IOException {
         Map<String, JsonNode> parameters = JsonMapper.readMap(body);
         RequestBody requestBody = new RequestBody();
 

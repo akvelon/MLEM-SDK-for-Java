@@ -117,9 +117,9 @@ public class TestDataFactory {
         return recordSet;
     }
 
-    public static RequestBody buildRequest(String propertyName, RecordSet recordSet) {
+    public static RequestBody buildRequest(String property, RecordSet recordSet) {
         RequestBody requestBody = new RequestBody();
-        requestBody.addParameter(propertyName, recordSet);
+        requestBody.addParameter(property, recordSet);
 
         return requestBody;
     }

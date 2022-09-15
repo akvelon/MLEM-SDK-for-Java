@@ -11,16 +11,16 @@ public final class RegModelBody extends RequestBody {
     /**
      * Create new RegModel request parameters.
      *
-     * @param propertyName a parameter property name.
-     * @param value        a value for "0".
+     * @param property a parameter property name.
+     * @param value    a value for "0".
      */
-    public RegModelBody(String propertyName, double value) {
+    public RegModelBody(String property, double value) {
         Record record = new Record();
         record.addColumn(RegModelProperty.VALUE, value);
 
         RecordSet recordSet = new RecordSet();
         recordSet.addRecord(record);
 
-        this.addParameter(propertyName, recordSet);
+        this.addParameter(property, recordSet);
     }
 }
