@@ -1,26 +1,45 @@
 package com.akvelon.client.model.request;
 
+import com.akvelon.client.model.request.typical.IrisProperty;
+import com.akvelon.client.model.request.typical.RegModelProperty;
 import com.akvelon.client.util.JsonMapper;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
-public class Record {
+/**
+ * A class that provides numbers with their names.
+ */
+public final class Record {
+    /**
+     * Map of number values with string name key.
+     */
     @JsonValue
-    private HashMap<String, Number> columns = new HashMap<>();
+    private Map<String, Number> columns = new HashMap<>();
 
+    /**
+     * Empty constructor. Do not remove it.
+     */
     public Record() {
     }
 
+    /**
+     * Constructs a new Record object. Used for deserialization.
+     * Do not remove.
+     *
+     * @param columns Map of number values with string name key.
+     */
     @JsonCreator
-    public Record(HashMap<String, Number> columns) {
+    public Record(Map<String, Number> columns) {
         this.columns = columns;
     }
 
-    public HashMap<String, Number> getColumns() {
+    public Map<String, Number> getColumns() {
         return columns;
     }
 
@@ -28,12 +47,20 @@ public class Record {
         columns.put(name, value);
     }
 
-    public String toString() {
+    public void addColumn(IrisProperty name, Number value) {
+        columns.put(name.property, value);
+    }
+
+    public void addColumn(RegModelProperty name, Number value) {
+        columns.put(name.property, value);
+    }
+
+    public String toJsonString() throws JsonProcessingException {
         return JsonMapper.writeValueAsString(columns);
     }
 
-    public JsonNode toJsonNode() {
-        return JsonMapper.readValue(toString(), JsonNode.class);
+    public JsonNode toJsonNode() throws JsonProcessingException {
+        return JsonMapper.readValue(toJsonString(), JsonNode.class);
     }
 
     @Override

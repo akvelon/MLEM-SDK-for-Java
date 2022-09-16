@@ -2,18 +2,22 @@ package com.akvelon.client.model.request;
 
 import com.akvelon.client.util.JsonMapper;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class RecordSet {
+/**
+ * A class that provides the list of records.
+ */
+public final class RecordSet {
+    /**
+     * The records list.
+     */
     @JsonProperty("values")
     private final List<Record> records = new ArrayList<>();
-
-    public RecordSet() {
-    }
 
     public List<Record> getRecords() {
         return records;
@@ -23,8 +27,8 @@ public class RecordSet {
         records.add(record);
     }
 
-    public JsonNode toJson(String propertyName) {
-        return JsonMapper.createObjectNodeWithArray(propertyName, records);
+    public JsonNode toJson(String property) throws JsonProcessingException {
+        return JsonMapper.createObjectNodeWithArray(property, records);
     }
 
     @Override
