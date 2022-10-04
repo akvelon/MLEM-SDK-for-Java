@@ -34,10 +34,10 @@ MlemJClient.java interface is the one you may want to look at first.
 The archive MlemJClient.jar contains jar file along with source code.
 
 You can also browse the project repository at: <br>
-https://git.akvelon.net:9443/internal/mlem-java/-/tree/master
+https://gitlab.akvelon.net/sdc/mlem-java/mlem-java/-/tree/master
 
 Or you can check out the latest source code as follows:<br>
-git clone https://git.akvelon.net:9443/internal/mlem-java.git
+git clone https://gitlab.akvelon.net/sdc/mlem-java/mlem-java.git
 
 ---
 
