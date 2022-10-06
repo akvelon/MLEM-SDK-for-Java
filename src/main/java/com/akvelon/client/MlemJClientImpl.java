@@ -16,6 +16,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -167,6 +168,26 @@ final class MlemJClientImpl implements MlemJClient {
                 throw new RuntimeException(e);
             }
         });
+    }
+
+    /**
+     * The method sends the list of /predict post requests with given JSON body.
+     *
+     * @param requestBody the requests data.
+     * @return a list of responses wrapped in the CompletableFuture object.
+     * @throws IOException          will be thrown if input can not be detected as JsonNode type.
+     * @throws ExecutionException   if this future completed exceptionally.
+     * @throws InterruptedException if the current thread was interrupted while waiting.
+     */
+    @Override
+    public List<CompletableFuture<JsonNode>> predict(List<JsonNode> requestBody) throws IOException, ExecutionException, InterruptedException {
+        List<CompletableFuture<JsonNode>> completableFutures = new ArrayList<>();
+        for (JsonNode jsonNode : requestBody) {
+            CompletableFuture<JsonNode> predict = predict(jsonNode);
+            completableFutures.add(predict);
+        }
+
+        return completableFutures;
     }
 
     /**

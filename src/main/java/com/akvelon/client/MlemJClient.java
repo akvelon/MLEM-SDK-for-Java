@@ -65,6 +65,18 @@ public interface MlemJClient {
      */
     CompletableFuture<List<Long>> predict(RegModelBody requestBody) throws IOException, ExecutionException, InterruptedException;
 
+    /**
+     * The method sends the list of /predict post requests with given JSON body.
+     *
+     * @param requestBody the requests data.
+     * @return a list of responses wrapped in the CompletableFuture object.
+     * @throws IOException          will be thrown if input can not be detected as JsonNode type.
+     * @throws ExecutionException   if this future completed exceptionally.
+     * @throws InterruptedException if the current thread was interrupted while waiting.
+     */
+    List<CompletableFuture<JsonNode>> predict(List<JsonNode> requestBody) throws IOException, ExecutionException, InterruptedException;
+
+
 
     /**
      * The method sends the post request with given method and JsonNode body.

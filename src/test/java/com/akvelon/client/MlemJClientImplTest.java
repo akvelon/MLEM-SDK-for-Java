@@ -135,11 +135,7 @@ public class MlemJClientImplTest {
 
         MlemJClientImpl mlemJClient = new MlemJClientImpl(executorService, HOST_URL, LOGGER);
         List<JsonNode> dataRequestList = Arrays.asList(TestDataFactory.buildDataRequestBody(), TestDataFactory.buildDataRequestBody(), TestDataFactory.buildDataRequestBody());
-        List<CompletableFuture<JsonNode>> completableFutures = new ArrayList<>();
-        for (JsonNode jsonNode : dataRequestList) {
-            CompletableFuture<JsonNode> predict = mlemJClient.predict(jsonNode);
-            completableFutures.add(predict);
-        }
+        List<CompletableFuture<JsonNode>> completableFutures = mlemJClient.predict(dataRequestList);
 
         for (CompletableFuture<JsonNode> future : completableFutures) {
             assertResponseJsonOrHandleException(future);
