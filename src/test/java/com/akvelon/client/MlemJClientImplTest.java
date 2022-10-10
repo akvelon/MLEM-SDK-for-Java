@@ -12,7 +12,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
@@ -129,17 +128,35 @@ public class MlemJClientImplTest {
     }
 
     @Test
-    @DisplayName("Test a list of the requests")
-    public void testListRequests() throws ExecutionException, InterruptedException, IOException {
+    @DisplayName("Test a list of the predict requests")
+    public void testListPredictRequests() throws ExecutionException, InterruptedException, IOException {
         ExecutorService executorService = Executors.newFixedThreadPool(3);
 
         MlemJClientImpl mlemJClient = new MlemJClientImpl(executorService, HOST_URL, LOGGER);
-        List<JsonNode> dataRequestList = Arrays.asList(TestDataFactory.buildDataRequestBody(), TestDataFactory.buildDataRequestBody(), TestDataFactory.buildDataRequestBody());
-        List<CompletableFuture<JsonNode>> completableFutures = mlemJClient.predict(dataRequestList);
+        List<RequestBody> dataRequestList = Arrays.asList(
+                TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet()),
+                TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet()),
+                TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet()));
+        CompletableFuture<List<JsonNode>> completableFutures = mlemJClient.predict(dataRequestList);
 
-        for (CompletableFuture<JsonNode> future : completableFutures) {
-            assertResponseJsonOrHandleException(future);
-        }
+        assertResponseListOrHandleException(completableFutures);
+
+        executorService.shutdown();
+    }
+
+    @Test
+    @DisplayName("Test a list of the call requests")
+    public void testListCallRequests() throws ExecutionException, InterruptedException, IOException {
+        ExecutorService executorService = Executors.newFixedThreadPool(3);
+
+        MlemJClientImpl mlemJClient = new MlemJClientImpl(executorService, HOST_URL, LOGGER);
+        List<RequestBody> dataRequestList = Arrays.asList(
+                TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet()),
+                TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet()),
+                TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet()));
+        CompletableFuture<List<JsonNode>> completableFutures = mlemJClient.call(POST_PREDICT_PROBA, dataRequestList);
+
+        assertResponseListOrHandleException(completableFutures);
 
         executorService.shutdown();
     }
@@ -258,10 +275,10 @@ public class MlemJClientImplTest {
         Assertions.assertFalse(response.isEmpty());
     }
 
-    private void assertResponseListOrHandleException(CompletableFuture<List<Long>> future) throws ExecutionException, InterruptedException {
+    private <T> void assertResponseListOrHandleException(CompletableFuture<List<T>> future) throws ExecutionException, InterruptedException {
         Assertions.assertNotNull(future);
 
-        List<Long> response = future
+        List<T> response = future
                 .exceptionally(throwable -> {
                     InvalidHttpStatusCodeException invalidHttpStatusCodeException = (InvalidHttpStatusCodeException) throwable.getCause();
                     assertResponseException(invalidHttpStatusCodeException);
