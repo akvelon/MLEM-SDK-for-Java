@@ -276,8 +276,7 @@ public class MlemJClientImplTest {
     }
 
     private <T> void assertResponseListOrHandleException(CompletableFuture<List<T>> future) throws ExecutionException, InterruptedException {
-        // TODO: 10/11/2022 fix to assertNotNull
-        Assertions.assertNull(future);
+        Assertions.assertNotNull(future);
 
         List<T> response = future
                 .exceptionally(throwable -> {
