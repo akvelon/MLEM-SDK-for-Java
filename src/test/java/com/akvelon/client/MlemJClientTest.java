@@ -16,14 +16,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
 
-public class MlemJClientImplTest {
-    private final static String HOST_URL = "http://example-mlem-get-started-app.herokuapp.com/";
+public class MlemJClientTest {
+    protected final static String HOST_URL = "http://example-mlem-get-started-app.herokuapp.com/";
     private final static ExecutorService executorService = Executors.newFixedThreadPool(10);
-    private static final System.Logger LOGGER = System.getLogger(MlemJClientImplTest.class.getName());
+    protected static final System.Logger LOGGER = System.getLogger(MlemJClientTest.class.getName());
     private static final JsonParser JSON_PARSER = new JsonParser(LOGGER);
 
-    private final MlemJClient clientWithExecutor = MlemJClientFactory.createMlemJClient(executorService, HOST_URL, LOGGER);
-    private final MlemJClient clientWithOutExecutor = MlemJClientFactory.createMlemJClient(HOST_URL, LOGGER);
+    protected MlemJClient jClient = MlemJClientFactory.createMlemJClient(executorService, HOST_URL, LOGGER, true);
 
     /**
      * /predict post-methods
@@ -48,13 +47,13 @@ public class MlemJClientImplTest {
     @Test
     @DisplayName("Test get /interface.json method with json response")
     public void testGetInterfaceJson() throws ExecutionException, InterruptedException {
-        assertResponseJsonOrHandleException(clientWithExecutor.interfaceJsonAsync());
+        assertResponseJsonOrHandleException(jClient.interfaceJsonAsync());
     }
 
     @Test
     @DisplayName("Test get /interface.json method with json response")
     public void testGetInterfaceRequest() throws ExecutionException, InterruptedException, IOException {
-        JsonNode response = clientWithExecutor.interfaceJsonAsync().exceptionally(throwable -> {
+        JsonNode response = jClient.interfaceJsonAsync().exceptionally(throwable -> {
             InvalidHttpStatusCodeException invalidHttpStatusCodeException = (InvalidHttpStatusCodeException) throwable.getCause();
             assertResponseException(invalidHttpStatusCodeException);
             return null;
@@ -71,20 +70,20 @@ public class MlemJClientImplTest {
     @Test
     @DisplayName("Test post /predict method with JSON response")
     public void testPredictJson() throws ExecutionException, InterruptedException, IOException {
-        assertResponseJsonOrHandleException(clientWithExecutor.predict(TestDataFactory.buildDataRequestBody()));
+        assertResponseJsonOrHandleException(jClient.predict(TestDataFactory.buildDataRequestBody()));
     }
 
     @Test
     @DisplayName("Test post /predict method with Request request and Json response")
     public void testPredictRequest() throws ExecutionException, InterruptedException, IOException {
         RequestBody requestBody = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet());
-        assertResponseJsonOrHandleException(clientWithExecutor.predict(requestBody));
+        assertResponseJsonOrHandleException(jClient.predict(requestBody));
     }
 
     @Test
     @DisplayName("Test post /predictProba method with JSON request and response")
     public void testPredictProbaJson() throws ExecutionException, InterruptedException, IOException {
-        assertResponseJsonOrHandleException(clientWithExecutor.call(POST_PREDICT_PROBA, TestDataFactory.buildDataRequestBody()));
+        assertResponseJsonOrHandleException(jClient.call(POST_PREDICT_PROBA, TestDataFactory.buildDataRequestBody()));
     }
 
     @Test
@@ -92,13 +91,13 @@ public class MlemJClientImplTest {
     public void testPredictProbaRequest() throws ExecutionException, InterruptedException, IOException {
         RequestBody requestBody = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet());
 
-        assertResponseJsonOrHandleException(clientWithExecutor.call(POST_PREDICT_PROBA, requestBody));
+        assertResponseJsonOrHandleException(jClient.call(POST_PREDICT_PROBA, requestBody));
     }
 
     @Test()
     @DisplayName("Test post /predictProba method with null request body")
     public void testPredictProbaEmptyString() {
-        IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> clientWithExecutor.call(POST_PREDICT_PROBA, (JsonNode) null).exceptionally(throwable -> {
+        IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> jClient.call(POST_PREDICT_PROBA, (JsonNode) null).exceptionally(throwable -> {
             InvalidHttpStatusCodeException invalidHttpStatusCodeException = (InvalidHttpStatusCodeException) throwable.getCause();
             assertResponseException(invalidHttpStatusCodeException);
             return null;
@@ -109,19 +108,19 @@ public class MlemJClientImplTest {
     @Test()
     @DisplayName("Test post /sklearnPredict method with JSON request and response")
     public void testSklearnPredictJson() throws InterruptedException, ExecutionException, IOException {
-        assertResponseJsonOrHandleException(clientWithExecutor.call(POST_SKLEARN_PREDICT, TestDataFactory.buildXRequestBody()));
+        assertResponseJsonOrHandleException(jClient.call(POST_SKLEARN_PREDICT, TestDataFactory.buildXRequestBody()));
     }
 
     @Test
     @DisplayName("Test post /sklearnPredictProba method with JSON request and response")
     public void testSklearnPredictProbaJson() throws InterruptedException, ExecutionException, IOException {
-        assertResponseJsonOrHandleException(clientWithExecutor.call(POST_SKLEARN_PREDICT_PROBA, TestDataFactory.buildXRequestBody()));
+        assertResponseJsonOrHandleException(jClient.call(POST_SKLEARN_PREDICT_PROBA, TestDataFactory.buildXRequestBody()));
     }
 
     @Test
     @DisplayName("Test post /predict method with executorService = null")
     public void testGetInterfaceExecutorNull() throws ExecutionException, InterruptedException, IOException {
-        MlemJClientImpl mlemJClient = new MlemJClientImpl(null, HOST_URL, LOGGER);
+        MlemJClientImpl mlemJClient = new MlemJClientImpl(null, HOST_URL, LOGGER, true);
 
         CompletableFuture<JsonNode> future = mlemJClient.predict(TestDataFactory.buildDataRequestBody());
         assertResponseJsonOrHandleException(future);
@@ -132,7 +131,7 @@ public class MlemJClientImplTest {
     public void testListPredictRequests() throws ExecutionException, InterruptedException, IOException {
         ExecutorService executorService = Executors.newFixedThreadPool(3);
 
-        MlemJClientImpl mlemJClient = new MlemJClientImpl(executorService, HOST_URL, LOGGER);
+        MlemJClientImpl mlemJClient = new MlemJClientImpl(executorService, HOST_URL, LOGGER, true);
         List<RequestBody> dataRequestList = Arrays.asList(
                 TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet()),
                 TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet()),
@@ -149,7 +148,7 @@ public class MlemJClientImplTest {
     public void testListCallRequests() throws ExecutionException, InterruptedException, IOException {
         ExecutorService executorService = Executors.newFixedThreadPool(3);
 
-        MlemJClientImpl mlemJClient = new MlemJClientImpl(executorService, HOST_URL, LOGGER);
+        MlemJClientImpl mlemJClient = new MlemJClientImpl(executorService, HOST_URL, LOGGER, true);
         List<RequestBody> dataRequestList = Arrays.asList(
                 TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet()),
                 TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet()),
@@ -163,9 +162,9 @@ public class MlemJClientImplTest {
 
     @Test
     @DisplayName("Test post /predict method with wrong column value type")
-    public void testPredictRequestBadColumnType() throws IOException {
+    public void testPredictRequestBadColumnType() throws IOException, ExecutionException, InterruptedException {
         RequestBody requestBody = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongValue());
-        IllegalRecordTypeException thrown = Assertions.assertThrows(IllegalRecordTypeException.class, () -> clientWithExecutor.predict(requestBody).get());
+        IllegalRecordTypeException thrown = Assertions.assertThrows(IllegalRecordTypeException.class, () -> jClient.predict(requestBody).get());
         Assertions.assertNotNull(thrown);
     }
 
@@ -173,7 +172,7 @@ public class MlemJClientImplTest {
     @DisplayName("Test post /predict method with wrong column name")
     public void testPredictRequestBadColumnName() throws IOException {
         RequestBody requestBody = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongName());
-        IllegalRecordTypeException thrown = Assertions.assertThrows(IllegalRecordTypeException.class, () -> clientWithExecutor.predict(requestBody).get());
+        IllegalRecordTypeException thrown = Assertions.assertThrows(IllegalRecordTypeException.class, () -> jClient.predict(requestBody).get());
         Assertions.assertNotNull(thrown);
     }
 
@@ -181,7 +180,7 @@ public class MlemJClientImplTest {
     @DisplayName("Test post /predict method with wrong column name")
     public void testPredictRequestBadColumnsCount() throws IOException {
         RequestBody requestBody = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongCount());
-        IllegalColumnsNumberException thrown = Assertions.assertThrows(IllegalColumnsNumberException.class, () -> clientWithExecutor.predict(requestBody).get());
+        IllegalColumnsNumberException thrown = Assertions.assertThrows(IllegalColumnsNumberException.class, () -> jClient.predict(requestBody).get());
         Assertions.assertNotNull(thrown);
     }
 
@@ -189,7 +188,7 @@ public class MlemJClientImplTest {
     @DisplayName("Test post /predict method with wrong parameter name")
     public void testPredictRequestBadParameterName() throws IOException {
         RequestBody requestBody = TestDataFactory.buildRequest("data1", TestDataFactory.buildRecordSetWrongCount());
-        InvalidParameterNameException thrown = Assertions.assertThrows(InvalidParameterNameException.class, () -> clientWithExecutor.predict(requestBody).get());
+        InvalidParameterNameException thrown = Assertions.assertThrows(InvalidParameterNameException.class, () -> jClient.predict(requestBody).get());
         Assertions.assertNotNull(thrown);
     }
 
@@ -197,7 +196,7 @@ public class MlemJClientImplTest {
     @DisplayName("Test post /call method with wrong parameter name")
     public void testPredictRequestBadRequestName() throws IOException {
         RequestBody requestBody = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongCount());
-        IllegalPathException thrown = Assertions.assertThrows(IllegalPathException.class, () -> clientWithExecutor.call("illegalmethodname", requestBody).get());
+        IllegalPathException thrown = Assertions.assertThrows(IllegalPathException.class, () -> jClient.call("illegalmethodname", requestBody).get());
         Assertions.assertNotNull(thrown);
     }
 
@@ -205,7 +204,7 @@ public class MlemJClientImplTest {
     @DisplayName("Test post /call empty method")
     public void testCallEmptyMethod() throws IOException {
         RequestBody requestBody = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongCount());
-        AssertionError thrown = Assertions.assertThrows(AssertionError.class, () -> clientWithExecutor.call("", requestBody).get());
+        AssertionError thrown = Assertions.assertThrows(AssertionError.class, () -> jClient.call("", requestBody).get());
         Assertions.assertNotNull(thrown);
     }
 
@@ -213,7 +212,7 @@ public class MlemJClientImplTest {
     @DisplayName("Test post /predict empty request")
     public void testPredictEmptyRequest() {
         RequestBody requestBody = new RequestBody();
-        IllegalParameterNumberException thrown = Assertions.assertThrows(IllegalParameterNumberException.class, () -> clientWithExecutor.predict(requestBody).get());
+        IllegalParameterNumberException thrown = Assertions.assertThrows(IllegalParameterNumberException.class, () -> jClient.predict(requestBody).get());
         Assertions.assertNotNull(thrown);
     }
 
@@ -221,20 +220,20 @@ public class MlemJClientImplTest {
     @DisplayName("Test post /predict method with Iris request and Json response")
     public void testPredictIris() throws ExecutionException, InterruptedException, IOException {
         IrisBody irisParameters = new IrisBody("data", 0.1d, 1.2d, 3.4d, 5.5d);
-        assertResponseListOrHandleException(clientWithExecutor.predict(irisParameters));
+        assertResponseListOrHandleException(jClient.predict(irisParameters));
     }
 
     @Test
     @DisplayName("Test post /sklearn_predict method with Iris request and Json response")
     public void testCallIris() throws ExecutionException, InterruptedException, IOException {
         IrisBody irisParameters = new IrisBody("X", 0.1d, 1.2d, 3.4d, 5.5d);
-        assertResponseListOrHandleException(clientWithExecutor.call(POST_SKLEARN_PREDICT_PROBA, irisParameters));
+        assertResponseListOrHandleException(jClient.call(POST_SKLEARN_PREDICT_PROBA, irisParameters));
     }
 
     @Test
     @DisplayName("Test post /predict method illegal host")
     public void testIllegalHost() {
-        MlemJClientImpl mlemJClientImpl = new MlemJClientImpl(null, HOST_URL + 1, LOGGER);
+        MlemJClientImpl mlemJClientImpl = new MlemJClientImpl(null, HOST_URL + 1, LOGGER, true);
 
         ExecutionException thrown = Assertions.assertThrows(ExecutionException.class,
                 () -> mlemJClientImpl.predict(TestDataFactory.buildDataRequestBody()).get());
@@ -246,7 +245,7 @@ public class MlemJClientImplTest {
     @DisplayName("Test post /predict method with invalid values property")
     public void testPredictJsonInvalidValues() {
         InvalidValuesException thrown = Assertions.assertThrows(InvalidValuesException.class,
-                () -> clientWithExecutor.predict(TestDataFactory.buildDataRequestBodyInvalidValues()));
+                () -> jClient.predict(TestDataFactory.buildDataRequestBodyInvalidValues()));
 
         Assertions.assertNotNull(thrown);
     }

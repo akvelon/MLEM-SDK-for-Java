@@ -37,7 +37,7 @@ public final class RequestValidator {
         if (!requestDescriptions.containsKey(path)) {
             String exceptionMessage = "The path " + path
                     + " is not found in schema; Available path list: " + requestDescriptions.keySet() + ".";
-            logger.log(System.Logger.Level.ERROR, exceptionMessage);
+            if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
             throw new IllegalPathException(exceptionMessage);
         }
 
@@ -57,7 +57,7 @@ public final class RequestValidator {
         if (parameters.size() != parameterDescMap.size()) {
             String exceptionMessage = "Actual parameters number: " + parameters.size()
                     + ", expected: " + parameterDescMap.size();
-            logger.log(System.Logger.Level.ERROR, exceptionMessage);
+            if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
             throw new IllegalParameterNumberException(exceptionMessage);
         }
 
@@ -66,7 +66,7 @@ public final class RequestValidator {
             if (!parameters.containsKey(entryDesc.getKey())) {
                 String exceptionMessage = "Actual parameters: " + parameters.keySet().toString().replaceAll("[\\[\\],]", "")
                         + ", expected: " + entryDesc.getKey();
-                logger.log(System.Logger.Level.ERROR, exceptionMessage);
+                if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
                 throw new InvalidParameterNameException(exceptionMessage);
             }
 
@@ -100,7 +100,7 @@ public final class RequestValidator {
         if (columns.size() != columnsDesc.size()) {
             String exceptionMessage = "Actual columns number: " + columns.size()
                     + ", expected: " + columnsDesc.size();
-            logger.log(System.Logger.Level.ERROR, exceptionMessage);
+            if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
             throw new IllegalColumnsNumberException(exceptionMessage);
         }
 
@@ -108,7 +108,7 @@ public final class RequestValidator {
             if (!columns.containsKey(recordSetColumnSchema.getName())) {
                 String exceptionMessage = "Column name not found: " + recordSetColumnSchema.getName() +
                         ", for given data: " + columns.entrySet();
-                logger.log(System.Logger.Level.ERROR, exceptionMessage);
+                if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
                 throw new IllegalRecordTypeException(exceptionMessage);
             }
 
@@ -129,14 +129,14 @@ public final class RequestValidator {
             if (!(actualNumber instanceof Double)) {
                 String exceptionMessage = "Expected type for column: " + property
                         + " with value: " + actualNumber + ", must be: " + DataType.Float64;
-                logger.log(System.Logger.Level.ERROR, exceptionMessage);
+                if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
                 throw new IllegalRecordTypeException(exceptionMessage);
             }
         } else if (expectedType.equals(DataType.Int64)) {
             if (!(actualNumber instanceof Long)) {
                 String exceptionMessage = "Expected type for the column: " + property
                         + " with value: " + actualNumber + ", must be: " + DataType.Int64;
-                logger.log(System.Logger.Level.ERROR, exceptionMessage);
+                if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
                 throw new IllegalRecordTypeException(exceptionMessage);
             }
         }

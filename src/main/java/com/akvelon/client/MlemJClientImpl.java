@@ -56,6 +56,26 @@ final class MlemJClientImpl implements MlemJClient {
      * Requests bodies schema.
      */
     private ApiSchema apiSchema;
+    private final boolean validation;
+
+    /**
+     * Constructor for creating the implementation of Mlem HttpClient.
+     *
+     * @param host the host URL.
+     */
+    public MlemJClientImpl(String host) {
+        this(null, host, null, false);
+    }
+
+    /**
+     * Constructor for creating the implementation of Mlem HttpClient.
+     *
+     * @param host       the host URL.
+     * @param validation the validation switcher.
+     */
+    public MlemJClientImpl(String host, boolean validation) {
+        this(null, host, null, validation);
+    }
 
     /**
      * Constructor for creating the implementation of Mlem HttpClient.
@@ -64,7 +84,18 @@ final class MlemJClientImpl implements MlemJClient {
      * @param logger the events logger.
      */
     public MlemJClientImpl(String host, System.Logger logger) {
-        this(null, host, logger);
+        this(null, host, logger, false);
+    }
+
+    /**
+     * Constructor for creating the implementation of Mlem HttpClient.
+     *
+     * @param host       the host URL.
+     * @param logger     the events logger.
+     * @param validation the validation switcher.
+     */
+    public MlemJClientImpl(String host, System.Logger logger, boolean validation) {
+        this(null, host, logger, validation);
     }
 
     /**
@@ -75,6 +106,18 @@ final class MlemJClientImpl implements MlemJClient {
      * @param logger          the events logger.
      */
     public MlemJClientImpl(ExecutorService executorService, String host, System.Logger logger) {
+        this(executorService, host, logger, false);
+    }
+
+    /**
+     * Constructor for creating the implementation of Mlem HttpClient.
+     *
+     * @param executorService provides a pool of threads and an API for assigning tasks to it.
+     * @param host            the host URL.
+     * @param logger          the events logger.
+     * @param validation      the validation switcher.
+     */
+    public MlemJClientImpl(ExecutorService executorService, String host, System.Logger logger, boolean validation) {
         this.host = host;
         HttpClient.Builder builder = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1);
 
@@ -85,6 +128,7 @@ final class MlemJClientImpl implements MlemJClient {
         this.httpClient = builder.build();
         this.logger = logger;
         this.jsonParser = new JsonParser(logger);
+        this.validation = validation;
     }
 
     /**
@@ -315,26 +359,31 @@ final class MlemJClientImpl implements MlemJClient {
         assert path != null && !path.isEmpty() : "the path is null or empty";
         assert requestBody != null : "the request body is null";
 
-        if (apiSchema == null) {
-            // if true, send /interface.json request to obtain the schema.
-            JsonNode schema = interfaceJsonAsync()
-                    .exceptionally(
-                            throwable -> {
-                                InvalidHttpStatusCodeException invalidHttpStatusCodeException = (InvalidHttpStatusCodeException) throwable.getCause();
-                                logger.log(
-                                        System.Logger.Level.ERROR,
-                                        "an exception in /interface.json request",
-                                        invalidHttpStatusCodeException
-                                );
-                                throw invalidHttpStatusCodeException;
-                            })
-                    .get();
+        if (validation) {
+            if (apiSchema == null) {
+                // if true, send /interface.json request to obtain the schema.
+                JsonNode schema = interfaceJsonAsync()
+                        .exceptionally(
+                                throwable -> {
+                                    InvalidHttpStatusCodeException invalidHttpStatusCodeException = (InvalidHttpStatusCodeException) throwable.getCause();
+                                    if (logger != null) {
+                                        logger.log(
+                                                System.Logger.Level.ERROR,
+                                                "an exception in /interface.json request",
+                                                invalidHttpStatusCodeException
+                                        );
+                                    }
 
-            apiSchema = jsonParser.parseApiSchema(schema);
+                                    throw invalidHttpStatusCodeException;
+                                })
+                        .get();
+
+                apiSchema = jsonParser.parseApiSchema(schema);
+            }
+
+            RequestValidator requestValidator = new RequestValidator(logger);
+            requestValidator.validateRequestBody(path, requestBody, apiSchema);
         }
-
-        RequestValidator requestValidator = new RequestValidator(logger);
-        requestValidator.validateRequestBody(path, requestBody, apiSchema);
 
         return sendPostRequest(path, requestBody.toJson());
     }
@@ -356,7 +405,7 @@ final class MlemJClientImpl implements MlemJClient {
                 .header("Content-Type", "application/json")
                 .build();
 
-        logger.log(System.Logger.Level.INFO, "url: " + url);
+        if (logger != null) logger.log(System.Logger.Level.INFO, "url: " + url);
 
         return httpClient
                 .sendAsync(request, HttpResponse.BodyHandlers.ofString())
@@ -378,7 +427,7 @@ final class MlemJClientImpl implements MlemJClient {
                 .uri(URI.create(url))
                 .build();
 
-        logger.log(System.Logger.Level.INFO, "url: " + url);
+        if (logger != null) logger.log(System.Logger.Level.INFO, "url: " + url);
 
         return httpClient
                 .sendAsync(request, HttpResponse.BodyHandlers.ofString())
@@ -399,7 +448,7 @@ final class MlemJClientImpl implements MlemJClient {
         try {
             return JsonMapper.readValue(httpResponse.body(), JsonNode.class);
         } catch (JsonProcessingException e) {
-            logger.log(System.Logger.Level.ERROR, "JsonMapper read body exception", e);
+            if (logger != null) logger.log(System.Logger.Level.ERROR, "JsonMapper read body exception", e);
             throw new RuntimeException(e);
         }
     }
@@ -414,6 +463,6 @@ final class MlemJClientImpl implements MlemJClient {
             throw new InvalidHttpStatusCodeException(httpResponse.body(), httpResponse.statusCode());
         }
 
-        logger.log(System.Logger.Level.INFO, httpResponse.statusCode());
+        if (logger != null) logger.log(System.Logger.Level.INFO, httpResponse.statusCode());
     }
 }
