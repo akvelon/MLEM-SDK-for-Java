@@ -5,7 +5,7 @@ import com.akvelon.client.model.request.RequestBody;
 import com.akvelon.client.model.request.typical.IrisBody;
 import com.akvelon.client.model.validation.ApiSchema;
 import com.akvelon.client.model.validation.RequestBodySchema;
-import com.akvelon.client.model.validation.ReturnsSchema;
+import com.akvelon.client.model.validation.ReturnType;
 import com.akvelon.client.util.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.AfterAll;
@@ -76,13 +76,13 @@ public class MlemJClientTest {
             Assertions.assertNotNull(method);
             RequestBodySchema requestBodySchema = entry.getValue();
             Assertions.assertNotNull(requestBodySchema);
-            ReturnsSchema returnsSchema = requestBodySchema.getReturnsSchema();
-            Assertions.assertNotNull(returnsSchema);
-            List<Integer> shape = returnsSchema.getShape();
+            ReturnType returnType = requestBodySchema.getReturnsSchema();
+            Assertions.assertNotNull(returnType);
+            List<Integer> shape = returnType.getShape();
             Assertions.assertNotNull(shape);
-            String dtype = returnsSchema.getDtype();
+            String dtype = returnType.getDtype();
             Assertions.assertNotNull(dtype);
-            String ndarray = returnsSchema.getType();
+            String ndarray = returnType.getType();
             Assertions.assertNotNull(ndarray);
         }
     }

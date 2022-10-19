@@ -99,11 +99,11 @@ public final class JsonParser {
             shapesList.add(shape.intValue());
         }
 
-        ReturnsSchema returnsSchema = new ReturnsSchema(shapesList, returnsJsonNode.get("dtype").asText(), returnsJsonNode.get("type").asText());
+        ReturnType returnType = new ReturnType(shapesList, returnsJsonNode.get("dtype").asText(), returnsJsonNode.get("type").asText());
 
         return new RequestBodySchema(
                 parameterDescMap,
-                returnsSchema
+                returnType
         );
     }
 

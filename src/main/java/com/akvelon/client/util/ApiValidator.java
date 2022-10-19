@@ -5,6 +5,7 @@ import com.akvelon.client.model.request.Record;
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.RequestBody;
 import com.akvelon.client.model.validation.*;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.List;
 import java.util.Map;
@@ -12,14 +13,14 @@ import java.util.Map;
 /**
  * A validator that provides functionality to validate the request by given schema.
  */
-public final class RequestValidator {
+public final class ApiValidator {
     /**
      * System.Logger instances log messages that will be routed to the underlying.
      * logging framework the LoggerFinder uses.
      */
     private final System.Logger logger;
 
-    public RequestValidator(System.Logger logger) {
+    public ApiValidator(System.Logger logger) {
         this.logger = logger;
     }
 
@@ -32,6 +33,12 @@ public final class RequestValidator {
      * @param apiSchema   the schema represented in ApiSchema object.
      */
     public void validateRequestBody(String path, RequestBody requestBody, ApiSchema apiSchema) {
+        RequestBodySchema requestBodySchema = validatePathAndGetRequestBodySchema(path, apiSchema);
+
+        validateSingleRequestBody(requestBody, requestBodySchema);
+    }
+
+    private RequestBodySchema validatePathAndGetRequestBodySchema(String path, ApiSchema apiSchema) {
         Map<String, RequestBodySchema> requestDescriptions = apiSchema.getRequestBodySchemas();
         // find given request in schema
         if (!requestDescriptions.containsKey(path)) {
@@ -41,7 +48,7 @@ public final class RequestValidator {
             throw new IllegalPathException(exceptionMessage);
         }
 
-        validateSingleRequestBody(requestBody, requestDescriptions.get(path));
+        return requestDescriptions.get(path);
     }
 
     /**
@@ -133,12 +140,45 @@ public final class RequestValidator {
                 throw new IllegalRecordTypeException(exceptionMessage);
             }
         } else if (expectedType.equals(DataType.Int64)) {
-            if (!(actualNumber instanceof Long)) {
+            if (!actualNumber.equals(0) && !(actualNumber instanceof Long)) {
                 String exceptionMessage = "Expected type for the column: " + property
                         + " with value: " + actualNumber + ", must be: " + DataType.Int64;
                 if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
                 throw new IllegalRecordTypeException(exceptionMessage);
             }
         }
+    }
+
+    public void validateResponse(String path, JsonNode response, ApiSchema apiSchema) {
+        RequestBodySchema requestBodySchema = validatePathAndGetRequestBodySchema(path, apiSchema);
+
+        validateSingleResponse(response, requestBodySchema.getReturnsSchema());
+    }
+
+    private void validateSingleResponse(JsonNode response, ReturnType returnType) {
+        String ndarray = returnType.getType();
+        if (!response.isArray() && ndarray.equals("ndarray")) {
+            throw new InvalidResponseTypeException("response is not an array: " + response);
+        }
+
+        String dtype = returnType.getDtype();
+        List<Integer> shapes = returnType.getShape();
+        if (shapes.size() > 1) {
+            for (JsonNode item : response) {
+                if (shapes.get(1) > 0) {
+                    if (!item.isArray()) {
+                        throw new InvalidResponseTypeException("response item is not an array: " + item);
+                    }
+
+                    for(JsonNode subItem : item) {
+                        validateNumberType(subItem.numberValue(), DataType.fromString(dtype), "response");
+                    }
+                }
+            }
+        }
+
+        /*for (JsonNode item : response) {
+            validateNumberType(item.numberValue(), DataType.fromString(dtype), "response");
+        }*/
     }
 }

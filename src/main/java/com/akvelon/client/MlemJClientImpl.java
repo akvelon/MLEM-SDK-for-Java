@@ -7,7 +7,7 @@ import com.akvelon.client.model.request.typical.RegModelBody;
 import com.akvelon.client.model.validation.ApiSchema;
 import com.akvelon.client.util.JsonMapper;
 import com.akvelon.client.util.JsonParser;
-import com.akvelon.client.util.RequestValidator;
+import com.akvelon.client.util.ApiValidator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -381,8 +381,8 @@ final class MlemJClientImpl implements MlemJClient {
                 apiSchema = jsonParser.parseApiSchema(schema);
             }
 
-            RequestValidator requestValidator = new RequestValidator(logger);
-            requestValidator.validateRequestBody(path, requestBody, apiSchema);
+            ApiValidator apiValidator = new ApiValidator(logger);
+            apiValidator.validateRequestBody(path, requestBody, apiSchema);
         }
 
         return sendPostRequest(path, requestBody.toJson());
@@ -411,7 +411,8 @@ final class MlemJClientImpl implements MlemJClient {
                 .sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 // Returns a new CompletionStage that, when this stage completes normally,
                 // is executed with this stage's result as the argument to the supplied function.
-                .thenApply(this::checkAndReadResponse);
+                .thenApply(this::checkAndReadResponse)
+                .thenApply(jsonNode -> validateResponse(path, jsonNode));
     }
 
     /**
@@ -464,5 +465,15 @@ final class MlemJClientImpl implements MlemJClient {
         }
 
         if (logger != null) logger.log(System.Logger.Level.INFO, httpResponse.statusCode());
+    }
+
+
+    private JsonNode validateResponse(String path, JsonNode jsonNode) {
+        if (apiSchema != null) {
+            ApiValidator responseValidator = new ApiValidator(logger);
+            responseValidator.validateResponse(path, jsonNode, apiSchema);
+        }
+
+        return jsonNode;
     }
 }
