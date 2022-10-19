@@ -79,8 +79,6 @@ public final class JsonParser {
             throw new InvalidArgsTypeException(exceptionMessage);
         }
 
-        JsonNode returnsJsonNode = entry.getValue().get("returns");
-
         Map<String, RecordSetSchema> parameterDescMap = new HashMap<>();
 
         for (JsonNode arg : args) {
@@ -88,9 +86,24 @@ public final class JsonParser {
             parameterDescMap.put(arg.get("name").asText(), recordSetSchema);
         }
 
+        JsonNode returnsJsonNode = entry.getValue().get("returns");
+        JsonNode shapes = returnsJsonNode.get("shape");
+        if (!shapes.isArray()) {
+            String exceptionMessage = "shape is not array: " + args;
+            logger.log(System.Logger.Level.ERROR, exceptionMessage);
+            throw new InvalidArgsTypeException(exceptionMessage);
+        }
+
+        List<Integer> shapesList = new ArrayList<>();
+        for (JsonNode shape : shapes) {
+            shapesList.add(shape.intValue());
+        }
+
+        ReturnsSchema returnsSchema = new ReturnsSchema(shapesList, returnsJsonNode.get("dtype").asText(), returnsJsonNode.get("type").asText());
+
         return new RequestBodySchema(
                 parameterDescMap,
-                DataType.fromString(returnsJsonNode.get("dtype").asText())
+                returnsSchema
         );
     }
 

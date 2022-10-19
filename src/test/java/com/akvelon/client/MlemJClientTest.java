@@ -4,6 +4,8 @@ import com.akvelon.client.exception.*;
 import com.akvelon.client.model.request.RequestBody;
 import com.akvelon.client.model.request.typical.IrisBody;
 import com.akvelon.client.model.validation.ApiSchema;
+import com.akvelon.client.model.validation.RequestBodySchema;
+import com.akvelon.client.model.validation.ReturnsSchema;
 import com.akvelon.client.util.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.AfterAll;
@@ -14,13 +16,14 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
 
 public class MlemJClientTest {
     protected final static String HOST_URL = "http://example-mlem-get-started-app.herokuapp.com/";
     private final static ExecutorService executorService = Executors.newFixedThreadPool(10);
     protected static final System.Logger LOGGER = System.getLogger(MlemJClientTest.class.getName());
-    private static final JsonParser JSON_PARSER = new JsonParser(LOGGER);
+    private static final JsonParser jsonParser = new JsonParser(LOGGER);
 
     protected MlemJClient jClient = MlemJClientFactory.createMlemJClient(executorService, HOST_URL, LOGGER, true);
 
@@ -63,8 +66,25 @@ public class MlemJClientTest {
             return;
         }
 
-        ApiSchema methodDesc = JSON_PARSER.parseApiSchema(response);
+        ApiSchema methodDesc = jsonParser.parseApiSchema(response);
         Assertions.assertNotNull(methodDesc);
+
+        Map<String, RequestBodySchema> requestBodySchemas = methodDesc.getRequestBodySchemas();
+        Assertions.assertNotNull(requestBodySchemas);
+        for (Map.Entry<String, RequestBodySchema> entry : requestBodySchemas.entrySet()) {
+            String method = entry.getKey();
+            Assertions.assertNotNull(method);
+            RequestBodySchema requestBodySchema = entry.getValue();
+            Assertions.assertNotNull(requestBodySchema);
+            ReturnsSchema returnsSchema = requestBodySchema.getReturnsSchema();
+            Assertions.assertNotNull(returnsSchema);
+            List<Integer> shape = returnsSchema.getShape();
+            Assertions.assertNotNull(shape);
+            String dtype = returnsSchema.getDtype();
+            Assertions.assertNotNull(dtype);
+            String ndarray = returnsSchema.getType();
+            Assertions.assertNotNull(ndarray);
+        }
     }
 
     @Test

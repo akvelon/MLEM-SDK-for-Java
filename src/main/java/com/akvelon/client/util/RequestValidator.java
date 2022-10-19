@@ -35,8 +35,8 @@ public final class RequestValidator {
         Map<String, RequestBodySchema> requestDescriptions = apiSchema.getRequestBodySchemas();
         // find given request in schema
         if (!requestDescriptions.containsKey(path)) {
-            String exceptionMessage = "The path " + path
-                    + " is not found in schema; Available path list: " + requestDescriptions.keySet() + ".";
+            String exceptionMessage = "The method " + path
+                    + " is not found in schema; Available methods list: " + requestDescriptions.keySet() + ".";
             if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
             throw new IllegalPathException(exceptionMessage);
         }

@@ -95,7 +95,8 @@ CompletableFuture<JsonNode> future = clientWithExecutor.interfaceJsonAsync();
 // handle the exception and get the response
 JsonNode response = future
     .exceptionally(throwable -> {
-        InvalidHttpStatusCodeException invalidHttpStatusCodeException = (InvalidHttpStatusCodeException) throwable.getCause();
+        InvalidHttpStatusCodeException invalidHttpStatusCodeException = 
+        (InvalidHttpStatusCodeException) throwable.getCause();
         return null;
     })
     .get();
@@ -131,7 +132,8 @@ JsonNode response1 = future.get();
 //to handle an exception use exceptionally method.
 JsonNode response2 = future
     .exceptionally(throwable -> {
-        InvalidHttpStatusCodeException invalidHttpStatusCodeException = (InvalidHttpStatusCodeException) throwable.getCause();
+        InvalidHttpStatusCodeException invalidHttpStatusCodeException = 
+        (InvalidHttpStatusCodeException) throwable.getCause();
         return null;
     })
     .get();
@@ -176,7 +178,8 @@ CompletableFuture<JsonNode> future = mlemClient.call("predict_proba123", request
 ```
 The response will be:
 ```text 
-error text: The path predict_proba123 is not found in schema; Available path list: [sklearn_predict, predict_proba, predict, sklearn_predict_proba].
+error text: The path predict_proba123 is not found in schema; Available path list: 
+[sklearn_predict, predict_proba, predict, sklearn_predict_proba].
 ```
 2) Invalid parameter name
 ```java 
