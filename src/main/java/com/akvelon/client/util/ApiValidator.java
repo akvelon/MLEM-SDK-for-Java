@@ -182,15 +182,15 @@ public final class ApiValidator {
             }
 
             if (nestingLevel != shapes.size()) {
-                throw new InvalidResponseTypeException("Unexpected level of nesting in response data. " +
-                        "Actual: " + nestingLevel + " ,expected: " + shapes.size());
+                throw new InvalidResponseTypeException("Unexpected level of nesting in the response data. " +
+                        "Actual: " + nestingLevel + ", expected: " + shapes.size());
             }
 
             int shapesLastIndex = shapes.size() - 1;
             Integer lastShape = shapes.get(shapesLastIndex);
             if (lastShape != null && array.size() != lastShape) {
-                throw new InvalidResponseTypeException("Unexpected length of array + " + array +
-                        ". Actual: " + array.size() + " ,expected: " + shapes.size());
+                throw new InvalidResponseTypeException("Unexpected length of the data: " + array +
+                        ". Actual: " + array.size() + ", expected: " + lastShape);
             }
 
             validateNumberType(item.numberValue(), DataType.fromString(dtype), array.asText());

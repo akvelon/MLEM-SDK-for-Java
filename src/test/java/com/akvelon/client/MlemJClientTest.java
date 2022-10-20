@@ -303,6 +303,19 @@ public class MlemJClientTest {
     }
 
     @Test
+    public void testSklearnResponseValidationWithException1() throws ExecutionException, InterruptedException, IOException {
+        CompletableFuture<JsonNode> future = jClient.interfaceJsonAsync();
+        assertResponseJsonOrHandleException(future);
+        JsonNode apiSchema = future.get();
+        new JsonParser(LOGGER).parseApiSchema(apiSchema);
+        InvalidResponseTypeException thrown = Assertions.assertThrows(
+                InvalidResponseTypeException.class,
+                () -> new ApiValidator(LOGGER).validateResponse(POST_SKLEARN_PREDICT_PROBA, TestDataFactory.buildResponse3(), new JsonParser(LOGGER).parseApiSchema(apiSchema))
+        );
+        Assertions.assertNotNull(thrown);
+    }
+
+    @Test
     public void testSklearnResponseValidationWithNumberFormatException() throws ExecutionException, InterruptedException, IOException {
         CompletableFuture<JsonNode> future = jClient.interfaceJsonAsync();
         assertResponseJsonOrHandleException(future);
