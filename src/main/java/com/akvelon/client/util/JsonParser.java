@@ -9,6 +9,7 @@ import com.akvelon.client.model.request.RequestBody;
 import com.akvelon.client.model.validation.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -96,6 +97,11 @@ public final class JsonParser {
 
         List<Integer> shapesList = new ArrayList<>();
         for (JsonNode shape : shapes) {
+            if (shape instanceof NullNode) {
+                shapesList.add(null);
+                continue;
+            }
+
             shapesList.add(shape.intValue());
         }
 

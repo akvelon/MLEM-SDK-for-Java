@@ -134,17 +134,17 @@ public final class ApiValidator {
     private void validateNumberType(Number actualNumber, DataType expectedType, String property) {
         if (expectedType.equals(DataType.Float64)) {
             if (!(actualNumber instanceof Double)) {
-                String exceptionMessage = "Expected type for column: " + property
+                String exceptionMessage = "Expected type for data: " + property
                         + " with value: " + actualNumber + ", must be: " + DataType.Float64;
                 if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
-                throw new IllegalRecordTypeException(exceptionMessage);
+                throw new IllegalNumberFormatException(exceptionMessage);
             }
         } else if (expectedType.equals(DataType.Int64)) {
             if (!actualNumber.equals(0) && !(actualNumber instanceof Long)) {
-                String exceptionMessage = "Expected type for the column: " + property
+                String exceptionMessage = "Expected type for the data: " + property
                         + " with value: " + actualNumber + ", must be: " + DataType.Int64;
                 if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
-                throw new IllegalRecordTypeException(exceptionMessage);
+                throw new IllegalNumberFormatException(exceptionMessage);
             }
         }
     }
@@ -156,29 +156,44 @@ public final class ApiValidator {
     }
 
     private void validateSingleResponse(JsonNode response, ReturnType returnType) {
+        if (response == null) {
+            throw new InvalidResponseTypeException("There is a null value in response.");
+        }
+
         String ndarray = returnType.getType();
         if (!response.isArray() && ndarray.equals("ndarray")) {
             throw new InvalidResponseTypeException("response is not an array: " + response);
         }
 
-        String dtype = returnType.getDtype();
-        List<Integer> shapes = returnType.getShape();
-        if (shapes.size() > 1) {
-            for (JsonNode item : response) {
-                if (shapes.get(1) > 0) {
-                    if (!item.isArray()) {
-                        throw new InvalidResponseTypeException("response item is not an array: " + item);
-                    }
+        validateArray(response, returnType.getShape(), 1, returnType.getDtype());
+    }
 
-                    for(JsonNode subItem : item) {
-                        validateNumberType(subItem.numberValue(), DataType.fromString(dtype), "response");
-                    }
-                }
-            }
+    private void validateArray(JsonNode array, List<Integer> shapes, int nestingLevel, String dtype) {
+        // shapes contains one null element
+        // so nothing to validate.
+        if (shapes.size() == 1 && shapes.get(0) == null) {
+            return;
         }
 
-        /*for (JsonNode item : response) {
-            validateNumberType(item.numberValue(), DataType.fromString(dtype), "response");
-        }*/
+        for (JsonNode item : array) {
+            if (item.isArray()) {
+                validateArray(item, shapes, nestingLevel + 1, dtype);
+                break;
+            }
+
+            if (nestingLevel != shapes.size()) {
+                throw new InvalidResponseTypeException("Unexpected level of nesting in response data. " +
+                        "Actual: " + nestingLevel + " ,expected: " + shapes.size());
+            }
+
+            int shapesLastIndex = shapes.size() - 1;
+            Integer lastShape = shapes.get(shapesLastIndex);
+            if (lastShape != null && array.size() != lastShape) {
+                throw new InvalidResponseTypeException("Unexpected length of array + " + array +
+                        ". Actual: " + array.size() + " ,expected: " + shapes.size());
+            }
+
+            validateNumberType(item.numberValue(), DataType.fromString(dtype), array.asText());
+        }
     }
 }

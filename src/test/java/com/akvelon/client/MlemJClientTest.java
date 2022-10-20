@@ -6,6 +6,7 @@ import com.akvelon.client.model.request.typical.IrisBody;
 import com.akvelon.client.model.validation.ApiSchema;
 import com.akvelon.client.model.validation.RequestBodySchema;
 import com.akvelon.client.model.validation.ReturnType;
+import com.akvelon.client.util.ApiValidator;
 import com.akvelon.client.util.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.AfterAll;
@@ -184,7 +185,7 @@ public class MlemJClientTest {
     @DisplayName("Test post /predict method with wrong column value type")
     public void testPredictRequestBadColumnType() throws IOException, ExecutionException, InterruptedException {
         RequestBody requestBody = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongValue());
-        IllegalRecordTypeException thrown = Assertions.assertThrows(IllegalRecordTypeException.class, () -> jClient.predict(requestBody).get());
+        IllegalNumberFormatException thrown = Assertions.assertThrows(IllegalNumberFormatException.class, () -> jClient.predict(requestBody).get());
         Assertions.assertNotNull(thrown);
     }
 
@@ -267,6 +268,50 @@ public class MlemJClientTest {
         InvalidValuesException thrown = Assertions.assertThrows(InvalidValuesException.class,
                 () -> jClient.predict(TestDataFactory.buildDataRequestBodyInvalidValues()));
 
+        Assertions.assertNotNull(thrown);
+    }
+
+    @Test
+    public void testPredictResponseValidation() throws ExecutionException, InterruptedException, IOException {
+        getSchemaAndValidateResponse("predict");
+    }
+
+    @Test
+    public void testSklearnPredictResponseValidation() throws ExecutionException, InterruptedException, IOException {
+        getSchemaAndValidateResponse(POST_SKLEARN_PREDICT);
+    }
+
+    private void getSchemaAndValidateResponse(String method) throws ExecutionException, InterruptedException, IOException {
+        CompletableFuture<JsonNode> future = jClient.interfaceJsonAsync();
+        assertResponseJsonOrHandleException(future);
+        JsonNode apiSchema = future.get();
+        new JsonParser(LOGGER).parseApiSchema(apiSchema);
+        new ApiValidator(LOGGER).validateResponse(method, TestDataFactory.buildResponse1(), new JsonParser(LOGGER).parseApiSchema(apiSchema));
+    }
+
+    @Test
+    public void testSklearnResponseValidationWithException() throws ExecutionException, InterruptedException, IOException {
+        CompletableFuture<JsonNode> future = jClient.interfaceJsonAsync();
+        assertResponseJsonOrHandleException(future);
+        JsonNode apiSchema = future.get();
+        new JsonParser(LOGGER).parseApiSchema(apiSchema);
+        InvalidResponseTypeException thrown = Assertions.assertThrows(
+                InvalidResponseTypeException.class,
+                () -> new ApiValidator(LOGGER).validateResponse(POST_SKLEARN_PREDICT_PROBA, TestDataFactory.buildResponse1(), new JsonParser(LOGGER).parseApiSchema(apiSchema))
+        );
+        Assertions.assertNotNull(thrown);
+    }
+
+    @Test
+    public void testSklearnResponseValidationWithNumberFormatException() throws ExecutionException, InterruptedException, IOException {
+        CompletableFuture<JsonNode> future = jClient.interfaceJsonAsync();
+        assertResponseJsonOrHandleException(future);
+        JsonNode apiSchema = future.get();
+        new JsonParser(LOGGER).parseApiSchema(apiSchema);
+        IllegalNumberFormatException thrown = Assertions.assertThrows(
+                IllegalNumberFormatException.class,
+                () -> new ApiValidator(LOGGER).validateResponse(POST_SKLEARN_PREDICT_PROBA, TestDataFactory.buildResponse2(), new JsonParser(LOGGER).parseApiSchema(apiSchema))
+        );
         Assertions.assertNotNull(thrown);
     }
 

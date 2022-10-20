@@ -60,6 +60,14 @@ public class TestDataFactory {
         return JsonMapper.readValue(xRequestBody, JsonNode.class);
     }
 
+    public static JsonNode buildResponse1() throws JsonProcessingException {
+        return JsonMapper.readValue("[1, 2]", JsonNode.class);
+    }
+
+    public static JsonNode buildResponse2() throws JsonProcessingException {
+        return JsonMapper.readValue("[[1.7, 2, 17]]", JsonNode.class);
+    }
+
     public static RecordSet buildRecordSet() throws JsonProcessingException {
         Record record = new Record();
         record.addColumn("sepal length (cm)", 1.2);
