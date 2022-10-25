@@ -132,20 +132,20 @@ public final class ApiValidator {
      * @param expectedType the type description provided by schema.
      */
     private void validateNumberType(Number actualNumber, DataType expectedType, String property) {
-        if (expectedType.equals(DataType.Float64)) {
-            if (!(actualNumber instanceof Double)) {
-                String exceptionMessage = "Expected type for data: " + property
-                        + " with value: " + actualNumber + ", must be: " + DataType.Float64;
-                if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
-                throw new IllegalNumberFormatException(exceptionMessage);
+        for(DataType dataType: DataType.values()) {
+            if (!actualNumber.equals(0) && expectedType.equals(dataType)) {
+                validateType(actualNumber, property, dataType);
             }
-        } else if (expectedType.equals(DataType.Int64)) {
-            if (!actualNumber.equals(0) && !(actualNumber instanceof Long)) {
-                String exceptionMessage = "Expected type for the data: " + property
-                        + " with value: " + actualNumber + ", must be: " + DataType.Int64;
-                if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
-                throw new IllegalNumberFormatException(exceptionMessage);
-            }
+        }
+    }
+
+    private void validateType(Number actualNumber, String property,
+                                  DataType actualType) {
+        if (!(actualType.getClazz().isInstance(actualNumber))) {
+            String exceptionMessage = "Expected type for data: " + property
+                    + " with value: " + actualNumber + ", must be: " + actualType;
+            if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
+            throw new IllegalNumberFormatException(exceptionMessage);
         }
     }
 
