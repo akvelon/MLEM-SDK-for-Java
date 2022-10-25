@@ -123,29 +123,47 @@ public final class JsonParser {
     private RecordSetSchema parseRecordSetSchema(JsonNode jsonNode) throws IOException {
         String recordSetDescType = jsonNode.get("type").asText();
 
-        if (!recordSetDescType.equals("dataframe")) {
-            String exceptionMessage = "RecordSet type is not dataframe: " + recordSetDescType;
-            logger.log(System.Logger.Level.ERROR, exceptionMessage);
-            throw new InvalidRecordSetTypeException(exceptionMessage);
+        if (recordSetDescType.equals("dataframe")) {
+            JsonNode columns = jsonNode.get("columns");
+            JsonNode dtypes = jsonNode.get("dtypes");
+
+            List<String> names = JsonMapper.readList(columns);
+            List<String> dTypes = JsonMapper.readList(dtypes);
+            if (names.size() != dTypes.size()) {
+                throw new IllegalColumnsNumberException("Columns size must be equal to dtypes. " +
+                        "Actual columns size: " + names.size() + ", actual dtypes size: " + dTypes.size() + ".");
+            }
+
+            ArrayList<RecordSetColumnSchema> recordSetColumnSchemas = new ArrayList<>();
+
+            for (int i = 0; i < names.size(); i++) {
+                recordSetColumnSchemas.add(new RecordSetColumnSchema(names.get(i), DataType.fromString(dTypes.get(i))));
+            }
+
+            return new RecordSetSchema(recordSetDescType, recordSetColumnSchemas);
         }
 
-        JsonNode columns = jsonNode.get("columns");
-        JsonNode dtypes = jsonNode.get("dtypes");
+        if (recordSetDescType.equals("list")) {
+            JsonNode items = jsonNode.get("items");
+            if (!items.isArray()) {
+                String exceptionMessage = "items is not array: " + items;
+                logger.log(System.Logger.Level.ERROR, exceptionMessage);
+                throw new InvalidRecordSetTypeException(exceptionMessage);
+            }
 
-        List<String> names = JsonMapper.readList(columns);
-        List<String> dTypes = JsonMapper.readList(dtypes);
-        if (names.size() != dTypes.size()) {
-            throw new IllegalColumnsNumberException("Columns size must be equal to dtypes. " +
-                    "Actual columns size: " + names.size() + ", actual dtypes size: " + dTypes.size() + ".");
+            ArrayList<RecordSetColumnSchema> recordSetColumnSchemas = new ArrayList<>();
+            for (JsonNode item : items) {
+                String ptype = item.get("ptype").asText();
+                String type = item.get("type").asText();
+                recordSetColumnSchemas.add(new RecordSetColumnSchema(ptype, DataType.fromString(type)));
+            }
+
+            return new RecordSetSchema(recordSetDescType, recordSetColumnSchemas);
         }
 
-        ArrayList<RecordSetColumnSchema> recordSetColumnSchemas = new ArrayList<>();
-
-        for (int i = 0; i < names.size(); i++) {
-            recordSetColumnSchemas.add(new RecordSetColumnSchema(names.get(i), DataType.fromString(dTypes.get(i))));
-        }
-
-        return new RecordSetSchema(recordSetDescType, recordSetColumnSchemas);
+        String exceptionMessage = "RecordSet type is not dataframe or list: " + recordSetDescType;
+        logger.log(System.Logger.Level.ERROR, exceptionMessage);
+        throw new InvalidRecordSetTypeException(exceptionMessage);
     }
 
     /**

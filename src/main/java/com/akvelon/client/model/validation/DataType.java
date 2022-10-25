@@ -14,7 +14,8 @@ public enum DataType {
     Uint16("uint16", Short.class),
     Uint32("uint32", Integer.class),
     Uint64("uint64", Long.class),
-    Bool("bool", Boolean.class);
+    Bool("bool", Boolean.class),
+    Str("primitive", String.class);
 
     public final String type;
     private final Class clazz;
