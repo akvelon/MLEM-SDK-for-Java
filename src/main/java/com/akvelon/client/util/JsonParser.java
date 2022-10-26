@@ -87,45 +87,24 @@ public final class JsonParser {
             parameterDescMap.put(arg.get("name").asText(), recordSetSchema);
         }
 
-        JsonNode returnsJsonNode = entry.getValue().get("returns");
-        JsonNode shapes = returnsJsonNode.get("shape");
-        if (!shapes.isArray()) {
-            String exceptionMessage = "shape is not array: " + args;
-            logger.log(System.Logger.Level.ERROR, exceptionMessage);
-            throw new InvalidArgsTypeException(exceptionMessage);
-        }
+        ReturnType returnType = parseReturnsSchema(entry.getValue().get("returns"));
 
-        List<Integer> shapesList = new ArrayList<>();
-        for (JsonNode shape : shapes) {
-            if (shape instanceof NullNode) {
-                shapesList.add(null);
-                continue;
-            }
-
-            shapesList.add(shape.intValue());
-        }
-
-        ReturnType returnType = new ReturnType(shapesList, returnsJsonNode.get("dtype").asText(), returnsJsonNode.get("type").asText());
-
-        return new RequestBodySchema(
-                parameterDescMap,
-                returnType
-        );
+        return new RequestBodySchema(parameterDescMap, returnType);
     }
 
     /**
      * Method to deserialize RecordSetDesc object from given JSON schema.
      *
-     * @param jsonNode the JsonNode representation of RecordSetDesc.
+     * @param type_ the JsonNode representation of RecordSetDesc.
      * @return the RecordSetDesc object of the conversion.
      * @throws IOException signals that an illegal recordSetType has occurred.
      */
-    private RecordSetSchema parseRecordSetSchema(JsonNode jsonNode) throws IOException {
-        String recordSetDescType = jsonNode.get("type").asText();
+    private RecordSetSchema parseRecordSetSchema(JsonNode type_) throws IOException {
+        String recordSetDescType = type_.get("type").asText();
 
         if (recordSetDescType.equals("dataframe")) {
-            JsonNode columns = jsonNode.get("columns");
-            JsonNode dtypes = jsonNode.get("dtypes");
+            JsonNode columns = type_.get("columns");
+            JsonNode dtypes = type_.get("dtypes");
 
             List<String> names = JsonMapper.readList(columns);
             List<String> dTypes = JsonMapper.readList(dtypes);
@@ -144,7 +123,7 @@ public final class JsonParser {
         }
 
         if (recordSetDescType.equals("list")) {
-            JsonNode items = jsonNode.get("items");
+            JsonNode items = type_.get("items");
             if (!items.isArray()) {
                 String exceptionMessage = "items is not array: " + items;
                 logger.log(System.Logger.Level.ERROR, exceptionMessage);
@@ -164,6 +143,37 @@ public final class JsonParser {
         String exceptionMessage = "RecordSet type is not dataframe or list: " + recordSetDescType;
         logger.log(System.Logger.Level.ERROR, exceptionMessage);
         throw new InvalidRecordSetTypeException(exceptionMessage);
+    }
+
+    /**
+     * Method to deserialize ReturnType object from given JSON schema.
+     *
+     * @param returnsJsonNode the JsonNode representation of ReturnType.
+     * @return the ReturnType object of the conversion.
+     */
+    private ReturnType parseReturnsSchema(JsonNode returnsJsonNode) {
+        JsonNode shapes = returnsJsonNode.get("shape");
+        if (shapes == null) {
+            return new ReturnType(returnsJsonNode.get("ptype").asText(), returnsJsonNode.get("type").asText());
+        }
+
+        if (!shapes.isArray()) {
+            String exceptionMessage = "shape is not array: " + returnsJsonNode;
+            logger.log(System.Logger.Level.ERROR, exceptionMessage);
+            throw new InvalidArgsTypeException(exceptionMessage);
+        }
+
+        List<Integer> shapesList = new ArrayList<>();
+        for (JsonNode shape : shapes) {
+            if (shape instanceof NullNode) {
+                shapesList.add(null);
+                continue;
+            }
+
+            shapesList.add(shape.intValue());
+        }
+
+        return new ReturnType(shapesList, returnsJsonNode.get("dtype").asText(), returnsJsonNode.get("type").asText());
     }
 
     /**

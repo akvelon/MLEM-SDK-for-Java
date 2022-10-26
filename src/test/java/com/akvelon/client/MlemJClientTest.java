@@ -50,8 +50,11 @@ public class MlemJClientTest {
 
     @Test
     @DisplayName("Test get /interface.json method with json response")
-    public void testGetInterfaceJson() throws ExecutionException, InterruptedException {
-        assertResponseJsonOrHandleException(jClient.interfaceJsonAsync());
+    public void testGetInterfaceJson() throws ExecutionException, InterruptedException, IOException {
+        CompletableFuture<JsonNode> completableFuture = jClient.interfaceJsonAsync();
+        assertResponseJsonOrHandleException(completableFuture);
+        ApiSchema methodDesc = jsonParser.parseApiSchema(completableFuture.get());
+        Assertions.assertNotNull(methodDesc);
     }
 
     @Test
