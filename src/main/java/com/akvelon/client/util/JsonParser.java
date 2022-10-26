@@ -9,13 +9,11 @@ import com.akvelon.client.model.request.RequestBody;
 import com.akvelon.client.model.validation.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A parser that provides functionality for deserialization JSON schema to descriptions objects.
@@ -76,7 +74,7 @@ public final class JsonParser {
 
         if (!args.isArray()) {
             String exceptionMessage = "args is not array: " + args;
-            logger.log(System.Logger.Level.ERROR, exceptionMessage);
+            if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
             throw new InvalidArgsTypeException(exceptionMessage);
         }
 
@@ -109,8 +107,10 @@ public final class JsonParser {
             List<String> names = JsonMapper.readList(columns);
             List<String> dTypes = JsonMapper.readList(dtypes);
             if (names.size() != dTypes.size()) {
-                throw new IllegalColumnsNumberException("Columns size must be equal to dtypes. " +
-                        "Actual columns size: " + names.size() + ", actual dtypes size: " + dTypes.size() + ".");
+                String exceptionMessage = "Columns size must be equal to dtypes. " +
+                        "Actual columns size: " + names.size() + ", actual dtypes size: " + dTypes.size() + ".";
+                if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
+                throw new IllegalColumnsNumberException(exceptionMessage);
             }
 
             ArrayList<RecordSetColumnSchema> recordSetColumnSchemas = new ArrayList<>();
@@ -122,26 +122,50 @@ public final class JsonParser {
             return new RecordSetSchema(recordSetDescType, recordSetColumnSchemas);
         }
 
+        if (recordSetDescType.equals("ndarray")) {
+            JsonNode shapes = type_.get("shape");
+            if (!shapes.isArray()) {
+                String exceptionMessage = "shapes is not array: " + shapes;
+                if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
+                throw new InvalidRecordSetTypeException(exceptionMessage);
+            }
+
+            List<Integer> shapesList = new ArrayList<>();
+            for (JsonNode shape : shapes) {
+                if (shape instanceof NullNode) {
+                    shapesList.add(null);
+                    continue;
+                }
+
+                shapesList.add(shape.intValue());
+            }
+
+            String dtype = type_.get("dtype").asText();
+
+            List<RecordSetColumnSchema> recordSetColumnSchemas
+                    = Collections.singletonList(new RecordSetColumnSchema(DataType.fromString(dtype), shapesList));
+            return new RecordSetSchema(recordSetDescType, recordSetColumnSchemas);
+        }
+
         if (recordSetDescType.equals("list")) {
             JsonNode items = type_.get("items");
             if (!items.isArray()) {
                 String exceptionMessage = "items is not array: " + items;
-                logger.log(System.Logger.Level.ERROR, exceptionMessage);
+                if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
                 throw new InvalidRecordSetTypeException(exceptionMessage);
             }
 
-            ArrayList<RecordSetColumnSchema> recordSetColumnSchemas = new ArrayList<>();
+            List<RecordSetColumnSchema> recordSetColumnSchemas = new ArrayList<>();
             for (JsonNode item : items) {
                 String ptype = item.get("ptype").asText();
-                String type = item.get("type").asText();
-                recordSetColumnSchemas.add(new RecordSetColumnSchema(ptype, DataType.fromString(type)));
+                recordSetColumnSchemas.add(new RecordSetColumnSchema(DataType.fromString(ptype)));
             }
 
             return new RecordSetSchema(recordSetDescType, recordSetColumnSchemas);
         }
 
         String exceptionMessage = "RecordSet type is not dataframe or list: " + recordSetDescType;
-        logger.log(System.Logger.Level.ERROR, exceptionMessage);
+        if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
         throw new InvalidRecordSetTypeException(exceptionMessage);
     }
 
@@ -157,9 +181,9 @@ public final class JsonParser {
             return new ReturnType(returnsJsonNode.get("ptype").asText(), returnsJsonNode.get("type").asText());
         }
 
-        if (!shapes.isArray()) {
+        if (!(shapes instanceof ArrayNode)) {
             String exceptionMessage = "shape is not array: " + returnsJsonNode;
-            logger.log(System.Logger.Level.ERROR, exceptionMessage);
+            if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
             throw new InvalidArgsTypeException(exceptionMessage);
         }
 
@@ -205,7 +229,9 @@ public final class JsonParser {
         JsonNode jsonNode = recordSetJson.findValue("values");
 
         if (jsonNode == null) {
-            throw new InvalidValuesException("Can not find property values in data: " + recordSetJson);
+            String exceptionMessage = "Can not find property values in data: " + recordSetJson;
+            if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
+            throw new InvalidValuesException(exceptionMessage);
         }
 
         return JsonMapper.readValue(recordSetJson.toString(), RecordSet.class);
