@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.concurrent.*;
 
 public class MlemJClientTest {
-    protected final static String HOST_URL = "http://localhost:8080/";
+    protected final static String HOST_URL = "http://example-mlem-get-started-app.herokuapp.com/";
     private final static ExecutorService executorService = Executors.newFixedThreadPool(10);
     protected static final System.Logger LOGGER = System.getLogger(MlemJClientTest.class.getName());
     private static final JsonParser jsonParser = new JsonParser(LOGGER);
