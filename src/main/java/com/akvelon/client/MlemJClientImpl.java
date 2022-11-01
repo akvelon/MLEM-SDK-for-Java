@@ -5,9 +5,9 @@ import com.akvelon.client.model.request.RequestBody;
 import com.akvelon.client.model.request.typical.IrisBody;
 import com.akvelon.client.model.request.typical.RegModelBody;
 import com.akvelon.client.model.validation.ApiSchema;
+import com.akvelon.client.util.ApiValidator;
 import com.akvelon.client.util.JsonMapper;
 import com.akvelon.client.util.JsonParser;
-import com.akvelon.client.util.ApiValidator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 

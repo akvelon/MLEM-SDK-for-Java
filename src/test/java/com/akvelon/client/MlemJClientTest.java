@@ -298,8 +298,8 @@ public class MlemJClientTest {
         assertResponseJsonOrHandleException(future);
         JsonNode apiSchema = future.get();
         new JsonParser(LOGGER).parseApiSchema(apiSchema);
-        InvalidResponseTypeException thrown = Assertions.assertThrows(
-                InvalidResponseTypeException.class,
+        IllegalArrayNestingLevel thrown = Assertions.assertThrows(
+                IllegalArrayNestingLevel.class,
                 () -> new ApiValidator(LOGGER).validateResponse(POST_SKLEARN_PREDICT_PROBA, TestDataFactory.buildResponse1(), new JsonParser(LOGGER).parseApiSchema(apiSchema))
         );
         Assertions.assertNotNull(thrown);
@@ -311,8 +311,8 @@ public class MlemJClientTest {
         assertResponseJsonOrHandleException(future);
         JsonNode apiSchema = future.get();
         new JsonParser(LOGGER).parseApiSchema(apiSchema);
-        InvalidResponseTypeException thrown = Assertions.assertThrows(
-                InvalidResponseTypeException.class,
+        IllegalArrayLength thrown = Assertions.assertThrows(
+                IllegalArrayLength.class,
                 () -> new ApiValidator(LOGGER).validateResponse(POST_SKLEARN_PREDICT_PROBA, TestDataFactory.buildResponse3(), new JsonParser(LOGGER).parseApiSchema(apiSchema))
         );
         Assertions.assertNotNull(thrown);
