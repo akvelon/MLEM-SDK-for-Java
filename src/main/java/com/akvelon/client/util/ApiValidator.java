@@ -113,10 +113,11 @@ public final class ApiValidator {
 
         for (RecordSetColumnSchema recordSetColumnSchema : columnsDesc) {
             if (!columns.containsKey(recordSetColumnSchema.getName())) {
-                String exceptionMessage = "Column name not found: " + recordSetColumnSchema.getName() +
-                        ", for given data: " + columns.entrySet();
+                String exceptionMessage = "Can't find: '" + recordSetColumnSchema.getName() +
+                        "' property in request object, although is exists in schema: "
+                        + "'" + recordSetSchema + "'";
                 if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
-                throw new IllegalRecordTypeException(exceptionMessage);
+                throw new KeyNotFoundException(exceptionMessage);
             }
 
             validateNumberType(columns.get(recordSetColumnSchema.getName()), recordSetColumnSchema.getType(), recordSetColumnSchema.getName());
@@ -132,7 +133,7 @@ public final class ApiValidator {
      * @param expectedType the type description provided by schema.
      */
     private void validateNumberType(Number actualNumber, DataType expectedType, String property) {
-        for(DataType dataType: DataType.values()) {
+        for (DataType dataType : DataType.values()) {
             if (!actualNumber.equals(0) && expectedType.equals(dataType)) {
                 validateType(actualNumber, property, dataType);
             }
@@ -140,12 +141,12 @@ public final class ApiValidator {
     }
 
     private void validateType(Number actualNumber, String property,
-                                  DataType actualType) {
+                              DataType actualType) {
         if (!(actualType.getClazz().isInstance(actualNumber))) {
-            String exceptionMessage = "Expected type for data: " + property
-                    + " with value: " + actualNumber + ", must be: " + actualType;
+            String exceptionMessage = "Value " + actualNumber + " for property '" + property + "' is not " +
+                    "compatible with expected type - " + actualType;
             if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
-            throw new IllegalNumberFormatException(exceptionMessage);
+            throw new InvalidTypeException(exceptionMessage);
         }
     }
 
@@ -165,10 +166,10 @@ public final class ApiValidator {
             throw new InvalidResponseTypeException("response is not an array: " + response);
         }
 
-        validateArray(response, returnType.getShape(), 1, returnType.getDtype());
+        validateArrayNesting(response, returnType.getShape(), 1, returnType.getDtype());
     }
 
-    private void validateArray(JsonNode array, List<Integer> shapes, int nestingLevel, String dtype) {
+    private void validateArrayNesting(JsonNode array, List<Integer> shapes, int nestingLevel, String dtype) {
         // shapes contains one null element
         // so nothing to validate.
         if (shapes.size() == 1 && shapes.get(0) == null) {
@@ -177,19 +178,19 @@ public final class ApiValidator {
 
         for (JsonNode item : array) {
             if (item.isArray()) {
-                validateArray(item, shapes, nestingLevel + 1, dtype);
+                validateArrayNesting(item, shapes, nestingLevel + 1, dtype);
                 break;
             }
 
             if (nestingLevel != shapes.size()) {
-                throw new InvalidResponseTypeException("Unexpected level of nesting in the response data. " +
+                throw new IllegalArrayNestingLevel("Unexpected level of nesting in the response data. " +
                         "Actual: " + nestingLevel + ", expected: " + shapes.size());
             }
 
             int shapesLastIndex = shapes.size() - 1;
             Integer lastShape = shapes.get(shapesLastIndex);
             if (lastShape != null && array.size() != lastShape) {
-                throw new InvalidResponseTypeException("Unexpected length of the data: " + array +
+                throw new IllegalArrayLength("Unexpected length of the data: " + array +
                         ". Actual: " + array.size() + ", expected: " + lastShape);
             }
 

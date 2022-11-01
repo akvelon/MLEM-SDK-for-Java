@@ -43,7 +43,7 @@ public enum DataType {
             }
         }
         // throw exception, if the parameter is not exists.
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("Unknown value type in response " + type);
     }
 
     public Class getClazz() {
