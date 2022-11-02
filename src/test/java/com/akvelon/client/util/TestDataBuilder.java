@@ -1,14 +1,13 @@
-package com.akvelon.client;
+package com.akvelon.client.util;
 
 import com.akvelon.client.model.request.Record;
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.RequestBody;
-import com.akvelon.client.util.JsonMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Assertions;
 
-public class TestDataFactory {
+public class TestDataBuilder {
     private static final String dataRequestBody = "{\n" +
             "  \"data\": {\n" +
             "    \"values\": [\n" +

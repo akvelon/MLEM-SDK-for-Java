@@ -3,11 +3,8 @@ package com.akvelon.client;
 import com.akvelon.client.exception.*;
 import com.akvelon.client.model.request.RequestBody;
 import com.akvelon.client.model.request.typical.IrisBody;
-import com.akvelon.client.model.validation.ApiSchema;
-import com.akvelon.client.model.validation.RequestBodySchema;
-import com.akvelon.client.model.validation.ReturnType;
-import com.akvelon.client.util.ApiValidator;
 import com.akvelon.client.util.JsonParser;
+import com.akvelon.client.util.TestDataBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -17,8 +14,9 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.*;
+
+import static com.akvelon.client.util.AssertionsUtil.*;
 
 public class MlemJClientTest {
     protected final static String HOST_URL = "http://example-mlem-get-started-app.herokuapp.com/";
@@ -32,8 +30,8 @@ public class MlemJClientTest {
      * /predict post-methods
      */
     private final String POST_PREDICT_PROBA = "predict_proba";
-    private final String POST_SKLEARN_PREDICT = "sklearn_predict";
-    private final String POST_SKLEARN_PREDICT_PROBA = "sklearn_predict_proba";
+    public static final String POST_SKLEARN_PREDICT = "sklearn_predict";
+    public static final String POST_SKLEARN_PREDICT_PROBA = "sklearn_predict_proba";
 
     @AfterAll
     @DisplayName("ExecutorService stopped")
@@ -49,71 +47,28 @@ public class MlemJClientTest {
     }
 
     @Test
-    @DisplayName("Test get /interface.json method with json response")
-    public void testGetInterfaceJson() throws ExecutionException, InterruptedException, IOException {
-        CompletableFuture<JsonNode> completableFuture = jClient.interfaceJsonAsync();
-        assertResponseJsonOrHandleException(completableFuture);
-        ApiSchema methodDesc = jsonParser.parseApiSchema(completableFuture.get());
-        Assertions.assertNotNull(methodDesc);
-    }
-
-    @Test
-    @DisplayName("Test get /interface.json method with json response")
-    public void testGetInterfaceRequest() throws ExecutionException, InterruptedException, IOException {
-        JsonNode response = jClient.interfaceJsonAsync().exceptionally(throwable -> {
-            InvalidHttpStatusCodeException invalidHttpStatusCodeException = (InvalidHttpStatusCodeException) throwable.getCause();
-            assertResponseException(invalidHttpStatusCodeException);
-            return null;
-        }).get();
-
-        if (response == null) {
-            return;
-        }
-
-        ApiSchema methodDesc = jsonParser.parseApiSchema(response);
-        Assertions.assertNotNull(methodDesc);
-
-        Map<String, RequestBodySchema> requestBodySchemas = methodDesc.getRequestBodySchemas();
-        Assertions.assertNotNull(requestBodySchemas);
-        for (Map.Entry<String, RequestBodySchema> entry : requestBodySchemas.entrySet()) {
-            String method = entry.getKey();
-            Assertions.assertNotNull(method);
-            RequestBodySchema requestBodySchema = entry.getValue();
-            Assertions.assertNotNull(requestBodySchema);
-            ReturnType returnType = requestBodySchema.getReturnsSchema();
-            Assertions.assertNotNull(returnType);
-            List<Integer> shape = returnType.getShape();
-            Assertions.assertNotNull(shape);
-            String dtype = returnType.getDtype();
-            Assertions.assertNotNull(dtype);
-            String ndarray = returnType.getType();
-            Assertions.assertNotNull(ndarray);
-        }
-    }
-
-    @Test
     @DisplayName("Test post /predict method with JSON response")
     public void testPredictJson() throws ExecutionException, InterruptedException, IOException {
-        assertResponseJsonOrHandleException(jClient.predict(TestDataFactory.buildDataRequestBody()));
+        assertResponseJsonOrHandleException(jClient.predict(TestDataBuilder.buildDataRequestBody()));
     }
 
     @Test
     @DisplayName("Test post /predict method with Request request and Json response")
     public void testPredictRequest() throws ExecutionException, InterruptedException, IOException {
-        RequestBody requestBody = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet());
+        RequestBody requestBody = TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSet());
         assertResponseJsonOrHandleException(jClient.predict(requestBody));
     }
 
     @Test
     @DisplayName("Test post /predictProba method with JSON request and response")
     public void testPredictProbaJson() throws ExecutionException, InterruptedException, IOException {
-        assertResponseJsonOrHandleException(jClient.call(POST_PREDICT_PROBA, TestDataFactory.buildDataRequestBody()));
+        assertResponseJsonOrHandleException(jClient.call(POST_PREDICT_PROBA, TestDataBuilder.buildDataRequestBody()));
     }
 
     @Test
     @DisplayName("Test post /predictProba method with Request request and Json response")
     public void testPredictProbaRequest() throws ExecutionException, InterruptedException, IOException {
-        RequestBody requestBody = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet());
+        RequestBody requestBody = TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSet());
 
         assertResponseJsonOrHandleException(jClient.call(POST_PREDICT_PROBA, requestBody));
     }
@@ -132,13 +87,13 @@ public class MlemJClientTest {
     @Test()
     @DisplayName("Test post /sklearnPredict method with JSON request and response")
     public void testSklearnPredictJson() throws InterruptedException, ExecutionException, IOException {
-        assertResponseJsonOrHandleException(jClient.call(POST_SKLEARN_PREDICT, TestDataFactory.buildXRequestBody()));
+        assertResponseJsonOrHandleException(jClient.call(POST_SKLEARN_PREDICT, TestDataBuilder.buildXRequestBody()));
     }
 
     @Test
     @DisplayName("Test post /sklearnPredictProba method with JSON request and response")
     public void testSklearnPredictProbaJson() throws InterruptedException, ExecutionException, IOException {
-        assertResponseJsonOrHandleException(jClient.call(POST_SKLEARN_PREDICT_PROBA, TestDataFactory.buildXRequestBody()));
+        assertResponseJsonOrHandleException(jClient.call(POST_SKLEARN_PREDICT_PROBA, TestDataBuilder.buildXRequestBody()));
     }
 
     @Test
@@ -146,7 +101,7 @@ public class MlemJClientTest {
     public void testGetInterfaceExecutorNull() throws ExecutionException, InterruptedException, IOException {
         MlemJClientImpl mlemJClient = new MlemJClientImpl(null, HOST_URL, LOGGER, true);
 
-        CompletableFuture<JsonNode> future = mlemJClient.predict(TestDataFactory.buildDataRequestBody());
+        CompletableFuture<JsonNode> future = mlemJClient.predict(TestDataBuilder.buildDataRequestBody());
         assertResponseJsonOrHandleException(future);
     }
 
@@ -157,9 +112,9 @@ public class MlemJClientTest {
 
         MlemJClientImpl mlemJClient = new MlemJClientImpl(executorService, HOST_URL, LOGGER, true);
         List<RequestBody> dataRequestList = Arrays.asList(
-                TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet()),
-                TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet()),
-                TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet()));
+                TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSet()),
+                TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSet()),
+                TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSet()));
         CompletableFuture<List<JsonNode>> completableFutures = mlemJClient.predict(dataRequestList);
 
         assertResponseListOrHandleException(completableFutures);
@@ -174,9 +129,9 @@ public class MlemJClientTest {
 
         MlemJClientImpl mlemJClient = new MlemJClientImpl(executorService, HOST_URL, LOGGER, true);
         List<RequestBody> dataRequestList = Arrays.asList(
-                TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet()),
-                TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet()),
-                TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSet()));
+                TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSet()),
+                TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSet()),
+                TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSet()));
         CompletableFuture<List<JsonNode>> completableFutures = mlemJClient.call(POST_PREDICT_PROBA, dataRequestList);
 
         assertResponseListOrHandleException(completableFutures);
@@ -187,7 +142,7 @@ public class MlemJClientTest {
     @Test
     @DisplayName("Test post /predict method with wrong column value type")
     public void testPredictRequestBadColumnType() throws IOException, ExecutionException, InterruptedException {
-        RequestBody requestBody = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongValue());
+        RequestBody requestBody = TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSetWrongValue());
         InvalidTypeException thrown = Assertions.assertThrows(InvalidTypeException.class, () -> jClient.predict(requestBody).get());
         Assertions.assertNotNull(thrown);
     }
@@ -195,23 +150,23 @@ public class MlemJClientTest {
     @Test
     @DisplayName("Test post /predict method with wrong column name")
     public void testPredictRequestBadColumnName() throws IOException {
-        RequestBody requestBody = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongName());
+        RequestBody requestBody = TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSetWrongName());
         KeyNotFoundException thrown = Assertions.assertThrows(KeyNotFoundException.class, () -> jClient.predict(requestBody).get());
         Assertions.assertNotNull(thrown);
     }
 
-    /*@Test
+    @Test
     @DisplayName("Test post /predict method with wrong column name")
     public void testPredictRequestBadColumnsCount() throws IOException {
-        RequestBody requestBody = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongCount());
+        RequestBody requestBody = TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSetWrongCount());
         IllegalColumnsNumberException thrown = Assertions.assertThrows(IllegalColumnsNumberException.class, () -> jClient.predict(requestBody).get());
         Assertions.assertNotNull(thrown);
-    }*/
+    }
 
     @Test
     @DisplayName("Test post /predict method with wrong parameter name")
     public void testPredictRequestBadParameterName() throws IOException {
-        RequestBody requestBody = TestDataFactory.buildRequest("data1", TestDataFactory.buildRecordSetWrongCount());
+        RequestBody requestBody = TestDataBuilder.buildRequest("data1", TestDataBuilder.buildRecordSetWrongCount());
         InvalidParameterNameException thrown = Assertions.assertThrows(InvalidParameterNameException.class, () -> jClient.predict(requestBody).get());
         Assertions.assertNotNull(thrown);
     }
@@ -219,7 +174,7 @@ public class MlemJClientTest {
     @Test
     @DisplayName("Test post /call method with wrong parameter name")
     public void testPredictRequestBadRequestName() throws IOException {
-        RequestBody requestBody = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongCount());
+        RequestBody requestBody = TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSetWrongCount());
         IllegalPathException thrown = Assertions.assertThrows(IllegalPathException.class, () -> jClient.call("illegalmethodname", requestBody).get());
         Assertions.assertNotNull(thrown);
     }
@@ -227,7 +182,7 @@ public class MlemJClientTest {
     @Test
     @DisplayName("Test post /call empty method")
     public void testCallEmptyMethod() throws IOException {
-        RequestBody requestBody = TestDataFactory.buildRequest("data", TestDataFactory.buildRecordSetWrongCount());
+        RequestBody requestBody = TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSetWrongCount());
         AssertionError thrown = Assertions.assertThrows(AssertionError.class, () -> jClient.call("", requestBody).get());
         Assertions.assertNotNull(thrown);
     }
@@ -260,7 +215,7 @@ public class MlemJClientTest {
         MlemJClientImpl mlemJClientImpl = new MlemJClientImpl(null, HOST_URL + 1, LOGGER, true);
 
         ExecutionException thrown = Assertions.assertThrows(ExecutionException.class,
-                () -> mlemJClientImpl.predict(TestDataFactory.buildDataRequestBody()).get());
+                () -> mlemJClientImpl.predict(TestDataBuilder.buildDataRequestBody()).get());
 
         Assertions.assertNotNull(thrown);
     }
@@ -269,114 +224,8 @@ public class MlemJClientTest {
     @DisplayName("Test post /predict method with invalid values property")
     public void testPredictJsonInvalidValues() {
         InvalidValuesException thrown = Assertions.assertThrows(InvalidValuesException.class,
-                () -> jClient.predict(TestDataFactory.buildDataRequestBodyInvalidValues()));
+                () -> jClient.predict(TestDataBuilder.buildDataRequestBodyInvalidValues()));
 
         Assertions.assertNotNull(thrown);
-    }
-
-    @Test
-    public void testPredictResponseValidation() throws ExecutionException, InterruptedException, IOException {
-        getSchemaAndValidateResponse("predict");
-    }
-
-    @Test
-    public void testSklearnPredictResponseValidation() throws ExecutionException, InterruptedException, IOException {
-        getSchemaAndValidateResponse(POST_SKLEARN_PREDICT);
-    }
-
-    private void getSchemaAndValidateResponse(String method) throws ExecutionException, InterruptedException, IOException {
-        CompletableFuture<JsonNode> future = jClient.interfaceJsonAsync();
-        assertResponseJsonOrHandleException(future);
-        JsonNode apiSchema = future.get();
-        new JsonParser().parseApiSchema(apiSchema);
-        new ApiValidator().validateResponse(method, TestDataFactory.buildResponse1(), new JsonParser().parseApiSchema(apiSchema));
-    }
-
-    @Test
-    public void testSklearnResponseValidationWithException() throws ExecutionException, InterruptedException, IOException {
-        CompletableFuture<JsonNode> future = jClient.interfaceJsonAsync();
-        assertResponseJsonOrHandleException(future);
-        JsonNode apiSchema = future.get();
-        new JsonParser().parseApiSchema(apiSchema);
-        IllegalArrayNestingLevel thrown = Assertions.assertThrows(
-                IllegalArrayNestingLevel.class,
-                () -> new ApiValidator().validateResponse(POST_SKLEARN_PREDICT_PROBA, TestDataFactory.buildResponse1(), new JsonParser().parseApiSchema(apiSchema))
-        );
-        Assertions.assertNotNull(thrown);
-    }
-
-    @Test
-    public void testSklearnResponseValidationWithException1() throws ExecutionException, InterruptedException, IOException {
-        CompletableFuture<JsonNode> future = jClient.interfaceJsonAsync();
-        assertResponseJsonOrHandleException(future);
-        JsonNode apiSchema = future.get();
-        new JsonParser().parseApiSchema(apiSchema);
-        IllegalArrayLength thrown = Assertions.assertThrows(
-                IllegalArrayLength.class,
-                () -> new ApiValidator().validateResponse(POST_SKLEARN_PREDICT_PROBA, TestDataFactory.buildResponse3(), new JsonParser().parseApiSchema(apiSchema))
-        );
-        Assertions.assertNotNull(thrown);
-    }
-
-    @Test
-    public void testSklearnResponseValidationWithNumberFormatException() throws ExecutionException, InterruptedException, IOException {
-        CompletableFuture<JsonNode> future = jClient.interfaceJsonAsync();
-        assertResponseJsonOrHandleException(future);
-        JsonNode apiSchema = future.get();
-        new JsonParser().parseApiSchema(apiSchema);
-        InvalidTypeException thrown = Assertions.assertThrows(
-                InvalidTypeException.class,
-                () -> new ApiValidator().validateResponse(POST_SKLEARN_PREDICT_PROBA, TestDataFactory.buildResponse2(), new JsonParser().parseApiSchema(apiSchema))
-        );
-        Assertions.assertNotNull(thrown);
-    }
-
-    private void assertResponseString(String response) {
-        Assertions.assertNotNull(response);
-        Assertions.assertFalse(response.isEmpty());
-    }
-
-    private void assertResponseJsonOrHandleException(CompletableFuture<JsonNode> future) throws ExecutionException, InterruptedException {
-        Assertions.assertNotNull(future);
-
-        JsonNode response = future
-                .exceptionally(throwable -> {
-                    InvalidHttpStatusCodeException invalidHttpStatusCodeException = (InvalidHttpStatusCodeException) throwable.getCause();
-                    assertResponseException(invalidHttpStatusCodeException);
-                    return null;
-                })
-                .get();
-
-        if (response == null) {
-            return;
-        }
-
-        Assertions.assertNotNull(response);
-        Assertions.assertFalse(response.isEmpty());
-    }
-
-    private <T> void assertResponseListOrHandleException(CompletableFuture<List<T>> future) throws ExecutionException, InterruptedException {
-        Assertions.assertNotNull(future);
-
-        List<T> response = future
-                .exceptionally(throwable -> {
-                    InvalidHttpStatusCodeException invalidHttpStatusCodeException = (InvalidHttpStatusCodeException) throwable.getCause();
-                    assertResponseException(invalidHttpStatusCodeException);
-                    return null;
-                })
-                .get();
-
-        if (response == null) {
-            return;
-        }
-
-        Assertions.assertNotNull(response);
-        Assertions.assertFalse(response.isEmpty());
-    }
-
-    private void assertResponseException(InvalidHttpStatusCodeException invalidHttpStatusCodeException) {
-        Assertions.assertNotNull(invalidHttpStatusCodeException);
-        Assertions.assertNotNull(invalidHttpStatusCodeException.getMessage(), invalidHttpStatusCodeException.getMessage());
-        assertResponseString(invalidHttpStatusCodeException.getMessage());
     }
 }

@@ -133,7 +133,7 @@ final class MlemJClientImpl implements MlemJClient {
      *
      * @return a JsonNode response wrapped in the CompletableFuture object.
      */
-    public CompletableFuture<JsonNode> interfaceJsonAsync() {
+    CompletableFuture<JsonNode> interfaceJsonAsync() {
         return sendGetRequest(GET_INTERFACE);
     }
 

@@ -45,14 +45,7 @@ git clone https://gitlab.akvelon.net/sdc/mlem-java/mlem-java.git
 
 MLEM JClient provides API for using MLEM technologies in your code with given schema. There are three methods for
 making requests: <br>
-1) **/interface.json**:
-
-- sends /interface.json get request;
-- can handle the exception;
-- returns a schema wrapped in the CompletableFuture object;
-- works asynchronously;
-
-2) **/predict**:
+1) **/predict**:
 
 - sends /predict post request with given body;
 - can have a Json or Request object as a body;
@@ -61,7 +54,7 @@ making requests: <br>
 - works asynchronously;
 - get the validation rules that apply to the request;
 
-3) **/call**:
+2) **/call**:
 
 - sends post request with given method and body;
 - can have a Json or Request object as a body;
@@ -87,22 +80,8 @@ System.Logger LOGGER = System.getLogger("logger name here");
 // create the client.
 MlemJClient mlemClient = MlemJClientFactory.createMlemJClient(executorService,HOST_URL,LOGGER);
 ```
-
-2) **Send the /interface.json request**
-```java
-// send the /inteface.json request.
-CompletableFuture<JsonNode> future = clientWithExecutor.interfaceJsonAsync();
-// handle the exception and get the response
-JsonNode response = future
-    .exceptionally(throwable -> {
-        InvalidHttpStatusCodeException invalidHttpStatusCodeException = 
-        (InvalidHttpStatusCodeException) throwable.getCause();
-        return null;
-    })
-    .get();
-```
         
-3) **Create the request body**
+2) **Create the request body**
 
 ```java 
 // create the Record object:
@@ -122,7 +101,7 @@ RequestBody requestBody = new RequestBody();
 requestBody.addParameter("data", recordSet);
  ```
 
-4) **Send the /predict request:**
+3) **Send the /predict request:**
 
 ```java 
 // send the /predict request.

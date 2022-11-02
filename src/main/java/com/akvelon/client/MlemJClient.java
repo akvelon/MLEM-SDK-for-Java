@@ -15,13 +15,6 @@ import java.util.concurrent.ExecutionException;
  */
 public interface MlemJClient {
     /**
-     * The method sends the /inteface.json get request to obtain a validation rules.
-     *
-     * @return a schema wrapped in the CompletableFuture object.
-     */
-    CompletableFuture<JsonNode> interfaceJsonAsync();
-
-    /**
      * The method sends the /predict post request with given JSON body.
      *
      * @param requestBody the requests data.
