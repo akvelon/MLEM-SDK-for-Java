@@ -20,16 +20,6 @@ import java.util.*;
  */
 public final class JsonParser {
     /**
-     * System.Logger instances log messages that will be routed to the underlying.
-     * logging framework the LoggerFinder uses.
-     */
-    private final System.Logger logger;
-
-    public JsonParser(System.Logger logger) {
-        this.logger = logger;
-    }
-
-    /**
      * Method to deserialize a ApiSchema object from given JSON schema.
      *
      * @param schema the JsonNode representation of ApiSchema.
@@ -74,7 +64,7 @@ public final class JsonParser {
 
         if (!args.isArray()) {
             String exceptionMessage = "args is not array: " + args;
-            if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
+            Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
             throw new InvalidArgsTypeException(exceptionMessage);
         }
 
@@ -109,7 +99,7 @@ public final class JsonParser {
             if (names.size() != dTypes.size()) {
                 String exceptionMessage = "Columns size must be equal to dtypes. " +
                         "Actual columns size: " + names.size() + ", actual dtypes size: " + dTypes.size() + ".";
-                if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
+                Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
                 throw new IllegalColumnsNumberException(exceptionMessage);
             }
 
@@ -126,7 +116,7 @@ public final class JsonParser {
             JsonNode shapes = type_.get("shape");
             if (!shapes.isArray()) {
                 String exceptionMessage = "shapes is not array: " + shapes;
-                if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
+                Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
                 throw new InvalidRecordSetTypeException(exceptionMessage);
             }
 
@@ -151,7 +141,7 @@ public final class JsonParser {
             JsonNode items = type_.get("items");
             if (!items.isArray()) {
                 String exceptionMessage = "items is not array: " + items;
-                if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
+                Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
                 throw new InvalidRecordSetTypeException(exceptionMessage);
             }
 
@@ -165,7 +155,7 @@ public final class JsonParser {
         }
 
         String exceptionMessage = "RecordSet type is not dataframe or list: " + recordSetDescType;
-        if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
+        Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
         throw new InvalidRecordSetTypeException(exceptionMessage);
     }
 
@@ -183,7 +173,7 @@ public final class JsonParser {
 
         if (!(shapes instanceof ArrayNode)) {
             String exceptionMessage = "shape is not array: " + returnsJsonNode;
-            if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
+            Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
             throw new InvalidArgsTypeException(exceptionMessage);
         }
 
@@ -230,7 +220,7 @@ public final class JsonParser {
 
         if (jsonNode == null) {
             String exceptionMessage = "Can not find property values in data: " + recordSetJson;
-            if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
+            Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
             throw new InvalidValuesException(exceptionMessage);
         }
 

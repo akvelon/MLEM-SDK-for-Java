@@ -24,7 +24,7 @@ public class MlemJClientTest {
     protected final static String HOST_URL = "http://example-mlem-get-started-app.herokuapp.com/";
     private final static ExecutorService executorService = Executors.newFixedThreadPool(10);
     protected static final System.Logger LOGGER = System.getLogger(MlemJClientTest.class.getName());
-    private static final JsonParser jsonParser = new JsonParser(LOGGER);
+    private static final JsonParser jsonParser = new JsonParser();
 
     protected MlemJClient jClient = MlemJClientFactory.createMlemJClient(executorService, HOST_URL, LOGGER, true);
 
@@ -288,8 +288,8 @@ public class MlemJClientTest {
         CompletableFuture<JsonNode> future = jClient.interfaceJsonAsync();
         assertResponseJsonOrHandleException(future);
         JsonNode apiSchema = future.get();
-        new JsonParser(LOGGER).parseApiSchema(apiSchema);
-        new ApiValidator(LOGGER).validateResponse(method, TestDataFactory.buildResponse1(), new JsonParser(LOGGER).parseApiSchema(apiSchema));
+        new JsonParser().parseApiSchema(apiSchema);
+        new ApiValidator().validateResponse(method, TestDataFactory.buildResponse1(), new JsonParser().parseApiSchema(apiSchema));
     }
 
     @Test
@@ -297,10 +297,10 @@ public class MlemJClientTest {
         CompletableFuture<JsonNode> future = jClient.interfaceJsonAsync();
         assertResponseJsonOrHandleException(future);
         JsonNode apiSchema = future.get();
-        new JsonParser(LOGGER).parseApiSchema(apiSchema);
+        new JsonParser().parseApiSchema(apiSchema);
         IllegalArrayNestingLevel thrown = Assertions.assertThrows(
                 IllegalArrayNestingLevel.class,
-                () -> new ApiValidator(LOGGER).validateResponse(POST_SKLEARN_PREDICT_PROBA, TestDataFactory.buildResponse1(), new JsonParser(LOGGER).parseApiSchema(apiSchema))
+                () -> new ApiValidator().validateResponse(POST_SKLEARN_PREDICT_PROBA, TestDataFactory.buildResponse1(), new JsonParser().parseApiSchema(apiSchema))
         );
         Assertions.assertNotNull(thrown);
     }
@@ -310,10 +310,10 @@ public class MlemJClientTest {
         CompletableFuture<JsonNode> future = jClient.interfaceJsonAsync();
         assertResponseJsonOrHandleException(future);
         JsonNode apiSchema = future.get();
-        new JsonParser(LOGGER).parseApiSchema(apiSchema);
+        new JsonParser().parseApiSchema(apiSchema);
         IllegalArrayLength thrown = Assertions.assertThrows(
                 IllegalArrayLength.class,
-                () -> new ApiValidator(LOGGER).validateResponse(POST_SKLEARN_PREDICT_PROBA, TestDataFactory.buildResponse3(), new JsonParser(LOGGER).parseApiSchema(apiSchema))
+                () -> new ApiValidator().validateResponse(POST_SKLEARN_PREDICT_PROBA, TestDataFactory.buildResponse3(), new JsonParser().parseApiSchema(apiSchema))
         );
         Assertions.assertNotNull(thrown);
     }
@@ -323,10 +323,10 @@ public class MlemJClientTest {
         CompletableFuture<JsonNode> future = jClient.interfaceJsonAsync();
         assertResponseJsonOrHandleException(future);
         JsonNode apiSchema = future.get();
-        new JsonParser(LOGGER).parseApiSchema(apiSchema);
+        new JsonParser().parseApiSchema(apiSchema);
         InvalidTypeException thrown = Assertions.assertThrows(
                 InvalidTypeException.class,
-                () -> new ApiValidator(LOGGER).validateResponse(POST_SKLEARN_PREDICT_PROBA, TestDataFactory.buildResponse2(), new JsonParser(LOGGER).parseApiSchema(apiSchema))
+                () -> new ApiValidator().validateResponse(POST_SKLEARN_PREDICT_PROBA, TestDataFactory.buildResponse2(), new JsonParser().parseApiSchema(apiSchema))
         );
         Assertions.assertNotNull(thrown);
     }

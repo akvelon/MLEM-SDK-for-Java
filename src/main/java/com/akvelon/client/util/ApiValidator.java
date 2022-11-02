@@ -15,16 +15,6 @@ import java.util.Map;
  */
 public final class ApiValidator {
     /**
-     * System.Logger instances log messages that will be routed to the underlying.
-     * logging framework the LoggerFinder uses.
-     */
-    private final System.Logger logger;
-
-    public ApiValidator(System.Logger logger) {
-        this.logger = logger;
-    }
-
-    /**
      * Validate Request object by given schema represented in ApiSchema.
      * Throw exception if the specified path is not exist.
      *
@@ -44,7 +34,7 @@ public final class ApiValidator {
         if (!requestDescriptions.containsKey(path)) {
             String exceptionMessage = "The method " + path
                     + " is not found in schema; Available methods list: " + requestDescriptions.keySet() + ".";
-            if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
+            Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
             throw new IllegalPathException(exceptionMessage);
         }
 
@@ -64,7 +54,7 @@ public final class ApiValidator {
         if (parameters.size() != parameterDescMap.size()) {
             String exceptionMessage = "Actual parameters number: " + parameters.size()
                     + ", expected: " + parameterDescMap.size();
-            if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
+            Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
             throw new IllegalParameterNumberException(exceptionMessage);
         }
 
@@ -73,7 +63,7 @@ public final class ApiValidator {
             if (!parameters.containsKey(entryDesc.getKey())) {
                 String exceptionMessage = "Actual parameters: " + parameters.keySet().toString().replaceAll("[\\[\\],]", "")
                         + ", expected: " + entryDesc.getKey();
-                if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
+                Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
                 throw new InvalidParameterNameException(exceptionMessage);
             }
 
@@ -107,7 +97,7 @@ public final class ApiValidator {
         if (columns.size() != columnsDesc.size()) {
             String exceptionMessage = "Actual columns number: " + columns.size()
                     + ", expected: " + columnsDesc.size();
-            if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
+            Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
             throw new IllegalColumnsNumberException(exceptionMessage);
         }
 
@@ -116,7 +106,7 @@ public final class ApiValidator {
                 String exceptionMessage = "Can't find: '" + recordSetColumnSchema.getName() +
                         "' property in request object, although is exists in schema: "
                         + "'" + recordSetSchema + "'";
-                if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
+                Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
                 throw new KeyNotFoundException(exceptionMessage);
             }
 
@@ -125,7 +115,7 @@ public final class ApiValidator {
     }
 
     /**
-     * Validate data type by given schema.
+     * Validate actual number data type by given expected type.
      * Throw exception if the specified number is not equal to type description.
      *
      * @param actualNumber the number to validate.
@@ -135,27 +125,48 @@ public final class ApiValidator {
     private void validateNumberType(Number actualNumber, DataType expectedType, String property) {
         for (DataType dataType : DataType.values()) {
             if (!actualNumber.equals(0) && expectedType.equals(dataType)) {
-                validateType(actualNumber, property, dataType);
+                determineType(actualNumber, property, dataType);
             }
         }
     }
 
-    private void validateType(Number actualNumber, String property,
-                              DataType actualType) {
+    /**
+     * Determines if the specified actual number is assignment-compatible with the actual type
+     * represented by DataType.
+     *
+     * @param actualNumber the number to determine.
+     * @param property     the property name.
+     * @param actualType   the type description provided by schema.
+     */
+    private void determineType(Number actualNumber, String property,
+                               DataType actualType) {
         if (!(actualType.getClazz().isInstance(actualNumber))) {
             String exceptionMessage = "Value " + actualNumber + " for property '" + property + "' is not " +
                     "compatible with expected type - " + actualType;
-            if (logger != null) logger.log(System.Logger.Level.ERROR, exceptionMessage);
+            Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
             throw new InvalidTypeException(exceptionMessage);
         }
     }
 
+    /**
+     * Validate Response object by given schema represented in ApiSchema.
+     *
+     * @param path      the method name for the request.
+     * @param response  the Response object to validate.
+     * @param apiSchema the schema represented in ApiSchema object.
+     */
     public void validateResponse(String path, JsonNode response, ApiSchema apiSchema) {
         RequestBodySchema requestBodySchema = validatePathAndGetRequestBodySchema(path, apiSchema);
 
         validateSingleResponse(response, requestBodySchema.getReturnsSchema());
     }
 
+    /**
+     * Validate Response object by given response description.
+     *
+     * @param response   the Response object to validate.
+     * @param returnType the response description provided by schema.
+     */
     private void validateSingleResponse(JsonNode response, ReturnType returnType) {
         if (response == null) {
             throw new InvalidResponseTypeException("There is a null value in response.");
@@ -169,6 +180,14 @@ public final class ApiValidator {
         validateArrayNesting(response, returnType.getShape(), 1, returnType.getDtype());
     }
 
+    /**
+     * Validate Response array object by given shapes, nesting level and type.
+     *
+     * @param array        the array object to validate.
+     * @param shapes       the list contains an array sizes.
+     * @param nestingLevel an array dimension.
+     * @param dtype         the type of element
+     */
     private void validateArrayNesting(JsonNode array, List<Integer> shapes, int nestingLevel, String dtype) {
         // shapes contains one null element
         // so nothing to validate.

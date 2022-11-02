@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class JsonParserTest {
     private static final System.Logger LOGGER = System.getLogger(JsonParserTest.class.getName());
-    private static final JsonParser JSON_PARSER = new JsonParser(LOGGER);
+    private static final JsonParser JSON_PARSER = new JsonParser();
 
     @Test
     public void testRequest() throws IOException {
