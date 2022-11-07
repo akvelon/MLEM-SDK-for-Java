@@ -1,14 +1,13 @@
-package com.akvelon.client;
+package com.akvelon.client.util;
 
 import com.akvelon.client.model.request.Record;
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.RequestBody;
-import com.akvelon.client.util.JsonMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Assertions;
 
-public class TestDataFactory {
+public class TestDataBuilder {
     private static final String dataRequestBody = "{\n" +
             "  \"data\": {\n" +
             "    \"values\": [\n" +
@@ -58,6 +57,18 @@ public class TestDataFactory {
 
     public static JsonNode buildXRequestBody() throws JsonProcessingException {
         return JsonMapper.readValue(xRequestBody, JsonNode.class);
+    }
+
+    public static JsonNode buildResponse1() throws JsonProcessingException {
+        return JsonMapper.readValue("[1, 2]", JsonNode.class);
+    }
+
+    public static JsonNode buildResponse2() throws JsonProcessingException {
+        return JsonMapper.readValue("[[1.7, 2, 17]]", JsonNode.class);
+    }
+
+    public static JsonNode buildResponse3() throws JsonProcessingException {
+        return JsonMapper.readValue("[[1.7, 2.1]]", JsonNode.class);
     }
 
     public static RecordSet buildRecordSet() throws JsonProcessingException {

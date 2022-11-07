@@ -3,6 +3,7 @@ package com.akvelon.client;
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.RequestBody;
 import com.akvelon.client.util.JsonMapper;
+import com.akvelon.client.util.TestDataBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Assertions;
@@ -27,15 +28,15 @@ public class RequestBodyMappingTest {
     @Test
     @DisplayName("Test a deserialization JSON content from given RecordSet content.")
     public void testRecordSetToJsonNode() throws JsonProcessingException {
-        JsonNode jsonArray = TestDataFactory.buildRecordSet().toJson("data");
+        JsonNode jsonArray = TestDataBuilder.buildRecordSet().toJson("data");
         Assertions.assertNotNull(jsonArray);
     }
 
     @Test
     @DisplayName("Test a deserialization JSON content from given Request content.")
     public void testRequestToJsonNode() throws JsonProcessingException {
-        RecordSet recordSet = TestDataFactory.buildRecordSet();
-        RequestBody requestBody = TestDataFactory.buildRequest("data", recordSet);
+        RecordSet recordSet = TestDataBuilder.buildRecordSet();
+        RequestBody requestBody = TestDataBuilder.buildRequest("data", recordSet);
         JsonNode jsonNode = requestBody.toJson();
 
         Assertions.assertNotNull(jsonNode);

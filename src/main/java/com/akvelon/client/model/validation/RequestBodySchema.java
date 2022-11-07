@@ -11,17 +11,17 @@ public final class RequestBodySchema {
      */
     private final Map<String, RecordSetSchema> parameterDescMap;
     /**
-     * The request return type.
+     * The request return schema.
      */
-    private final DataType returnType;
+    private final ReturnType returnType;
 
     /**
      * Construct a new RequestDesc.
      *
      * @param parameterDescMap the request parameters description.
-     * @param returnType       the request return type.
+     * @param returnType    the request return schema.
      */
-    public RequestBodySchema(Map<String, RecordSetSchema> parameterDescMap, DataType returnType) {
+    public RequestBodySchema(Map<String, RecordSetSchema> parameterDescMap, ReturnType returnType) {
         this.parameterDescMap = parameterDescMap;
         this.returnType = returnType;
     }
@@ -30,7 +30,7 @@ public final class RequestBodySchema {
         return parameterDescMap;
     }
 
-    public DataType getReturnType() {
+    public ReturnType getReturnsSchema() {
         return returnType;
     }
 }

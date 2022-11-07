@@ -75,7 +75,7 @@ public final class JsonMapper {
 
     /**
      * @param property the name of property to set value.
-     * @param records      the list of record values.
+     * @param records  the list of record values.
      * @return This node after adding property value.
      * @throws JsonProcessingException caused when processing JSON finished with a problem.
      */

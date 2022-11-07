@@ -1,5 +1,7 @@
 package com.akvelon.client.model.validation;
 
+import java.util.List;
+
 /**
  * A class that provides the record set column description.
  */
@@ -7,11 +9,16 @@ public final class RecordSetColumnSchema {
     /**
      * The column name.
      */
-    private final String name;
+    private String name;
     /**
      * The column type.
      */
     private final DataType type;
+
+    /**
+     * Shapes list.
+     */
+    private List<Integer> shape;
 
     /**
      * Construct the new RecordSetColumn.
@@ -24,11 +31,29 @@ public final class RecordSetColumnSchema {
         this.type = type;
     }
 
+    /**
+     * Construct the new RecordSetColumn.
+     *
+     * @param type the column type.
+     */
+    public RecordSetColumnSchema(DataType type) {
+        this.type = type;
+    }
+
+    public RecordSetColumnSchema(DataType type, List<Integer> shape) {
+        this.type = type;
+        this.shape = shape;
+    }
+
     public String getName() {
         return name;
     }
 
     public DataType getType() {
         return type;
+    }
+
+    public List<Integer> getShape() {
+        return shape;
     }
 }

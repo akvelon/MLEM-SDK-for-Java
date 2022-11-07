@@ -4,6 +4,7 @@ import com.akvelon.client.model.request.Record;
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.RequestBody;
 import com.akvelon.client.util.JsonParser;
+import com.akvelon.client.util.TestDataBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -12,12 +13,12 @@ import java.util.List;
 import java.util.Map;
 
 public class JsonParserTest {
-    private static final System.Logger LOGGER = System.getLogger(MlemJClientImplTest.class.getName());
-    private static final JsonParser JSON_PARSER = new JsonParser(LOGGER);
+    private static final System.Logger LOGGER = System.getLogger(JsonParserTest.class.getName());
+    private static final JsonParser JSON_PARSER = new JsonParser();
 
     @Test
     public void testRequest() throws IOException {
-        RequestBody requestBody = JSON_PARSER.parseRequestBody(TestDataFactory.buildDataRequestBody());
+        RequestBody requestBody = JSON_PARSER.parseRequestBody(TestDataBuilder.buildDataRequestBody());
         Assertions.assertNotNull(requestBody);
 
         Map<String, RecordSet> parameters = requestBody.getParameters();
