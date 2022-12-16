@@ -1,5 +1,9 @@
 package com.akvelon.client.model.validation;
 
+import com.akvelon.client.resources.EM;
+
+import java.util.List;
+
 /**
  * An enumeration that provides available data types.
  */
@@ -15,7 +19,8 @@ public enum DataType {
     Uint32("uint32", Integer.class),
     Uint64("uint64", Long.class),
     Bool("bool", Boolean.class),
-    Str("primitive", String.class);
+    Str("primitive", String.class),
+    Ndarray("ndarray", List.class);
 
     public final String type;
     private final Class clazz;
@@ -42,8 +47,9 @@ public enum DataType {
                 return dataType;
             }
         }
+
         // throw exception, if the parameter is not exists.
-        throw new IllegalArgumentException("Unknown value type in response " + type);
+        throw new IllegalArgumentException(String.format(EM.NoValidationLogic, type));
     }
 
     public Class getClazz() {

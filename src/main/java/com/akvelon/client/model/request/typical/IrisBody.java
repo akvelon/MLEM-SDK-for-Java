@@ -5,7 +5,7 @@ import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.RequestBody;
 
 /**
- * A class that provides the Iris request parameters.
+ * A class that provides the Iris request body as an example request.
  */
 public final class IrisBody extends RequestBody {
     /**

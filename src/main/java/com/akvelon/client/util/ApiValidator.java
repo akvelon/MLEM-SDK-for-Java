@@ -5,6 +5,7 @@ import com.akvelon.client.model.request.Record;
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.RequestBody;
 import com.akvelon.client.model.validation.*;
+import com.akvelon.client.resources.EM;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.List;
@@ -52,8 +53,7 @@ public final class ApiValidator {
         Map<String, RecordSet> parameters = requestBody.getParameters();
         Map<String, RecordSetSchema> parameterDescMap = requestBodySchema.getParameterDescMap();
         if (parameters.size() != parameterDescMap.size()) {
-            String exceptionMessage = "Actual parameters number: " + parameters.size()
-                    + ", expected: " + parameterDescMap.size();
+            String exceptionMessage = String.format(EM.InvalidParametersCount, parameters.size(), parameterDescMap.size());
             Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
             throw new IllegalParameterNumberException(exceptionMessage);
         }
@@ -110,6 +110,12 @@ public final class ApiValidator {
                 throw new KeyNotFoundException(exceptionMessage);
             }
 
+            String argProperty = recordSetColumnSchema.getName();
+            if (argProperty == null || argProperty.isEmpty()) {
+                String exceptionMessage = EM.EmptyArgument;
+                Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
+                throw new EmptyArgumentException(exceptionMessage);
+            }
             validateNumberType(columns.get(recordSetColumnSchema.getName()), recordSetColumnSchema.getType(), recordSetColumnSchema.getName());
         }
     }
@@ -141,8 +147,9 @@ public final class ApiValidator {
     private void determineType(Number actualNumber, String property,
                                DataType actualType) {
         if (!(actualType.getClazz().isInstance(actualNumber))) {
-            String exceptionMessage = "Value " + actualNumber + " for property '" + property + "' is not " +
-                    "compatible with expected type - " + actualType;
+            String exceptionMessage = String.format(EM.InvalidType, actualNumber, actualType)
+                    + " for property '" + property + "'";
+
             Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
             throw new InvalidTypeException(exceptionMessage);
         }
@@ -186,7 +193,7 @@ public final class ApiValidator {
      * @param array        the array object to validate.
      * @param shapes       the list contains an array sizes.
      * @param nestingLevel an array dimension.
-     * @param dtype         the type of element
+     * @param dtype        the type of element
      */
     private void validateArrayNesting(JsonNode array, List<Integer> shapes, int nestingLevel, String dtype) {
         // shapes contains one null element

@@ -1,7 +1,6 @@
 package com.akvelon.client.util;
 
 import com.akvelon.client.exception.InvalidHttpStatusCodeException;
-import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Assertions;
 
 import java.util.List;
@@ -14,10 +13,10 @@ public class AssertionsUtil {
         Assertions.assertFalse(response.isEmpty());
     }
 
-    public static void assertResponseJsonOrHandleException(CompletableFuture<JsonNode> future) throws ExecutionException, InterruptedException {
+    public static <T> void assertResponseJsonOrHandleException(CompletableFuture<T> future) throws ExecutionException, InterruptedException {
         Assertions.assertNotNull(future);
 
-        JsonNode response = future
+        T response = future
                 .exceptionally(throwable -> {
                     InvalidHttpStatusCodeException invalidHttpStatusCodeException = (InvalidHttpStatusCodeException) throwable.getCause();
                     assertResponseException(invalidHttpStatusCodeException);
@@ -30,7 +29,6 @@ public class AssertionsUtil {
         }
 
         Assertions.assertNotNull(response);
-        Assertions.assertFalse(response.isEmpty());
     }
 
     public static <T> void assertResponseListOrHandleException(CompletableFuture<List<T>> future) throws ExecutionException, InterruptedException {

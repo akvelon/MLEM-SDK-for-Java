@@ -1,12 +1,10 @@
 package com.akvelon.client.util;
 
-import com.akvelon.client.exception.IllegalColumnsNumberException;
-import com.akvelon.client.exception.InvalidArgsTypeException;
-import com.akvelon.client.exception.InvalidRecordSetTypeException;
-import com.akvelon.client.exception.InvalidValuesException;
+import com.akvelon.client.exception.*;
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.RequestBody;
 import com.akvelon.client.model.validation.*;
+import com.akvelon.client.resources.EM;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -63,7 +61,7 @@ public final class JsonParser {
         JsonNode args = entry.getValue().get("args");
 
         if (!args.isArray()) {
-            String exceptionMessage = "args is not array: " + args;
+            String exceptionMessage = EM.InvalidApiSchema + ", args is not array: " + args;
             Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
             throw new InvalidArgsTypeException(exceptionMessage);
         }
@@ -97,7 +95,7 @@ public final class JsonParser {
             List<String> names = JsonMapper.readList(columns);
             List<String> dTypes = JsonMapper.readList(dtypes);
             if (names.size() != dTypes.size()) {
-                String exceptionMessage = "Columns size must be equal to dtypes. " +
+                String exceptionMessage = EM.InvalidApiSchema + ", columns size must be equal to dtypes. " +
                         "Actual columns size: " + names.size() + ", actual dtypes size: " + dTypes.size() + ".";
                 Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
                 throw new IllegalColumnsNumberException(exceptionMessage);
@@ -115,9 +113,9 @@ public final class JsonParser {
         if (recordSetDescType.equals("ndarray")) {
             JsonNode shapes = type_.get("shape");
             if (!shapes.isArray()) {
-                String exceptionMessage = "shapes is not array: " + shapes;
+                String exceptionMessage = EM.InvalidApiSchema + ", shapes is not array: " + shapes;
                 Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
-                throw new InvalidRecordSetTypeException(exceptionMessage);
+                throw new InvalidTypeException(exceptionMessage);
             }
 
             List<Integer> shapesList = new ArrayList<>();
@@ -140,9 +138,9 @@ public final class JsonParser {
         if (recordSetDescType.equals("list")) {
             JsonNode items = type_.get("items");
             if (!items.isArray()) {
-                String exceptionMessage = "items is not array: " + items;
+                String exceptionMessage = EM.InvalidApiSchema + ", items is not array: " + items;
                 Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
-                throw new InvalidRecordSetTypeException(exceptionMessage);
+                throw new InvalidTypeException(exceptionMessage);
             }
 
             List<RecordSetColumnSchema> recordSetColumnSchemas = new ArrayList<>();
@@ -154,9 +152,10 @@ public final class JsonParser {
             return new RecordSetSchema(recordSetDescType, recordSetColumnSchemas);
         }
 
-        String exceptionMessage = "RecordSet type is not dataframe or list: " + recordSetDescType;
+        String exceptionMessage = EM.InvalidApiSchema + ", " + String.format(EM.UknownMethodArgument, recordSetDescType);
+
         Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
-        throw new InvalidRecordSetTypeException(exceptionMessage);
+        throw new NotSupportedTypeException(exceptionMessage);
     }
 
     /**
@@ -172,7 +171,7 @@ public final class JsonParser {
         }
 
         if (!(shapes instanceof ArrayNode)) {
-            String exceptionMessage = "shape is not array: " + returnsJsonNode;
+            String exceptionMessage = EM.InvalidApiSchema + ", shape is not array: " + returnsJsonNode;
             Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
             throw new InvalidArgsTypeException(exceptionMessage);
         }
@@ -219,7 +218,7 @@ public final class JsonParser {
         JsonNode jsonNode = recordSetJson.findValue("values");
 
         if (jsonNode == null) {
-            String exceptionMessage = "Can not find property values in data: " + recordSetJson;
+            String exceptionMessage = EM.InvalidApiSchema + " can not find property values in data: " + recordSetJson;
             Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
             throw new InvalidValuesException(exceptionMessage);
         }

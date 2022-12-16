@@ -2,7 +2,6 @@ package com.akvelon.client;
 
 import com.akvelon.client.exception.IllegalArrayLength;
 import com.akvelon.client.exception.IllegalArrayNestingLevel;
-import com.akvelon.client.exception.InvalidHttpStatusCodeException;
 import com.akvelon.client.exception.InvalidTypeException;
 import com.akvelon.client.model.validation.ApiSchema;
 import com.akvelon.client.model.validation.RequestBodySchema;
@@ -10,7 +9,6 @@ import com.akvelon.client.model.validation.ReturnType;
 import com.akvelon.client.util.ApiValidator;
 import com.akvelon.client.util.JsonParser;
 import com.akvelon.client.util.TestDataBuilder;
-import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,37 +19,16 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import static com.akvelon.client.util.AssertionsUtil.assertResponseException;
-import static com.akvelon.client.util.AssertionsUtil.assertResponseJsonOrHandleException;
 import static com.akvelon.client.MlemJClientTest.*;
+import static com.akvelon.client.util.AssertionsUtil.assertResponseJsonOrHandleException;
 
 public class SchemaTest {
-    private static final JsonParser jsonParser = new JsonParser();
-    private final MlemJClientImpl jClient = new MlemJClientImpl(HOST_URL, LOGGER, true);
+    private final MlemJClient jClient = new MlemJClientImpl(HOST_URL, LOGGER, true);
 
     @Test
     @DisplayName("Test get /interface.json method with json response")
-    public void testGetInterfaceJson() throws ExecutionException, InterruptedException, IOException {
-        CompletableFuture<JsonNode> completableFuture = jClient.interfaceJsonAsync();
-        assertResponseJsonOrHandleException(completableFuture);
-        ApiSchema methodDesc = jsonParser.parseApiSchema(completableFuture.get());
-        Assertions.assertNotNull(methodDesc);
-    }
-
-    @Test
-    @DisplayName("Test get /interface.json method with json response")
-    public void testGetInterfaceRequest() throws ExecutionException, InterruptedException, IOException {
-        JsonNode response = jClient.interfaceJsonAsync().exceptionally(throwable -> {
-            InvalidHttpStatusCodeException invalidHttpStatusCodeException = (InvalidHttpStatusCodeException) throwable.getCause();
-            assertResponseException(invalidHttpStatusCodeException);
-            return null;
-        }).get();
-
-        if (response == null) {
-            return;
-        }
-
-        ApiSchema methodDesc = jsonParser.parseApiSchema(response);
+    public void testGetInterfaceRequest() throws ExecutionException, InterruptedException {
+        ApiSchema methodDesc = jClient.interfaceJsonAsync().get();
         Assertions.assertNotNull(methodDesc);
 
         Map<String, RequestBodySchema> requestBodySchemas = methodDesc.getRequestBodySchemas();
@@ -83,48 +60,43 @@ public class SchemaTest {
     }
 
     private void getSchemaAndValidateResponse(String method) throws ExecutionException, InterruptedException, IOException {
-        CompletableFuture<JsonNode> future = jClient.interfaceJsonAsync();
+        CompletableFuture<ApiSchema> future = jClient.interfaceJsonAsync();
         assertResponseJsonOrHandleException(future);
-        JsonNode apiSchema = future.get();
-        new JsonParser().parseApiSchema(apiSchema);
-        new ApiValidator().validateResponse(method, TestDataBuilder.buildResponse1(), new JsonParser().parseApiSchema(apiSchema));
+        ApiSchema apiSchema = future.get();
+        new ApiValidator().validateResponse(method, TestDataBuilder.buildResponse1(), apiSchema);
     }
 
     @Test
-    public void testSklearnResponseValidationWithException() throws ExecutionException, InterruptedException, IOException {
-        CompletableFuture<JsonNode> future = jClient.interfaceJsonAsync();
+    public void testSklearnResponseValidationWithException() throws ExecutionException, InterruptedException {
+        CompletableFuture<ApiSchema> future = jClient.interfaceJsonAsync();
         assertResponseJsonOrHandleException(future);
-        JsonNode apiSchema = future.get();
-        new JsonParser().parseApiSchema(apiSchema);
         IllegalArrayNestingLevel thrown = Assertions.assertThrows(
                 IllegalArrayNestingLevel.class,
-                () -> new ApiValidator().validateResponse(POST_SKLEARN_PREDICT_PROBA, TestDataBuilder.buildResponse1(), new JsonParser().parseApiSchema(apiSchema))
+                () -> new ApiValidator().validateResponse(POST_SKLEARN_PREDICT_PROBA, TestDataBuilder.buildResponse1(), future.get())
         );
         Assertions.assertNotNull(thrown);
     }
 
     @Test
-    public void testSklearnResponseValidationWithException1() throws ExecutionException, InterruptedException, IOException {
-        CompletableFuture<JsonNode> future = jClient.interfaceJsonAsync();
+    public void testSklearnResponseValidationWithException1() throws ExecutionException, InterruptedException {
+        CompletableFuture<ApiSchema> future = jClient.interfaceJsonAsync();
         assertResponseJsonOrHandleException(future);
-        JsonNode apiSchema = future.get();
-        new JsonParser().parseApiSchema(apiSchema);
+        ApiSchema apiSchema = future.get();
         IllegalArrayLength thrown = Assertions.assertThrows(
                 IllegalArrayLength.class,
-                () -> new ApiValidator().validateResponse(POST_SKLEARN_PREDICT_PROBA, TestDataBuilder.buildResponse3(), new JsonParser().parseApiSchema(apiSchema))
+                () -> new ApiValidator().validateResponse(POST_SKLEARN_PREDICT_PROBA, TestDataBuilder.buildResponse3(), apiSchema)
         );
         Assertions.assertNotNull(thrown);
     }
 
     @Test
-    public void testSklearnResponseValidationWithNumberFormatException() throws ExecutionException, InterruptedException, IOException {
-        CompletableFuture<JsonNode> future = jClient.interfaceJsonAsync();
+    public void testSklearnResponseValidationWithNumberFormatException() throws ExecutionException, InterruptedException {
+        CompletableFuture<ApiSchema> future = jClient.interfaceJsonAsync();
         assertResponseJsonOrHandleException(future);
-        JsonNode apiSchema = future.get();
-        new JsonParser().parseApiSchema(apiSchema);
+        ApiSchema apiSchema = future.get();
         InvalidTypeException thrown = Assertions.assertThrows(
                 InvalidTypeException.class,
-                () -> new ApiValidator().validateResponse(POST_SKLEARN_PREDICT_PROBA, TestDataBuilder.buildResponse2(), new JsonParser().parseApiSchema(apiSchema))
+                () -> new ApiValidator().validateResponse(POST_SKLEARN_PREDICT_PROBA, TestDataBuilder.buildResponse2(), apiSchema)
         );
         Assertions.assertNotNull(thrown);
     }

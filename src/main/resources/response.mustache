@@ -1,0 +1,13 @@
+package {{packages}}
+
+import com.akvelon.client.model.response.ArrayValue;
+import com.akvelon.client.model.response.ResponseBody;
+import com.akvelon.client.model.validation.DataType;
+
+import java.util.List;
+
+public final class {{className}} extends ResponseBody {
+    public {{className}}({{#properties}}{{type}} {{argument}}{{/properties}}) {
+        super({{#properties}}{{superFirstArgument}}, {{superSecondArgument}}{{/properties}});
+    }
+}

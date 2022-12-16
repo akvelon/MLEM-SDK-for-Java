@@ -1,8 +1,8 @@
 package com.akvelon.client;
 
 import com.akvelon.client.model.request.RequestBody;
+import com.akvelon.client.model.response.ResponseBody;
 import com.akvelon.client.util.TestDataBuilder;
-import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,7 @@ public class MlemJClientWithoutValidationTest extends MlemJClientTest {
     @DisplayName("Test post /predict method with wrong column value type")
     public void testPredictRequestBadColumnType() throws IOException, ExecutionException, InterruptedException {
         RequestBody requestBody = TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSetWrongValue());
-        JsonNode jsonNode = jClient.predict(requestBody).get();
+        ResponseBody jsonNode = jClient.predict(requestBody).get();
         Assertions.assertNotNull(jsonNode);
     }
 

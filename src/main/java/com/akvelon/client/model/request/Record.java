@@ -2,6 +2,7 @@ package com.akvelon.client.model.request;
 
 import com.akvelon.client.model.request.typical.IrisProperty;
 import com.akvelon.client.model.request.typical.RegModelProperty;
+import com.akvelon.client.model.request.typical.WineColumn;
 import com.akvelon.client.util.JsonMapper;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -53,6 +54,10 @@ public final class Record {
 
     public void addColumn(RegModelProperty name, Number value) {
         columns.put(name.property, value);
+    }
+
+    public void addColumn(WineColumn column) {
+        columns.put(column.getProperty().property, column.getValue());
     }
 
     public String toJsonString() throws JsonProcessingException {

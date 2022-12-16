@@ -1,0 +1,20 @@
+package {{packages}}
+
+import com.akvelon.client.model.request.Record;
+import com.akvelon.client.model.request.RecordSet;
+import com.akvelon.client.model.request.RequestBody;
+
+public final class {{className}} extends RequestBody {
+
+    public {{className}}({{#properties}}{{type}} {{argument}}{{/properties}}) {
+        Record record = new Record();
+        {{#properties}}
+        record.addColumn("{{columnName}}", {{property}});
+        {{/properties}}
+
+        RecordSet recordSet = new RecordSet();
+        recordSet.addRecord(record);
+
+        this.addParameter("{{parameterProperty}}", recordSet);
+    }
+}
