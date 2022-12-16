@@ -1,4 +1,4 @@
-package com.akvelon.client;
+package com.akvelon.client.util;
 
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.RequestBody;

@@ -12,7 +12,7 @@ public final class MlemJClientFactory {
      * @param host the host URL.
      * @return the new MlemJClient.
      */
-    public static MlemJClient createMlemJClient(String host) {
+    public static MlemJClientImpl createMlemJClient(String host) {
         return new MlemJClientImpl(host);
     }
 
@@ -20,11 +20,11 @@ public final class MlemJClientFactory {
      * Create the implementation of MlemJClient.
      *
      * @param host       the host URL.
-     * @param validation the validation switcher.
+     * @param validationOn the validation switcher.
      * @return the new MlemJClient.
      */
-    public static MlemJClient createMlemJClient(String host, boolean validation) {
-        return new MlemJClientImpl(host, validation);
+    public static MlemJClient createMlemJClient(String host, boolean validationOn) {
+        return new MlemJClientImpl(host, validationOn);
     }
 
     /**
@@ -43,11 +43,11 @@ public final class MlemJClientFactory {
      *
      * @param host       the host URL.
      * @param logger     the events logger.
-     * @param validation the validation switcher.
+     * @param validationOn the validation switcher.
      * @return the new MlemJClient.
      */
-    public static MlemJClient createMlemJClient(String host, System.Logger logger, boolean validation) {
-        return new MlemJClientImpl(host, logger, validation);
+    public static MlemJClient createMlemJClient(String host, System.Logger logger, boolean validationOn) {
+        return new MlemJClientImpl(host, logger, validationOn);
     }
 
     /**
@@ -68,10 +68,10 @@ public final class MlemJClientFactory {
      * @param executorService provides a pool of threads and an API for assigning tasks to it.
      * @param host            the host URL.
      * @param logger          the events logger.
-     * @param validation      the validation switcher.
+     * @param validationOn      the validation switcher.
      * @return the new MlemJClient.
      */
-    public static MlemJClient createMlemJClient(ExecutorService executorService, String host, System.Logger logger, boolean validation) {
-        return new MlemJClientImpl(executorService, host, logger, validation);
+    public static MlemJClient createMlemJClient(ExecutorService executorService, String host, System.Logger logger, boolean validationOn) {
+        return new MlemJClientImpl(executorService, host, logger, validationOn);
     }
 }

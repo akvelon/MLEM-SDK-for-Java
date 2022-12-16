@@ -5,18 +5,19 @@ import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.RequestBody;
 
 /**
- * A class that provides the RegModel request parameters  as an example request.
+ * A class that provides the Wine request body as an example request.
  */
-public final class RegModelBody extends RequestBody {
+public class WineBody extends RequestBody {
     /**
-     * Create new RegModel request parameters.
+     * Create new Wine body request parameters.
      *
      * @param property a parameter property name.
-     * @param value    a value for "0".
      */
-    public RegModelBody(String property, double value) {
+    public WineBody(String property, WineColumn[] wineColumns) {
         Record record = new Record();
-        record.addColumn(RegModelProperty.VALUE, value);
+        for (WineColumn wineColumn : wineColumns) {
+            record.addColumn(wineColumn.getProperty().property, wineColumn.getValue());
+        }
 
         RecordSet recordSet = new RecordSet();
         recordSet.addRecord(record);

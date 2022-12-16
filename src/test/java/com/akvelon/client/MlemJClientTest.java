@@ -3,6 +3,7 @@ package com.akvelon.client;
 import com.akvelon.client.exception.*;
 import com.akvelon.client.model.request.RequestBody;
 import com.akvelon.client.model.request.typical.IrisBody;
+import com.akvelon.client.model.response.ResponseBody;
 import com.akvelon.client.util.JsonParser;
 import com.akvelon.client.util.TestDataBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -115,7 +116,7 @@ public class MlemJClientTest {
                 TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSet()),
                 TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSet()),
                 TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSet()));
-        CompletableFuture<List<JsonNode>> completableFutures = mlemJClient.predict(dataRequestList);
+        CompletableFuture<List<ResponseBody>> completableFutures = mlemJClient.predict(dataRequestList);
 
         assertResponseListOrHandleException(completableFutures);
 
@@ -132,7 +133,7 @@ public class MlemJClientTest {
                 TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSet()),
                 TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSet()),
                 TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSet()));
-        CompletableFuture<List<JsonNode>> completableFutures = mlemJClient.call(POST_PREDICT_PROBA, dataRequestList);
+        CompletableFuture<List<ResponseBody>> completableFutures = mlemJClient.call(POST_PREDICT_PROBA, dataRequestList);
 
         assertResponseListOrHandleException(completableFutures);
 
@@ -199,14 +200,14 @@ public class MlemJClientTest {
     @DisplayName("Test post /predict method with Iris request and Json response")
     public void testPredictIris() throws ExecutionException, InterruptedException, IOException {
         IrisBody irisParameters = new IrisBody("data", 0.1d, 1.2d, 3.4d, 5.5d);
-        assertResponseListOrHandleException(jClient.predict(irisParameters));
+        assertResponseJsonOrHandleException(jClient.predict(irisParameters));
     }
 
     @Test
     @DisplayName("Test post /sklearn_predict method with Iris request and Json response")
     public void testCallIris() throws ExecutionException, InterruptedException, IOException {
         IrisBody irisParameters = new IrisBody("X", 0.1d, 1.2d, 3.4d, 5.5d);
-        assertResponseListOrHandleException(jClient.call(POST_SKLEARN_PREDICT_PROBA, irisParameters));
+        assertResponseJsonOrHandleException(jClient.call(POST_SKLEARN_PREDICT_PROBA, irisParameters));
     }
 
     @Test
