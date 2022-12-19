@@ -5,10 +5,12 @@ import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.RequestBody;
 
 public class DigitsBody extends RequestBody {
-    public DigitsBody(DigitsColumn[] records) {
+    public DigitsBody(DigitsColumn[][] records) {
         Record record = new Record();
-        for (DigitsColumn digitsColumn : records) {
-            record.addColumn(digitsColumn.getProperty().property, digitsColumn.getValue());
+        for (DigitsColumn[] digitsColumns : records) {
+            for (DigitsColumn digitsColumn : digitsColumns) {
+                record.addColumn(digitsColumn.getProperty().property, digitsColumn.getValue());
+            }
         }
 
         RecordSet recordSet = new RecordSet();
