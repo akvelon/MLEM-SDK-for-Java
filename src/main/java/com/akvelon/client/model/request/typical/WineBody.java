@@ -9,7 +9,7 @@ import com.akvelon.client.model.request.RequestBody;
  */
 public class WineBody extends RequestBody {
     /**
-     * Create new Wine body request parameters.
+     * Create new Wine body request body.
      *
      * @param property a parameter property name.
      */

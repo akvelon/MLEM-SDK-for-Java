@@ -9,7 +9,7 @@ import com.akvelon.client.model.request.RequestBody;
  */
 public final class IrisBody extends RequestBody {
     /**
-     * Create new Iris request parameters.
+     * Create new Iris request body.
      *
      * @param property    a parameter property name.
      * @param sepalLength a value for sepal length (cm).
