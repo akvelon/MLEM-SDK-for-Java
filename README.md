@@ -34,12 +34,12 @@ MlemJClient.java interface is the one you may want to look at first.
 // init host.
 String HOST_URL = "http://example-mlem-get-started-app.herokuapp.com/";
 // create ExecutorService.
-        ExecutorService executorService = Executors.newFixedThreadPool(10);
+ExecutorService executorService = Executors.newFixedThreadPool(10);
 // create the simple implementation of System.Logger.
 // you can use other libraries for logging: log4j and slf4j.        
-        System.Logger LOGGER = System.getLogger("logger name here");
+System.Logger LOGGER = System.getLogger("logger name here");
 // create the client.
-        MlemJClient mlemClient = MlemJClientFactory.createMlemJClient(executorService,HOST_URL,LOGGER);
+MlemJClient mlemClient = MlemJClientFactory.createMlemJClient(executorService, HOST_URL, LOGGER);
 ```
 
 2) **Create the request body**
@@ -168,13 +168,18 @@ You can turn on/off this feature using `validationOn` properties of the mlem cli
 
 ## Classes generation
 
-There is an upcoming feature for classes generation - for request and response data.
+Mlem client provides classes generation functionality for request objects and response based on api schema of the deployed mlem model. 
+This feature can be useful to send request or handle a response easier.
+
+You can generate classes using `modelgenerator` package and `ExampleGenerator.java` class of the mlem client for request and response objects.
 
 ## Sample ML models
 
 There are the following sample models, that can be used for deployment and requests testing.
 - RegModel
 - Iris
+- Digits
+- Wine
 
 They are in `com.akvelon.client.model.request.typical` package.
 
