@@ -47,6 +47,12 @@ public class TestDataBuilder {
             "  }\n" +
             "}";
 
+    private static final String strRequestBody = "{\n" +
+            "  \"data\": [\n" +
+            "    \"1abcde\"\n" +
+            "  ]\n" +
+            "}";
+
     public static JsonNode buildDataRequestBody() throws JsonProcessingException {
         return JsonMapper.readValue(dataRequestBody, JsonNode.class);
     }
@@ -57,6 +63,10 @@ public class TestDataBuilder {
 
     public static JsonNode buildXRequestBody() throws JsonProcessingException {
         return JsonMapper.readValue(xRequestBody, JsonNode.class);
+    }
+
+    public static JsonNode buildStrRequestBody() throws JsonProcessingException {
+        return JsonMapper.readValue(strRequestBody, JsonNode.class);
     }
 
     public static JsonNode buildResponse1() throws JsonProcessingException {

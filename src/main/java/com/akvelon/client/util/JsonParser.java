@@ -69,7 +69,7 @@ public final class JsonParser {
         Map<String, RecordSetSchema> parameterDescMap = new HashMap<>();
 
         for (JsonNode arg : args) {
-            RecordSetSchema recordSetSchema = parseRecordSetSchema(arg.get("type_"));
+            RecordSetSchema recordSetSchema = parseRecordSetSchema(arg.get("data_type"));
             parameterDescMap.put(arg.get("name").asText(), recordSetSchema);
         }
 
@@ -165,10 +165,14 @@ public final class JsonParser {
      * @return the ReturnType object of the conversion.
      */
     private ReturnType parseReturnsSchema(JsonNode returnsJsonNode) {
-        JsonNode shapes = returnsJsonNode.get("shape");
-        if (shapes == null) {
-            return new ReturnType(returnsJsonNode.get("ptype").asText(), returnsJsonNode.get("type").asText());
+        JsonNode jsonNode = returnsJsonNode.get("data_type");
+
+        JsonNode type = jsonNode.get("type");
+        if (type.asText().equals("ndarray")) {
+            return new ReturnType(jsonNode.get("dtype").asText(), jsonNode.get("type").asText());
         }
+
+        JsonNode shapes = jsonNode.get("shapes");
 
         if (!(shapes instanceof ArrayNode)) {
             String exceptionMessage = EM.InvalidApiSchema + ", shape is not array: " + returnsJsonNode;

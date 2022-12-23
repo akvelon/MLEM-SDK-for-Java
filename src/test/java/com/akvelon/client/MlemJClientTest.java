@@ -23,16 +23,15 @@ public class MlemJClientTest {
     protected final static String HOST_URL = "http://example-mlem-get-started-app.herokuapp.com/";
     private final static ExecutorService executorService = Executors.newFixedThreadPool(10);
     protected static final System.Logger LOGGER = System.getLogger(MlemJClientTest.class.getName());
-    private static final JsonParser jsonParser = new JsonParser();
 
     protected MlemJClient jClient = MlemJClientFactory.createMlemJClient(executorService, HOST_URL, LOGGER, true);
 
     /**
      * /predict post-methods
      */
-    private final String POST_PREDICT_PROBA = "predict_proba";
+    private final String POST_PREDICT_PROBA = "predict_proba";/*
     public static final String POST_SKLEARN_PREDICT = "sklearn_predict";
-    public static final String POST_SKLEARN_PREDICT_PROBA = "sklearn_predict_proba";
+    public static final String POST_SKLEARN_PREDICT_PROBA = "sklearn_predict_proba";*/
 
     @AfterAll
     @DisplayName("ExecutorService stopped")
@@ -83,18 +82,6 @@ public class MlemJClientTest {
             return null;
         }).get());
         Assertions.assertNotNull(thrown);
-    }
-
-    @Test()
-    @DisplayName("Test post /sklearnPredict method with JSON request and response")
-    public void testSklearnPredictJson() throws InterruptedException, ExecutionException, IOException {
-        assertResponseJsonOrHandleException(jClient.call(POST_SKLEARN_PREDICT, TestDataBuilder.buildXRequestBody()));
-    }
-
-    @Test
-    @DisplayName("Test post /sklearnPredictProba method with JSON request and response")
-    public void testSklearnPredictProbaJson() throws InterruptedException, ExecutionException, IOException {
-        assertResponseJsonOrHandleException(jClient.call(POST_SKLEARN_PREDICT_PROBA, TestDataBuilder.buildXRequestBody()));
     }
 
     @Test
@@ -201,13 +188,6 @@ public class MlemJClientTest {
     public void testPredictIris() throws ExecutionException, InterruptedException, IOException {
         IrisBody irisParameters = new IrisBody("data", 0.1d, 1.2d, 3.4d, 5.5d);
         assertResponseJsonOrHandleException(jClient.predict(irisParameters));
-    }
-
-    @Test
-    @DisplayName("Test post /sklearn_predict method with Iris request and Json response")
-    public void testCallIris() throws ExecutionException, InterruptedException, IOException {
-        IrisBody irisParameters = new IrisBody("X", 0.1d, 1.2d, 3.4d, 5.5d);
-        assertResponseJsonOrHandleException(jClient.call(POST_SKLEARN_PREDICT_PROBA, irisParameters));
     }
 
     @Test

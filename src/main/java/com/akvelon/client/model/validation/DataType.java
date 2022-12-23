@@ -19,7 +19,7 @@ public enum DataType {
     Uint32("uint32", Integer.class),
     Uint64("uint64", Long.class),
     Bool("bool", Boolean.class),
-    Str("primitive", String.class),
+    Str("str", String.class),
     Ndarray("ndarray", List.class);
 
     public final String type;

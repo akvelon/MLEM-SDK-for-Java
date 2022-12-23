@@ -138,7 +138,7 @@ final class MlemJClientImpl implements MlemJClient {
                 })
                 .exceptionally(
                         throwable -> {
-                            InvalidHttpStatusCodeException invalidHttpStatusCodeException = (InvalidHttpStatusCodeException) throwable.getCause();
+                            RuntimeException invalidHttpStatusCodeException = (RuntimeException) throwable.getCause();
                             Logger.getInstance().log(
                                     System.Logger.Level.ERROR,
                                     "an exception in /interface.json request",
