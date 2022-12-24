@@ -45,8 +45,6 @@ public class SchemaTest {
             Assertions.assertNotNull(requestBodySchema);
             ReturnType returnType = requestBodySchema.getReturnsSchema();
             Assertions.assertNotNull(returnType);
-            List<Integer> shape = returnType.getShape();
-            Assertions.assertNotNull(shape);
             String dtype = returnType.getDtype();
             Assertions.assertNotNull(dtype);
             String ndarray = returnType.getType();

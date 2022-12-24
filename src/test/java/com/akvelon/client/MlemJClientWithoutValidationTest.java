@@ -9,11 +9,14 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MlemJClientWithoutValidationTest extends MlemJClientTest {
 
     public MlemJClientWithoutValidationTest() {
-        super.jClient = MlemJClientFactory.createMlemJClient(HOST_URL, LOGGER, false);
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        super.jClient = MlemJClientFactory.createMlemJClient(executorService, HOST_URL, LOGGER, false);
     }
 
     @Test

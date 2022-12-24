@@ -198,6 +198,10 @@ public final class ApiValidator {
     private void validateArrayNesting(JsonNode array, List<Integer> shapes, int nestingLevel, String dtype) {
         // shapes contains one null element
         // so nothing to validate.
+        if (shapes == null) {
+            return;
+        }
+
         if (shapes.size() == 1 && shapes.get(0) == null) {
             return;
         }
