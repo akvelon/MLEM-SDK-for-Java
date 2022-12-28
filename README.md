@@ -1,4 +1,4 @@
-# MLEM API Client
+# MLEM API Client (version 1.0, mlem version 0.4.0)
 
 ## What is MLEM?
 
@@ -184,6 +184,15 @@ There are the following sample models, that can be used for deployment and reque
 They are in `com.akvelon.client.model.request.typical` package.
 
 They are built using `LearnModelScript.py` scripts for each model.
+
+## Supported request object data types
+Mlem client support the following types:
+- Pandas types: dataframe
+- Numpy types: ndarray
+- Primitive types: float64, int (int8, int16,int32), uint (uint8, uint16, uint32, uint64), bool
+
+Please note that mlem [already sorts](https://github.com/iterative/mlem/blob/afb18dba1cbc3e69590caa2f2a93f99dcdddf1f1/mlem/contrib/pandas.py#L161) dataframe fields in right order - so there is no need to worry about columns order for this datatype (treat it just like a dictionary type).
+
 
 ## Shared resources
 
