@@ -19,7 +19,7 @@ public class ModelGeneratorTest {
     @DisplayName("Test model generation empty directory path")
     public void testGenerationEmptyDirectoryPathException() {
         ModelGenerator modelGenerator = new ModelGenerator(HOST_URL);
-        EmptyDirectoryPathException thrown = Assertions.assertThrows(EmptyDirectoryPathException.class, () -> modelGenerator.generate(""));
+        EmptyDirectoryPathException thrown = Assertions.assertThrows(EmptyDirectoryPathException.class, () -> modelGenerator.generate("", ""));
         Assertions.assertNotNull(thrown);
     }
 

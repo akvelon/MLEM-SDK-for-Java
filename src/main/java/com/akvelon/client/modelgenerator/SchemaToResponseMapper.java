@@ -11,22 +11,22 @@ import java.util.Map;
 import static com.akvelon.client.modelgenerator.Constant.*;
 
 final class SchemaToResponseMapper {
-    public static List<Context> requestBodySchemasToContextList(Map<String, RequestBodySchema> requestBodySchemas) {
+    public static List<Context> requestBodySchemasToContextList(Map<String, RequestBodySchema> requestBodySchemas, String packageName) {
         List<Context> contextList = new ArrayList<>();
         for (Map.Entry<String, RequestBodySchema> schemaEntry : requestBodySchemas.entrySet()) {
-            contextList.add(requestBodySchemaToContext(schemaEntry.getKey(), schemaEntry.getValue()));
+            contextList.add(requestBodySchemaToContext(schemaEntry.getKey(), schemaEntry.getValue(), packageName));
         }
 
         return contextList;
     }
 
-    private static Context requestBodySchemaToContext(String name, RequestBodySchema requestBodySchema) {
+    private static Context requestBodySchemaToContext(String name, RequestBodySchema requestBodySchema, String packageName) {
         ReturnType returnType = requestBodySchema.getReturnsSchema();
 
         Context context = new Context();
         String className = Util.formatToJavaClass(name) + RESPONSE_BODY_NAME;
         context.setClassName(className);
-        context.setPackages(PACKAGE_NAME);
+        context.setPackages(packageName);
         context.setParameterProperty(name);
         List<Context.Property> propertyList = new ArrayList<>();
         propertyList.add(

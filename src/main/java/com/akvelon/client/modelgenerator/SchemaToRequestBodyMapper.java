@@ -13,32 +13,32 @@ import static com.akvelon.client.modelgenerator.Constant.*;
 
 final class SchemaToRequestBodyMapper {
 
-    public static List<Context> requestBodySchemasToContextList(Map<String, RequestBodySchema> requestBodySchemas) {
+    public static List<Context> requestBodySchemasToContextList(Map<String, RequestBodySchema> requestBodySchemas, String packageName) {
         List<Context> contextList = new ArrayList<>();
         for (Map.Entry<String, RequestBodySchema> schemaEntry : requestBodySchemas.entrySet()) {
-            contextList.addAll(requestBodySchemaToContext(schemaEntry.getKey(), schemaEntry.getValue()));
+            contextList.addAll(requestBodySchemaToContext(schemaEntry.getKey(), schemaEntry.getValue(), packageName));
         }
 
         return contextList;
     }
 
-    private static List<Context> requestBodySchemaToContext(String name, RequestBodySchema requestBodySchema) {
+    private static List<Context> requestBodySchemaToContext(String name, RequestBodySchema requestBodySchema, String packageName) {
         List<Context> contextList = new ArrayList<>();
 
         for (Map.Entry<String, RecordSetSchema> entry : requestBodySchema.getParameterDescMap().entrySet()) {
-            contextList.addAll(recordSetSchemaToContext(name, entry.getKey(), entry.getValue()));
+            contextList.addAll(recordSetSchemaToContext(name, entry.getKey(), entry.getValue(), packageName));
         }
 
         return contextList;
     }
 
-    private static List<Context> recordSetSchemaToContext(String methodName, String name, RecordSetSchema recordSetSchema) {
+    private static List<Context> recordSetSchemaToContext(String methodName, String name, RecordSetSchema recordSetSchema, String packageName) {
         List<Context> contextList = new ArrayList<>();
 
         Context context = new Context();
         String className = Util.formatToJavaClass(methodName + Util.capitalize(name));
         context.setClassName(className + REQUEST_BODY_NAME);
-        context.setPackages(PACKAGE_NAME);
+        context.setPackages(packageName);
         context.setParameterProperty(name);
         List<Context.Property> propertyList = columnsToProperties(recordSetSchema.getColumns());
         context.setProperties(propertyList);
@@ -70,8 +70,7 @@ final class SchemaToRequestBodyMapper {
     }
 
     private static Context.Property recordSetColumnSchemaToProperty(RecordSetColumnSchema recordSetColumnSchema, String divider) {
-        return new Context.Property(recordSetColumnSchema.getName(), getCorrectProperty(recordSetColumnSchema.getName()),
-                DataType.fromString(recordSetColumnSchema.getType().type).getClazz().getSimpleName(), divider);
+        return new Context.Property(recordSetColumnSchema.getName(), getCorrectProperty(recordSetColumnSchema.getName()), DataType.fromString(recordSetColumnSchema.getType().type).getClazz().getSimpleName(), divider);
     }
 
     private static String getCorrectProperty(String propertyName) {

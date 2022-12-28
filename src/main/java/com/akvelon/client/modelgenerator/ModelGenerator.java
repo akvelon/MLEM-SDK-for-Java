@@ -22,22 +22,22 @@ public class ModelGenerator {
         this.jClient = MlemJClientFactory.createMlemJClient(host);
     }
 
-    public void generate(String path) throws ExecutionException, InterruptedException {
+    public void generate(String path, String packageName) throws ExecutionException, InterruptedException {
         if (path == null || path.isEmpty()) {
             throw new EmptyDirectoryPathException("Directory path must not be null or empty");
         }
         ApiSchema apiSchema = jClient.interfaceJsonAsync().get();
-        generateRequestBodies(apiSchema, path);
-        generateResponses(apiSchema, path);
+        generateRequestBodies(apiSchema, path, packageName);
+        generateResponses(apiSchema, path, packageName);
     }
 
-    private static void generateRequestBodies(ApiSchema apiSchema, String path) {
-        List<Context> requestBodiesContexts = SchemaToRequestBodyMapper.requestBodySchemasToContextList(apiSchema.getRequestBodySchemas());
+    private static void generateRequestBodies(ApiSchema apiSchema, String path, String packageName) {
+        List<Context> requestBodiesContexts = SchemaToRequestBodyMapper.requestBodySchemasToContextList(apiSchema.getRequestBodySchemas(), packageName);
         generateClassesForPattern(requestBodiesContexts, REQUEST_BODY_PATTERN_FILE_NAME, path);
     }
 
-    private static void generateResponses(ApiSchema apiSchema, String path) {
-        List<Context> responsesContexts = SchemaToResponseMapper.requestBodySchemasToContextList(apiSchema.getRequestBodySchemas());
+    private static void generateResponses(ApiSchema apiSchema, String path, String packageName) {
+        List<Context> responsesContexts = SchemaToResponseMapper.requestBodySchemasToContextList(apiSchema.getRequestBodySchemas(), packageName);
         generateClassesForPattern(responsesContexts, RESPONSE_PATTERN_FILE_NAME, path);
     }
 
