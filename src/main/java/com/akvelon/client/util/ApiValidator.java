@@ -6,6 +6,7 @@ import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.RequestBody;
 import com.akvelon.client.model.validation.*;
 import com.akvelon.client.resources.EM;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public final class ApiValidator {
      * @param requestBody the Request object to validate.
      * @param apiSchema   the schema represented in ApiSchema object.
      */
-    public void validateRequestBody(String path, RequestBody requestBody, ApiSchema apiSchema) {
+    public void validateRequestBody(String path, RequestBody requestBody, ApiSchema apiSchema) throws JsonProcessingException {
         RequestBodySchema requestBodySchema = validatePathAndGetRequestBodySchema(path, apiSchema);
 
         validateSingleRequestBody(requestBody, requestBodySchema);
@@ -49,8 +50,8 @@ public final class ApiValidator {
      * @param requestBody       the Request object to validate.
      * @param requestBodySchema the request description provided by schema.
      */
-    private void validateSingleRequestBody(RequestBody requestBody, RequestBodySchema requestBodySchema) {
-        Map<String, RecordSet> parameters = requestBody.getParameters();
+    private <T> void validateSingleRequestBody(RequestBody<T> requestBody, RequestBodySchema requestBodySchema) throws JsonProcessingException {
+        Map<String, T> parameters = requestBody.getParameters();
         Map<String, RecordSetSchema> parameterDescMap = requestBodySchema.getParameterDescMap();
         if (parameters.size() != parameterDescMap.size()) {
             String exceptionMessage = String.format(EM.InvalidParametersCount, parameters.size(), parameterDescMap.size());
@@ -67,8 +68,21 @@ public final class ApiValidator {
                 throw new InvalidParameterNameException(exceptionMessage);
             }
 
-            validateRecordSet(parameters.get(entryDesc.getKey()), entryDesc.getValue());
+            if (parameters.get(entryDesc.getKey()) instanceof RecordSet) {
+                validateRecordSet((RecordSet) parameters.get(entryDesc.getKey()), entryDesc.getValue());
+            } else if (parameters.get(entryDesc.getKey()).getClass().isArray()) {
+                validateRecordSetArray(parameters.get(entryDesc.getKey()), entryDesc.getValue());
+/*
+                validateArrayNesting(response, returnType.getShape(), 1, returnType.getDtype());
+*/
+            }
         }
+    }
+
+    private <T> void validateRecordSetArray(T t, RecordSetSchema value) {
+        JsonNode jsonNode = JsonMapper.createObjectNodeWithArray((Number[][]) t);
+        validateArrayNesting(jsonNode, value.getColumns().get(0).getShape(), 1, value.getColumns().get(0).getType().type);
+
     }
 
     /**
@@ -84,6 +98,11 @@ public final class ApiValidator {
         }
     }
 
+    private <T extends Number> void validateRecordSetArray(T[][] recordSet, RecordSetSchema recordSetSchema) throws JsonProcessingException {
+        JsonNode jsonNode = JsonMapper.createObjectNodeWithArray(recordSet);
+        validateArrayNesting(jsonNode, recordSetSchema.getColumns().get(0).getShape(), 1, recordSetSchema.getColumns().get(0).getType().type);
+    }
+
     /**
      * Validate Record object by given schema.
      * Throw exception if the specified parameters is not equal to record schema.
@@ -92,6 +111,10 @@ public final class ApiValidator {
      * @param recordSetSchema the record description provided by schema.
      */
     private void validateRecord(Record record, RecordSetSchema recordSetSchema) {
+        if (recordSetSchema.getType().equals("ndarray")) {
+            return;
+        }
+
         Map<String, Number> columns = record.getColumns();
         List<RecordSetColumnSchema> columnsDesc = recordSetSchema.getColumns();
         if (columns.size() != columnsDesc.size()) {

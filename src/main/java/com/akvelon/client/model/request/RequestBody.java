@@ -11,11 +11,11 @@ import java.util.Map;
 /**
  * A class that maps the requests parameters.
  */
-public class RequestBody {
+public class RequestBody <T> {
     /**
      * The map of record set as a value and name as a key.
      */
-    private final Map<String, RecordSet> parameters = new HashMap<>();
+    private final Map<String, T> parameters = new HashMap<>();
 
     /**
      * Associates the specified record set with the specified name.
@@ -23,7 +23,7 @@ public class RequestBody {
      * @param property  the property name.
      * @param recordSet the RecordSet object.
      */
-    public void addParameter(String property, RecordSet recordSet) {
+    public void addParameter(String property, T recordSet) {
         parameters.put(property, recordSet);
     }
 
@@ -38,7 +38,7 @@ public class RequestBody {
         return JsonMapper.readValue(jsonString, JsonNode.class);
     }
 
-    public Map<String, RecordSet> getParameters() {
+    public Map<String, T> getParameters() {
         return parameters;
     }
 

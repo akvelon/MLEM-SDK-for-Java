@@ -75,6 +75,10 @@ final class SchemaToRequestBodyMapper {
     }
 
     private static String getCorrectProperty(String propertyName) {
+        if (propertyName == null || propertyName.isEmpty()) {
+            return "propertyName";
+        }
+
         char firstChar = propertyName.charAt(0);
         if (!Character.isDigit(firstChar)) {
             return propertyName;

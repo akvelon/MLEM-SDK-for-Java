@@ -138,8 +138,15 @@ public class TestDataBuilder {
         return recordSet;
     }
 
-    public static RequestBody buildRequest(String property, RecordSet recordSet) {
-        RequestBody requestBody = new RequestBody();
+    public static RequestBody<RecordSet> buildRequest(String property, RecordSet recordSet) {
+        RequestBody<RecordSet> requestBody = new RequestBody<>();
+        requestBody.addParameter(property, recordSet);
+
+        return requestBody;
+    }
+
+    public static <T extends Number> RequestBody<T[][]> buildRequest(String property, T[][] recordSet) {
+        RequestBody<T[][]> requestBody = new RequestBody<>();
         requestBody.addParameter(property, recordSet);
 
         return requestBody;

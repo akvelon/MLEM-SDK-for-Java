@@ -26,10 +26,13 @@ public final class JsonParser {
      *                     or an illegal recordSetType has occurred or args is not array.
      */
     public ApiSchema parseApiSchema(JsonNode schema) throws IOException {
+        String version = schema.get("version").asText();
+        Logger.getInstance().log(System.Logger.Level.INFO, "MLEM API version: " + version);
+
         Map<String, JsonNode> jsonNodeMap = JsonMapper.readMap(schema.get("methods"));
         Map<String, RequestBodySchema> methods = parseMethods(jsonNodeMap);
 
-        return new ApiSchema(methods);
+        return new ApiSchema(methods, version);
     }
 
     /**

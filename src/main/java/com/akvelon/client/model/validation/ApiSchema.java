@@ -17,12 +17,18 @@ public final class ApiSchema {
     private final Map<String, RequestBodySchema> requestBodySchemas;
 
     /**
+     * API schema version.
+     */
+    private final String version;
+
+    /**
      * Constructs a new ApiSchema.
      *
      * @param requestBodySchemas the request body descriptions.
      */
-    public ApiSchema(Map<String, RequestBodySchema> requestBodySchemas) {
+    public ApiSchema(Map<String, RequestBodySchema> requestBodySchemas, String version) {
         this.requestBodySchemas = requestBodySchemas;
+        this.version = version;
     }
 
     /**
@@ -38,5 +44,9 @@ public final class ApiSchema {
 
     public JsonNode toJsonNode() throws JsonProcessingException {
         return JsonMapper.readValue(toJsonString(), JsonNode.class);
+    }
+
+    public String getVersion() {
+        return version;
     }
 }

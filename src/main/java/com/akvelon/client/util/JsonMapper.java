@@ -45,7 +45,8 @@ public final class JsonMapper {
      * @throws IOException signals that an I/O exception has occurred.
      */
     public static <T> List<T> readList(JsonNode json) throws IOException {
-        ObjectReader reader = mapper.readerFor(new TypeReference<List<T>>() {});
+        ObjectReader reader = mapper.readerFor(new TypeReference<List<T>>() {
+        });
         return reader.readValue(json);
     }
 
@@ -58,7 +59,8 @@ public final class JsonMapper {
      * @throws IOException signals that an I/O exception has occurred.
      */
     public static Map<String, JsonNode> readMap(JsonNode json) throws IOException {
-        ObjectReader reader = mapper.readerFor(new TypeReference<Map<String, JsonNode>>() {});
+        ObjectReader reader = mapper.readerFor(new TypeReference<Map<String, JsonNode>>() {
+        });
         return reader.readValue(json);
     }
 
@@ -87,5 +89,27 @@ public final class JsonMapper {
         }
 
         return mapper.createObjectNode().set(property, arrayNode);
+    }
+
+    public static <T extends Number> JsonNode createObjectNodeWithArray(T[][] records2Dim) {
+        ArrayNode arrayNode2Dim = mapper.createArrayNode();
+
+        for (T[] records1Dim : records2Dim) {
+            ArrayNode arrayNode1Dim = mapper.createArrayNode();
+            for (T record : records1Dim) {
+                if (record instanceof Float) {
+                    arrayNode1Dim.add((Float) record);
+                } else if (record instanceof Double) {
+                    arrayNode1Dim.add((Double) record);
+                } else if (record instanceof Integer) {
+                    arrayNode1Dim.add((Integer) record);
+                } else if (record instanceof Long) {
+                    arrayNode1Dim.add((Long) record);
+                }
+            }
+            arrayNode2Dim.add(arrayNode1Dim);
+        }
+
+        return arrayNode2Dim;
     }
 }
