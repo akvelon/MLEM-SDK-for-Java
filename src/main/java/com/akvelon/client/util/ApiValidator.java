@@ -4,6 +4,7 @@ import com.akvelon.client.exception.*;
 import com.akvelon.client.model.request.Record;
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.RequestBody;
+import com.akvelon.client.model.response.Value;
 import com.akvelon.client.model.validation.*;
 import com.akvelon.client.resources.EM;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -50,8 +51,8 @@ public final class ApiValidator {
      * @param requestBody       the Request object to validate.
      * @param requestBodySchema the request description provided by schema.
      */
-    private <T> void validateSingleRequestBody(RequestBody<T> requestBody, RequestBodySchema requestBodySchema) throws JsonProcessingException {
-        Map<String, T> parameters = requestBody.getParameters();
+    private void validateSingleRequestBody(RequestBody requestBody, RequestBodySchema requestBodySchema) throws JsonProcessingException {
+        Map<String, Value> parameters = requestBody.getParameters();
         Map<String, RecordSetSchema> parameterDescMap = requestBodySchema.getParameterDescMap();
         if (parameters.size() != parameterDescMap.size()) {
             String exceptionMessage = String.format(EM.InvalidParametersCount, parameters.size(), parameterDescMap.size());

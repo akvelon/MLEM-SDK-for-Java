@@ -1,5 +1,6 @@
 package com.akvelon.client.model.request;
 
+import com.akvelon.client.model.response.Value;
 import com.akvelon.client.util.JsonMapper;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -12,7 +13,7 @@ import java.util.Objects;
 /**
  * A class that provides the list of records.
  */
-public final class RecordSet {
+public final class RecordSet extends Value {
     /**
      * The records list.
      */
