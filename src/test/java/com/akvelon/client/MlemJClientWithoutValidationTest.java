@@ -23,7 +23,7 @@ public class MlemJClientWithoutValidationTest extends MlemJClientTest {
     @Test
     @DisplayName("Test post /predict empty request")
     public void testPredictEmptyRequest() {
-        RequestBody<RecordSet> requestBody = new RequestBody<>();
+        RequestBody requestBody = new RequestBody();
         ExecutionException thrown = Assertions.assertThrows(ExecutionException.class, () -> jClient.predict(requestBody).get());
         Assertions.assertNotNull(thrown);
     }
@@ -31,7 +31,7 @@ public class MlemJClientWithoutValidationTest extends MlemJClientTest {
     @Test
     @DisplayName("Test post /predict method with wrong parameter name")
     public void testPredictRequestBadParameterName() throws IOException {
-        RequestBody<RecordSet> requestBody = TestDataBuilder.buildRequest("data1", TestDataBuilder.buildRecordSetWrongCount());
+        RequestBody requestBody = TestDataBuilder.buildRequest("data1", TestDataBuilder.buildRecordSetWrongCount());
         ExecutionException thrown = Assertions.assertThrows(ExecutionException.class, () -> jClient.predict(requestBody).get());
         Assertions.assertNotNull(thrown);
     }
@@ -39,7 +39,7 @@ public class MlemJClientWithoutValidationTest extends MlemJClientTest {
     @Test
     @DisplayName("Test post /predict method with wrong column name")
     public void testPredictRequestBadColumnName() throws IOException {
-        RequestBody<RecordSet> requestBody = TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSetWrongName());
+        RequestBody requestBody = TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSetWrongName());
         ExecutionException thrown = Assertions.assertThrows(ExecutionException.class, () -> jClient.predict(requestBody).get());
         Assertions.assertNotNull(thrown);
     }
@@ -47,7 +47,7 @@ public class MlemJClientWithoutValidationTest extends MlemJClientTest {
     @Test
     @DisplayName("Test post /predict method with wrong column value type")
     public void testPredictRequestBadColumnType() throws IOException, ExecutionException, InterruptedException {
-        RequestBody<RecordSet> requestBody = TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSetWrongValue());
+        RequestBody requestBody = TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSetWrongValue());
         ResponseBody jsonNode = jClient.predict(requestBody).get();
         Assertions.assertNotNull(jsonNode);
     }
@@ -55,7 +55,7 @@ public class MlemJClientWithoutValidationTest extends MlemJClientTest {
     @Test
     @DisplayName("Test post /call method with wrong parameter name")
     public void testPredictRequestBadRequestName() throws IOException {
-        RequestBody<RecordSet> requestBody = TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSetWrongCount());
+        RequestBody requestBody = TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSetWrongCount());
         ExecutionException thrown = Assertions.assertThrows(ExecutionException.class, () -> jClient.call("illegalmethodname", requestBody).get());
         Assertions.assertNotNull(thrown);
     }
@@ -63,7 +63,7 @@ public class MlemJClientWithoutValidationTest extends MlemJClientTest {
     @Test
     @DisplayName("Test post /predict method with wrong column name")
     public void testPredictRequestBadColumnsCount() throws IOException {
-        RequestBody<RecordSet> requestBody = TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSetWrongCount());
+        RequestBody requestBody = TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSetWrongCount());
         ExecutionException thrown = Assertions.assertThrows(ExecutionException.class, () -> jClient.predict(requestBody).get());
         Assertions.assertNotNull(thrown);
     }

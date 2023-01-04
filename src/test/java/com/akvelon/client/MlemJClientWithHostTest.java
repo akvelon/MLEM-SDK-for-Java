@@ -1,5 +1,6 @@
 package com.akvelon.client;
 
+import com.akvelon.client.model.request.ArraySet;
 import com.akvelon.client.model.request.RequestBody;
 import com.akvelon.client.util.TestDataBuilder;
 import org.junit.jupiter.api.Disabled;
@@ -28,7 +29,9 @@ public class MlemJClientWithHostTest extends MlemJClientTest {
                 array[i][j] = 0.1d;
             }
         }
-        RequestBody<Double[][]> requestBody = TestDataBuilder.buildRequest("data", array);
+
+        ArraySet<Double> arraySet = new ArraySet<>(array);
+        RequestBody requestBody = TestDataBuilder.buildRequest("data", arraySet);
         assertResponseJsonOrHandleException(jClient.predict(requestBody));
     }
 }
