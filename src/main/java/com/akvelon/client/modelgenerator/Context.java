@@ -7,11 +7,21 @@ import java.util.List;
  * A class that provides a Java class description.
  */
 public class Context {
+    /**
+     * Attributes or features that characterize classes.
+     */
     List<Property> properties;
-    List<String> getters;
-    List<String> setters;
+    /**
+     * Representing the name of a Java class.
+     */
     String className;
+    /**
+     * Used to group related classes.
+     */
     String packages;
+    /**
+     * RecordSet property.
+     */
     String parameterProperty;
 
     public void setParameterProperty(String parameterProperty) {
@@ -30,24 +40,40 @@ public class Context {
         this.packages = packages;
     }
 
-    public void setGetters(List<String> getters) {
-        this.getters = getters;
-    }
-
-    public void setSetters(List<String> setters) {
-        this.setters = setters;
-    }
-
+    /**
+     * Attribute or feature that characterize classes.
+     */
     public static class Property {
+        /**
+         * Record column value.
+         */
         String property;
-        String getter;
-        String camelcase;
+        /**
+         * Constructors argument type.
+         */
         String type;
+        /**
+         * Record column name.
+         */
         String columnName;
+        /**
+         * Divider ',' or empty.
+         */
         String divider;
+        /**
+         * Constructors argument.
+         */
         String argument;
-        String superFirstArgument;
-        String superSecondArgument;
+        /**
+         * First argument for call super() in the Response body constructor.
+         * See response.mustache file.
+         */
+        String firstResponseConstructorArg;
+        /**
+         * Second argument for call super() in the Response body constructor.
+         * See response.mustache file.
+         */
+        String secondResponseConstructorArg;
 
         public Property(String columnName, String property, String type, String divider) {
             this.columnName = columnName;
@@ -64,8 +90,6 @@ public class Context {
             }
 
             this.argument = this.property + divider;
-            this.getter = "get" + Util.capitalize(this.property);
-            this.camelcase = Util.capitalize(this.property);
             this.type = type;
             this.divider = divider;
         }
@@ -74,10 +98,10 @@ public class Context {
             this(null, property, type, divider);
         }
 
-        public Property(String property, String type, String divider, String superFirstArgument, String superSecondArgument) {
+        public Property(String property, String type, String divider, String firstResponseConstructorArg, String secondResponseConstructorArg) {
             this(property, type, divider);
-            this.superFirstArgument = superFirstArgument;
-            this.superSecondArgument = superSecondArgument;
+            this.firstResponseConstructorArg = firstResponseConstructorArg;
+            this.secondResponseConstructorArg = secondResponseConstructorArg;
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.akvelon.client.util;
 
+import com.akvelon.client.model.request.ArraySet;
 import com.akvelon.client.model.request.Record;
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.RequestBody;
@@ -138,15 +139,15 @@ public class TestDataBuilder {
         return recordSet;
     }
 
-    public static RequestBody<RecordSet> buildRequest(String property, RecordSet recordSet) {
-        RequestBody<RecordSet> requestBody = new RequestBody<>();
+    public static RequestBody buildRequest(String property, RecordSet recordSet) {
+        RequestBody requestBody = new RequestBody();
         requestBody.addParameter(property, recordSet);
 
         return requestBody;
     }
 
-    public static <T extends Number> RequestBody<T[][]> buildRequest(String property, T[][] recordSet) {
-        RequestBody<T[][]> requestBody = new RequestBody<>();
+    public static <T extends Number> RequestBody buildRequest(String property, ArraySet<T> recordSet) {
+        RequestBody requestBody = new RequestBody();
         requestBody.addParameter(property, recordSet);
 
         return requestBody;
