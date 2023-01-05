@@ -32,11 +32,9 @@ public class RequestBody {
      * Method to deserialize JSON content from given JSON content String.
      *
      * @return the JsonNode object of the conversion.
-     * @throws JsonProcessingException used to signal fatal problems with mapping of content.
      */
-    public JsonNode toJson() throws JsonProcessingException {
-        String jsonString = JsonMapper.writeValueAsString(parameters);
-        return JsonMapper.readValue(jsonString, JsonNode.class);
+    public JsonNode toJson() {
+        return JsonMapper.createObjectNodeWith2DArray(parameters);
     }
 
     public Map<String, Value> getParameters() {

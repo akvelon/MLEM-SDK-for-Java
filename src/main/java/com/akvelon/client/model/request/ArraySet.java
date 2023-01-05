@@ -19,6 +19,6 @@ public class ArraySet<T extends Number> extends Value {
     }
 
     public JsonNode toJson() {
-        return JsonMapper.createObjectNodeWithArray(arrays);
+        return JsonMapper.createObjectNodeWith2DArray(arrays);
     }
 }

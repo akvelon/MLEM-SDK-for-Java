@@ -14,7 +14,7 @@ import static com.akvelon.client.util.AssertionsUtil.assertResponseJsonOrHandleE
 
 public class MlemJClientWithHostTest extends MlemJClientTest {
     public MlemJClientWithHostTest() {
-        jClient = MlemJClientFactory.createMlemJClient(HOST_URL, true);
+        jClient = MlemJClientFactory.createMlemJClient("http://localhost:8080/", true);
     }
 
     @Disabled("Disabled until Digits MLEM model is up!")

@@ -29,7 +29,7 @@ public final class RecordSet extends Value {
     }
 
     public JsonNode toJson(String property) throws JsonProcessingException {
-        return JsonMapper.createObjectNodeWithArray(property, records);
+        return JsonMapper.createObjectNodeWith2DArray(property, records);
     }
 
     @Override
@@ -43,5 +43,10 @@ public final class RecordSet extends Value {
     @Override
     public int hashCode() {
         return Objects.hash(records);
+    }
+
+    @Override
+    public JsonNode toJson() {
+        return null;
     }
 }

@@ -1,6 +1,7 @@
 package com.akvelon.client.util;
 
 import com.akvelon.client.exception.*;
+import com.akvelon.client.model.request.ArraySet;
 import com.akvelon.client.model.request.Record;
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.RequestBody;
@@ -69,39 +70,26 @@ public final class ApiValidator {
                 throw new InvalidParameterNameException(exceptionMessage);
             }
 
-            if (parameters.get(entryDesc.getKey()) instanceof RecordSet) {
-                validateRecordSet((RecordSet) parameters.get(entryDesc.getKey()), entryDesc.getValue());
-            } else if (parameters.get(entryDesc.getKey()).getClass().isArray()) {
-                validateRecordSetArray(parameters.get(entryDesc.getKey()), entryDesc.getValue());
-/*
-                validateArrayNesting(response, returnType.getShape(), 1, returnType.getDtype());
-*/
-            }
+            validateValue(parameters.get(entryDesc.getKey()), entryDesc.getValue());
         }
-    }
-
-    private <T> void validateRecordSetArray(T t, RecordSetSchema value) {
-        JsonNode jsonNode = JsonMapper.createObjectNodeWithArray((Number[][]) t);
-        validateArrayNesting(jsonNode, value.getColumns().get(0).getShape(), 1, value.getColumns().get(0).getType().type);
-
     }
 
     /**
-     * Validate RecordSet object by given description.
+     * Validate Value object by given description.
      *
-     * @param recordSet       the RecordSet object to validate.
+     * @param value           the object to validate.
      * @param recordSetSchema the record set description provided by schema.
      */
-    private void validateRecordSet(RecordSet recordSet, RecordSetSchema recordSetSchema) {
-        List<Record> recordList = recordSet.getRecords();
-        for (Record record : recordList) {
-            validateRecord(record, recordSetSchema);
+    private void validateValue(Value value, RecordSetSchema recordSetSchema) {
+        if (value instanceof RecordSet) {
+            List<Record> recordList = ((RecordSet) value).getRecords();
+            for (Record record : recordList) {
+                validateRecord(record, recordSetSchema);
+            }
+        } else if (value instanceof ArraySet) {
+            JsonNode jsonNode = JsonMapper.createObjectNodeWith2DArray(((ArraySet) value).getArrays());
+            validateArrayNesting(jsonNode, recordSetSchema.getColumns().get(0).getShape(), 1, recordSetSchema.getColumns().get(0).getType().type);
         }
-    }
-
-    private <T extends Number> void validateRecordSetArray(T[][] recordSet, RecordSetSchema recordSetSchema) throws JsonProcessingException {
-        JsonNode jsonNode = JsonMapper.createObjectNodeWithArray(recordSet);
-        validateArrayNesting(jsonNode, recordSetSchema.getColumns().get(0).getShape(), 1, recordSetSchema.getColumns().get(0).getType().type);
     }
 
     /**

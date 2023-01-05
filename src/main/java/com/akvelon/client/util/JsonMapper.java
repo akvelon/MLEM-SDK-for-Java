@@ -1,12 +1,14 @@
 package com.akvelon.client.util;
 
 import com.akvelon.client.model.request.Record;
+import com.akvelon.client.model.response.Value;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.IOException;
 import java.util.List;
@@ -81,7 +83,7 @@ public final class JsonMapper {
      * @return This node after adding property value.
      * @throws JsonProcessingException caused when processing JSON finished with a problem.
      */
-    public static JsonNode createObjectNodeWithArray(String property, List<Record> records) throws JsonProcessingException {
+    public static JsonNode createObjectNodeWith2DArray(String property, List<Record> records) throws JsonProcessingException {
         ArrayNode arrayNode = mapper.createArrayNode();
 
         for (Record record : records) {
@@ -91,25 +93,58 @@ public final class JsonMapper {
         return mapper.createObjectNode().set(property, arrayNode);
     }
 
-    public static <T extends Number> JsonNode createObjectNodeWithArray(T[][] records2Dim) {
+    public static JsonNode createObjectNodeWith2DArray(Map<String, Value> values) {
+        ObjectNode arrayNode = mapper.createObjectNode();
+
+        for (Map.Entry<String, Value> valueEntry : values.entrySet()) {
+            arrayNode.set(valueEntry.getKey(), valueEntry.getValue().toJson());
+        }
+
+        return arrayNode;
+    }
+
+    public static <T extends Number> JsonNode createObjectNodeWith2DArray(T[][] records2Dim) {
         ArrayNode arrayNode2Dim = mapper.createArrayNode();
 
         for (T[] records1Dim : records2Dim) {
-            ArrayNode arrayNode1Dim = mapper.createArrayNode();
-            for (T record : records1Dim) {
-                if (record instanceof Float) {
-                    arrayNode1Dim.add((Float) record);
-                } else if (record instanceof Double) {
-                    arrayNode1Dim.add((Double) record);
-                } else if (record instanceof Integer) {
-                    arrayNode1Dim.add((Integer) record);
-                } else if (record instanceof Long) {
-                    arrayNode1Dim.add((Long) record);
-                }
-            }
+            JsonNode arrayNode1Dim = createObjectNodeWith1DArray(records1Dim);
             arrayNode2Dim.add(arrayNode1Dim);
         }
 
         return arrayNode2Dim;
+    }
+
+    public static <T extends Number> JsonNode createObjectNodeWith1DArray(T[] records1Dim) {
+        ArrayNode arrayNode1Dim = mapper.createArrayNode();
+        for (T record : records1Dim) {
+            if (record instanceof Float) {
+                arrayNode1Dim.add((Float) record);
+            } else if (record instanceof Double) {
+                arrayNode1Dim.add((Double) record);
+            } else if (record instanceof Integer) {
+                arrayNode1Dim.add((Integer) record);
+            } else if (record instanceof Long) {
+                arrayNode1Dim.add((Long) record);
+            }
+        }
+
+        return arrayNode1Dim;
+    }
+
+    public static <T extends Number> JsonNode createObjectNodeWithList(List<T> records1Dim) {
+        ArrayNode arrayNode1Dim = mapper.createArrayNode();
+        for (T record : records1Dim) {
+            if (record instanceof Float) {
+                arrayNode1Dim.add((Float) record);
+            } else if (record instanceof Double) {
+                arrayNode1Dim.add((Double) record);
+            } else if (record instanceof Integer) {
+                arrayNode1Dim.add((Integer) record);
+            } else if (record instanceof Long) {
+                arrayNode1Dim.add((Long) record);
+            }
+        }
+
+        return arrayNode1Dim;
     }
 }
