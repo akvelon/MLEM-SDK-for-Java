@@ -83,7 +83,7 @@ public final class JsonMapper {
      * @return This node after adding property value.
      * @throws JsonProcessingException caused when processing JSON finished with a problem.
      */
-    public static JsonNode createObjectNodeWith2DArray(String property, List<Record> records) throws JsonProcessingException {
+    public static JsonNode createObjectNodeWithRecords(String property, List<Record> records) throws JsonProcessingException {
         ArrayNode arrayNode = mapper.createArrayNode();
 
         for (Record record : records) {
@@ -93,7 +93,7 @@ public final class JsonMapper {
         return mapper.createObjectNode().set(property, arrayNode);
     }
 
-    public static JsonNode createObjectNodeWith2DArray(Map<String, Value> values) {
+    public static JsonNode createObjectNodeWith2DArray(Map<String, Value> values) throws JsonProcessingException {
         ObjectNode arrayNode = mapper.createObjectNode();
 
         for (Map.Entry<String, Value> valueEntry : values.entrySet()) {

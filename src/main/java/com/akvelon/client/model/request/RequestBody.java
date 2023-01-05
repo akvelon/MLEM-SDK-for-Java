@@ -33,7 +33,7 @@ public class RequestBody {
      *
      * @return the JsonNode object of the conversion.
      */
-    public JsonNode toJson() {
+    public JsonNode toJson() throws JsonProcessingException {
         return JsonMapper.createObjectNodeWith2DArray(parameters);
     }
 

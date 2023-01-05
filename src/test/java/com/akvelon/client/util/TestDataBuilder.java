@@ -91,7 +91,7 @@ public class TestDataBuilder {
         JsonNode jsonNode = record.toJsonNode();
         Assertions.assertNotNull(jsonNode);
 
-        RecordSet recordSet = new RecordSet();
+        RecordSet recordSet = new RecordSet("values");
         recordSet.addRecord(record);
 
         return recordSet;
@@ -106,7 +106,7 @@ public class TestDataBuilder {
         JsonNode jsonNode = record.toJsonNode();
         Assertions.assertNotNull(jsonNode);
 
-        RecordSet recordSet = new RecordSet();
+        RecordSet recordSet = new RecordSet("values");
         recordSet.addRecord(record);
 
         return recordSet;
@@ -121,7 +121,7 @@ public class TestDataBuilder {
         JsonNode jsonNode = record.toJsonNode();
         Assertions.assertNotNull(jsonNode);
 
-        RecordSet recordSet = new RecordSet();
+        RecordSet recordSet = new RecordSet("values");
         recordSet.addRecord(record);
 
         return recordSet;
@@ -133,7 +133,7 @@ public class TestDataBuilder {
         JsonNode jsonNode = record.toJsonNode();
         Assertions.assertNotNull(jsonNode);
 
-        RecordSet recordSet = new RecordSet();
+        RecordSet recordSet = new RecordSet("values");
         recordSet.addRecord(record);
 
         return recordSet;

@@ -21,7 +21,7 @@ public class DigitsBody extends RequestBody {
             }
         }
 
-        RecordSet recordSet = new RecordSet();
+        RecordSet recordSet = new RecordSet("");
         recordSet.addRecord(record);
 
         this.addParameter("data", recordSet);

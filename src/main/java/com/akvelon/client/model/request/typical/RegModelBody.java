@@ -18,7 +18,7 @@ public final class RegModelBody extends RequestBody {
         Record record = new Record();
         record.addColumn(RegModelProperty.VALUE, value);
 
-        RecordSet recordSet = new RecordSet();
+        RecordSet recordSet = new RecordSet(property);
         recordSet.addRecord(record);
 
         this.addParameter(property, recordSet);

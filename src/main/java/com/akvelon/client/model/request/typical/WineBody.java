@@ -19,7 +19,7 @@ public class WineBody extends RequestBody {
             record.addColumn(wineColumn.getProperty().property, wineColumn.getValue());
         }
 
-        RecordSet recordSet = new RecordSet();
+        RecordSet recordSet = new RecordSet(property);
         recordSet.addRecord(record);
 
         this.addParameter(property, recordSet);

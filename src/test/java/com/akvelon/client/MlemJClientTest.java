@@ -29,9 +29,7 @@ public class MlemJClientTest {
     /**
      * /predict post-methods
      */
-    private final String POST_PREDICT_PROBA = "predict_proba";/*
-    public static final String POST_SKLEARN_PREDICT = "sklearn_predict";
-    public static final String POST_SKLEARN_PREDICT_PROBA = "sklearn_predict_proba";*/
+    private final String POST_PREDICT_PROBA = "predict_proba";
 
     @AfterAll
     @DisplayName("ExecutorService stopped")
