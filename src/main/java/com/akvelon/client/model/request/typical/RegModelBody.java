@@ -21,6 +21,6 @@ public final class RegModelBody extends RequestBody {
         RecordSet recordSet = new RecordSet(property);
         recordSet.addRecord(record);
 
-        this.addParameter(property, recordSet);
+        addParameter(property, recordSet);
     }
 }

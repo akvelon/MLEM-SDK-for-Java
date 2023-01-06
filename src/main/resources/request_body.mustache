@@ -12,7 +12,7 @@ public final class {{className}} extends RequestBody {
         record.addColumn("{{columnName}}", {{property}});
         {{/properties}}
 
-        RecordSet recordSet = new RecordSet();
+        RecordSet recordSet = new RecordSet("values");
         recordSet.addRecord(record);
 
         this.addParameter("{{parameterProperty}}", recordSet);
