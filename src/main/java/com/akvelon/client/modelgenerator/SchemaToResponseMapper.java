@@ -27,13 +27,11 @@ final class SchemaToResponseMapper {
         String className = Util.formatToJavaClass(name) + RESPONSE_BODY_NAME;
         context.setClassName(className);
         context.setPackages(packageName);
-        context.setParameterProperty(name);
         List<Context.Property> propertyList = new ArrayList<>();
         propertyList.add(
+                // TODO: 1/10/2023
                 new Context.Property(
-                        RETURN_VALUE_NAME,
                         toReturnValue(returnType),
-                        NO_DIVIDER,
                         NEW_ARRAY_VALUE,
                         toDataType(returnType)));
         context.setProperties(propertyList);

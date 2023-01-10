@@ -15,7 +15,7 @@ import java.util.concurrent.ExecutionException;
  */
 public interface MlemJClient {
     /**
-     * The method sends the /inteface.json get request to obtain a validation rules.
+     * The method sends the /interface.json get request to obtain a validation rules.
      *
      * @return a schema wrapped in the CompletableFuture object.
      */
@@ -49,7 +49,7 @@ public interface MlemJClient {
      * The method sends the /predict post request with given bodies list.
      *
      * @param requestBody the requests data represented in List<RequestBody>.
-     * @return a list of responses wrapped in the CompletableFuture object.
+     * @return a response wrapped in the CompletableFuture object.
      * @throws IOException          will be thrown if input can not be detected as JsonNode type.
      * @throws ExecutionException   if this future completed exceptionally.
      * @throws InterruptedException if the current thread was interrupted while waiting.
@@ -87,7 +87,7 @@ public interface MlemJClient {
      * The method sends the post request with given method and requestBody.
      *
      * @param path        the specific resource in the host that the client wants to access.
-     * @param requestBody the requests data represented in RequestBody class
+     * @param requestBody the requests data represented in RequestBody class.
      * @return a list of responses wrapped in the CompletableFuture object.
      * @throws IOException          will be thrown if input can not be detected as JsonNode type.
      * @throws ExecutionException   if this future completed exceptionally.

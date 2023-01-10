@@ -19,14 +19,6 @@ public class Context {
      * Used to group related classes.
      */
     String packages;
-    /**
-     * RecordSet property.
-     */
-    String parameterProperty;
-
-    public void setParameterProperty(String parameterProperty) {
-        this.parameterProperty = parameterProperty;
-    }
 
     public void setProperties(List<Property> properties) {
         this.properties = properties;
@@ -45,25 +37,13 @@ public class Context {
      */
     public static class Property {
         /**
-         * Record column value.
+         * The part of the method name: add + "methodName"().
+         */
+        String methodName;
+        /**
+         * The property name.
          */
         String property;
-        /**
-         * Constructors argument type.
-         */
-        String type;
-        /**
-         * Record column name.
-         */
-        String columnName;
-        /**
-         * Divider ',' or empty.
-         */
-        String divider;
-        /**
-         * Constructors argument.
-         */
-        String argument;
         /**
          * First argument for call super() in the Response body constructor.
          * See response.mustache file.
@@ -75,31 +55,24 @@ public class Context {
          */
         String secondResponseConstructorArg;
 
-        public Property(String columnName, String property, String type, String divider) {
-            this.columnName = columnName;
-            this.property = property.replaceAll("\\W|_", " ");
-            String[] propertyes = this.property.split(" ");
-            this.property = "";
+        public Property(String property) {
+            this.property = property;
+            this.methodName = Util.capitalize(property);
+            /*this.methodName = property.replaceAll("\\W|_", " ");
+            String[] propertyes = this.methodName.split(" ");
+            this.methodName = "";
             for (int i = 0; i < propertyes.length; i++) {
                 if (i == 0) {
-                    this.property += propertyes[0];
+                    this.methodName += propertyes[0];
                     continue;
                 }
 
-                this.property += Util.capitalize(propertyes[i]);
-            }
-
-            this.argument = this.property + divider;
-            this.type = type;
-            this.divider = divider;
+                this.methodName += Util.capitalize(propertyes[i]);
+            }*/
         }
 
-        public Property(String property, String type, String divider) {
-            this(null, property, type, divider);
-        }
-
-        public Property(String property, String type, String divider, String firstResponseConstructorArg, String secondResponseConstructorArg) {
-            this(property, type, divider);
+        public Property(String property, String firstResponseConstructorArg, String secondResponseConstructorArg) {
+            this(property);
             this.firstResponseConstructorArg = firstResponseConstructorArg;
             this.secondResponseConstructorArg = secondResponseConstructorArg;
         }

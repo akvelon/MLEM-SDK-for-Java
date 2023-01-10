@@ -16,7 +16,7 @@ public class RequestBody {
     /**
      * The map of record set as a value and name as a key.
      */
-    private final Map<String, Value> parameters = new HashMap<>();
+    private Map<String, Value> parameters = new HashMap<>();
 
     /**
      * Associates the specified record set with the specified name.
@@ -26,6 +26,10 @@ public class RequestBody {
      */
     public void addParameter(String property, Value value) {
         parameters.put(property, value);
+    }
+
+    public void setParameters(Map<String, Value> parameters) {
+        this.parameters = parameters;
     }
 
     /**

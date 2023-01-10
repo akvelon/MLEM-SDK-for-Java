@@ -1,6 +1,5 @@
 package com.akvelon.client.modelgenerator;
 
-import com.akvelon.client.model.validation.DataType;
 import com.akvelon.client.model.validation.RecordSetColumnSchema;
 import com.akvelon.client.model.validation.RecordSetSchema;
 import com.akvelon.client.model.validation.RequestBodySchema;
@@ -9,7 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.akvelon.client.modelgenerator.Constant.*;
+import static com.akvelon.client.modelgenerator.Constant.REQUEST_BODY_NAME;
+import static com.akvelon.client.modelgenerator.Constant.VALUE_NAME;
 
 final class SchemaToRequestBodyMapper {
 
@@ -24,53 +24,58 @@ final class SchemaToRequestBodyMapper {
 
     private static List<Context> requestBodySchemaToContext(String name, RequestBodySchema requestBodySchema, String packageName) {
         List<Context> contextList = new ArrayList<>();
+        List<String> propertiesList = new ArrayList<>();
 
         for (Map.Entry<String, RecordSetSchema> entry : requestBodySchema.getParameterDescMap().entrySet()) {
-            contextList.addAll(recordSetSchemaToContext(name, entry.getKey(), entry.getValue(), packageName));
+            propertiesList.add(entry.getKey());
         }
+
+        contextList.addAll(recordSetSchemaToContext(name, propertiesList, packageName));
 
         return contextList;
     }
 
-    private static List<Context> recordSetSchemaToContext(String methodName, String name, RecordSetSchema recordSetSchema, String packageName) {
+    private static List<Context> recordSetSchemaToContext(String methodName, List<String> properties, String packageName) {
         List<Context> contextList = new ArrayList<>();
 
         Context context = new Context();
-        String className = Util.formatToJavaClass(methodName + Util.capitalize(name));
+        String className = Util.formatToJavaClass(methodName);
         context.setClassName(className + REQUEST_BODY_NAME);
         context.setPackages(packageName);
-        context.setParameterProperty(name);
-        List<Context.Property> propertyList = columnsToProperties(recordSetSchema.getColumns());
+        List<Context.Property> propertyList = toMustacheFormat(properties);
         context.setProperties(propertyList);
         contextList.add(context);
 
         return contextList;
     }
 
+    private static List<Context.Property> toMustacheFormat(List<String> propertyName) {
+        List<Context.Property> propertyList = new ArrayList<>();
+        for (String property : propertyName) {
+            propertyList.add(new Context.Property(property));
+        }
+
+        return propertyList;
+    }
+
     private static List<Context.Property> columnsToProperties(List<RecordSetColumnSchema> recordSetColumnSchemaList) {
         List<Context.Property> propertyList = new ArrayList<>();
         if (recordSetColumnSchemaList.size() == 1) {
-            Context.Property property = recordSetColumnSchemaToProperty(recordSetColumnSchemaList.get(0), NO_DIVIDER);
+            Context.Property property = recordSetColumnSchemaToProperty(recordSetColumnSchemaList.get(0));
             propertyList.add(property);
             return propertyList;
         }
 
-        int size = recordSetColumnSchemaList.size();
-        for (int i = 0; i < size; i++) {
-            String divider = ARGS_DIVIDER;
-            if (i == size - 1) {
-                divider = NO_DIVIDER;
-            }
-
-            Context.Property property = recordSetColumnSchemaToProperty(recordSetColumnSchemaList.get(i), divider);
+        for (RecordSetColumnSchema recordSetColumnSchema : recordSetColumnSchemaList) {
+            Context.Property property = recordSetColumnSchemaToProperty(recordSetColumnSchema);
             propertyList.add(property);
         }
 
         return propertyList;
     }
 
-    private static Context.Property recordSetColumnSchemaToProperty(RecordSetColumnSchema recordSetColumnSchema, String divider) {
-        return new Context.Property(recordSetColumnSchema.getName(), getCorrectProperty(recordSetColumnSchema.getName()), DataType.fromString(recordSetColumnSchema.getType().type).getClazz().getSimpleName(), divider);
+    private static Context.Property recordSetColumnSchemaToProperty(RecordSetColumnSchema recordSetColumnSchema) {
+        return new Context.Property(recordSetColumnSchema.getName());
     }
 
     private static String getCorrectProperty(String propertyName) {
