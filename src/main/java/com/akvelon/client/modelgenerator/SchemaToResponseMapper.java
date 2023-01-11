@@ -29,8 +29,8 @@ final class SchemaToResponseMapper {
         context.setPackages(packageName);
         List<Context.Property> propertyList = new ArrayList<>();
         propertyList.add(
-                // TODO: 1/10/2023
                 new Context.Property(
+                        RETURN_VALUE_NAME,
                         toReturnValue(returnType),
                         NEW_ARRAY_VALUE,
                         toDataType(returnType)));

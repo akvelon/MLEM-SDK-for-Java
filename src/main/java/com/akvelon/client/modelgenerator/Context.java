@@ -45,6 +45,14 @@ public class Context {
          */
         String property;
         /**
+         * Constructors argument type.
+         */
+        String type;
+        /**
+         * Constructors argument.
+         */
+        String argument;
+        /**
          * First argument for call super() in the Response body constructor.
          * See response.mustache file.
          */
@@ -58,21 +66,11 @@ public class Context {
         public Property(String property) {
             this.property = property;
             this.methodName = Util.capitalize(property);
-            /*this.methodName = property.replaceAll("\\W|_", " ");
-            String[] propertyes = this.methodName.split(" ");
-            this.methodName = "";
-            for (int i = 0; i < propertyes.length; i++) {
-                if (i == 0) {
-                    this.methodName += propertyes[0];
-                    continue;
-                }
-
-                this.methodName += Util.capitalize(propertyes[i]);
-            }*/
         }
 
-        public Property(String property, String firstResponseConstructorArg, String secondResponseConstructorArg) {
-            this(property);
+        public Property(String argument, String type, String firstResponseConstructorArg, String secondResponseConstructorArg) {
+            this.argument = argument;
+            this.type = type;
             this.firstResponseConstructorArg = firstResponseConstructorArg;
             this.secondResponseConstructorArg = secondResponseConstructorArg;
         }
