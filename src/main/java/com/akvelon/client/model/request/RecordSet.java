@@ -16,9 +16,6 @@ public final class RecordSet extends Value {
     /**
      * The records list.
      */
-/*
-    @JsonProperty("values")
-*/
     private final List<Record> records = new ArrayList<>();
 
     private final String property;

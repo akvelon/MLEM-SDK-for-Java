@@ -10,6 +10,9 @@ import java.util.Map;
 
 import static com.akvelon.client.modelgenerator.Constant.*;
 
+/**
+ * A mapper that provides functionality for transfer data from schema to response body.
+ */
 final class SchemaToResponseMapper {
     public static List<Context> requestBodySchemasToContextList(Map<String, RequestBodySchema> requestBodySchemas, String packageName) {
         List<Context> contextList = new ArrayList<>();

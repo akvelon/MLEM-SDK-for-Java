@@ -11,6 +11,9 @@ import java.util.Map;
 import static com.akvelon.client.modelgenerator.Constant.REQUEST_BODY_NAME;
 import static com.akvelon.client.modelgenerator.Constant.VALUE_NAME;
 
+/**
+ * A mapper that provides functionality for transfer data from schema to request body.
+ */
 final class SchemaToRequestBodyMapper {
 
     public static List<Context> requestBodySchemasToContextList(Map<String, RequestBodySchema> requestBodySchemas, String packageName) {

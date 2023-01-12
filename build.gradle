@@ -4,6 +4,7 @@ plugins {
 
 group 'com.akvelon'
 version '1.0'
+description = 'mlem 0.4.0'
 
 repositories {
     mavenCentral()
