@@ -178,7 +178,7 @@ public final class JsonParser {
         JsonNode shapes = jsonNode.get("shapes");
 
         if (!(shapes instanceof ArrayNode)) {
-            String exceptionMessage = EM.InvalidApiSchema + ", shape is not array: " + returnsJsonNode;
+            String exceptionMessage = String.format(EM.UnknownDataTypeInSchema, returnsJsonNode);
             Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
             throw new InvalidArgsTypeException(exceptionMessage);
         }

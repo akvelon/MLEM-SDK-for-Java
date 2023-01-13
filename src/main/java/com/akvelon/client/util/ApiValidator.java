@@ -36,8 +36,7 @@ public final class ApiValidator {
         Map<String, RequestBodySchema> requestDescriptions = apiSchema.getRequestBodySchemas();
         // find given request in schema
         if (!requestDescriptions.containsKey(path)) {
-            String exceptionMessage = "The method " + path
-                    + " is not found in schema; Available methods list: " + requestDescriptions.keySet() + ".";
+            String exceptionMessage = String.format(EM.NoMethodInApi, path);
             Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
             throw new IllegalPathException(exceptionMessage);
         }
@@ -52,7 +51,7 @@ public final class ApiValidator {
      * @param requestBody       the Request object to validate.
      * @param requestBodySchema the request description provided by schema.
      */
-    private void validateSingleRequestBody(RequestBody requestBody, RequestBodySchema requestBodySchema) throws JsonProcessingException {
+    private void validateSingleRequestBody(RequestBody requestBody, RequestBodySchema requestBodySchema) {
         Map<String, Value> parameters = requestBody.getParameters();
         Map<String, RecordSetSchema> parameterDescMap = requestBodySchema.getParameterDescMap();
         if (parameters.size() != parameterDescMap.size()) {
@@ -105,6 +104,12 @@ public final class ApiValidator {
         }
 
         Map<String, Number> columns = record.getColumns();
+        if(columns.isEmpty()) {
+            String exceptionMessage = String.format(EM.MapModelColumnsIsEmpty);
+            Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
+            throw new IllegalColumnsNumberException(exceptionMessage);
+        }
+
         List<RecordSetColumnSchema> columnsDesc = recordSetSchema.getColumns();
         if (columns.size() != columnsDesc.size()) {
             String exceptionMessage = "Actual columns number: " + columns.size()
