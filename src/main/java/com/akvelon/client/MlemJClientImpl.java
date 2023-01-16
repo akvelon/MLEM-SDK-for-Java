@@ -4,6 +4,7 @@ import com.akvelon.client.exception.InvalidHttpStatusCodeException;
 import com.akvelon.client.model.request.RequestBody;
 import com.akvelon.client.model.response.ResponseBody;
 import com.akvelon.client.model.validation.ApiSchema;
+import com.akvelon.client.resources.EM;
 import com.akvelon.client.util.ApiValidator;
 import com.akvelon.client.util.JsonMapper;
 import com.akvelon.client.util.JsonParser;
@@ -222,8 +223,8 @@ final class MlemJClientImpl implements MlemJClient {
      * @throws InterruptedException if the current thread was interrupted while waiting.
      */
     private synchronized <T extends RequestBody> CompletableFuture<JsonNode> validateAndSendRequest(String path, T requestBody) throws IOException, ExecutionException, InterruptedException {
-        assert path != null && !path.isEmpty() : "the path is null or empty";
-        assert requestBody != null : "the request body is null";
+        assert path != null && !path.isEmpty() : String.format(EM.InputValueIsEmpty, "path");
+        assert requestBody != null : String.format(EM.InputValueIsNull, "requestBody");
 
         if (validationOn) {
             if (apiSchema == null) {

@@ -26,7 +26,7 @@ public final class ApiValidator {
      * @param requestBody the Request object to validate.
      * @param apiSchema   the schema represented in ApiSchema object.
      */
-    public void validateRequestBody(String path, RequestBody requestBody, ApiSchema apiSchema) throws JsonProcessingException {
+    public void validateRequestBody(String path, RequestBody requestBody, ApiSchema apiSchema) {
         RequestBodySchema requestBodySchema = validatePathAndGetRequestBodySchema(path, apiSchema);
 
         validateSingleRequestBody(requestBody, requestBodySchema);
@@ -104,7 +104,7 @@ public final class ApiValidator {
         }
 
         Map<String, Number> columns = record.getColumns();
-        if(columns.isEmpty()) {
+        if (columns.isEmpty()) {
             String exceptionMessage = String.format(EM.MapModelColumnsIsEmpty);
             Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
             throw new IllegalColumnsNumberException(exceptionMessage);
@@ -182,23 +182,28 @@ public final class ApiValidator {
     public void validateResponse(String path, JsonNode response, ApiSchema apiSchema) {
         RequestBodySchema requestBodySchema = validatePathAndGetRequestBodySchema(path, apiSchema);
 
-        validateSingleResponse(response, requestBodySchema.getReturnsSchema());
+        validateSingleResponse(path, response, requestBodySchema.getReturnsSchema());
     }
 
     /**
      * Validate Response object by given response description.
      *
+     * @param path       the method name for the request.
      * @param response   the Response object to validate.
      * @param returnType the response description provided by schema.
      */
-    private void validateSingleResponse(JsonNode response, ReturnType returnType) {
+    private void validateSingleResponse(String path, JsonNode response, ReturnType returnType) {
         if (response == null) {
-            throw new InvalidResponseTypeException("There is a null value in response.");
+            String exceptionMessage = String.format(EM.ReturnObjectTypeForMethodIsEmpty, path);
+            Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
+            throw new InvalidResponseTypeException(exceptionMessage);
         }
 
         String ndarray = returnType.getType();
         if (!response.isArray() && ndarray.equals("ndarray")) {
-            throw new InvalidResponseTypeException("response is not an array: " + response);
+            String exceptionMessage = String.format(EM.InvalidJsonResponseFromModel, response);
+            Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
+            throw new InvalidResponseTypeException(exceptionMessage);
         }
 
         validateArrayNesting(response, returnType.getShape(), 1, returnType.getDtype());
@@ -230,15 +235,17 @@ public final class ApiValidator {
             }
 
             if (nestingLevel != shapes.size()) {
-                throw new IllegalArrayNestingLevel("Unexpected level of nesting in the response data. " +
-                        "Actual: " + nestingLevel + ", expected: " + shapes.size());
+                String exceptionMessage = String.format(EM.UnexpectedLevelOfNestingResponseData, nestingLevel, shapes.size());
+                Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
+                throw new IllegalArrayNestingLevel(exceptionMessage);
             }
 
             int shapesLastIndex = shapes.size() - 1;
             Integer lastShape = shapes.get(shapesLastIndex);
             if (lastShape != null && array.size() != lastShape) {
-                throw new IllegalArrayLength("Unexpected length of the data: " + array +
-                        ". Actual: " + array.size() + ", expected: " + lastShape);
+                String exceptionMessage = String.format(EM.PrimitiveValueUnexpectedLevel, array.size(), lastShape);
+                Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
+                throw new IllegalArrayLength(exceptionMessage);
             }
 
             validateNumberType(item.numberValue(), DataType.fromString(dtype), array.asText());
