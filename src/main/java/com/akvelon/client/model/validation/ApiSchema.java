@@ -45,8 +45,4 @@ public final class ApiSchema {
     public JsonNode toJsonNode() throws JsonProcessingException {
         return JsonMapper.readValue(toJsonString(), JsonNode.class);
     }
-
-    public String getVersion() {
-        return version;
-    }
 }

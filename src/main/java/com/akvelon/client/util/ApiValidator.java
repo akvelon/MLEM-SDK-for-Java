@@ -8,7 +8,6 @@ import com.akvelon.client.model.request.RequestBody;
 import com.akvelon.client.model.response.Value;
 import com.akvelon.client.model.validation.*;
 import com.akvelon.client.resources.EM;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.List;

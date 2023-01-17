@@ -19,7 +19,7 @@ public interface MlemJClient {
      *
      * @return a schema wrapped in the CompletableFuture object.
      */
-    CompletableFuture<ApiSchema> interfaceJsonAsync() throws ExecutionException, InterruptedException;
+    CompletableFuture<ApiSchema> interfaceJsonAsync();
 
     /**
      * The method sends the /predict post request with given JSON body.

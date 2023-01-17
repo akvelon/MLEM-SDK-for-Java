@@ -57,7 +57,7 @@ public final class JsonMapper {
      * Convert results from given JSON tree into Map type.
      *
      * @param json the Json data.
-     * @return the list of given type Map.
+     * @return the map of given type Map.
      * @throws IOException signals that an I/O exception has occurred.
      */
     public static Map<String, JsonNode> readMap(JsonNode json) throws IOException {
