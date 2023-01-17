@@ -10,30 +10,31 @@ import java.util.Map;
 
 import static com.akvelon.client.modelgenerator.Constant.*;
 
+/**
+ * A mapper that provides functionality for transfer data from schema to response body.
+ */
 final class SchemaToResponseMapper {
-    public static List<Context> requestBodySchemasToContextList(Map<String, RequestBodySchema> requestBodySchemas) {
+    public static List<Context> requestBodySchemasToContextList(Map<String, RequestBodySchema> requestBodySchemas, String packageName) {
         List<Context> contextList = new ArrayList<>();
         for (Map.Entry<String, RequestBodySchema> schemaEntry : requestBodySchemas.entrySet()) {
-            contextList.add(requestBodySchemaToContext(schemaEntry.getKey(), schemaEntry.getValue()));
+            contextList.add(requestBodySchemaToContext(schemaEntry.getKey(), schemaEntry.getValue(), packageName));
         }
 
         return contextList;
     }
 
-    private static Context requestBodySchemaToContext(String name, RequestBodySchema requestBodySchema) {
+    private static Context requestBodySchemaToContext(String name, RequestBodySchema requestBodySchema, String packageName) {
         ReturnType returnType = requestBodySchema.getReturnsSchema();
 
         Context context = new Context();
         String className = Util.formatToJavaClass(name) + RESPONSE_BODY_NAME;
         context.setClassName(className);
-        context.setPackages(PACKAGE_NAME);
-        context.setParameterProperty(name);
+        context.setPackages(packageName);
         List<Context.Property> propertyList = new ArrayList<>();
         propertyList.add(
                 new Context.Property(
                         RETURN_VALUE_NAME,
                         toReturnValue(returnType),
-                        NO_DIVIDER,
                         NEW_ARRAY_VALUE,
                         toDataType(returnType)));
         context.setProperties(propertyList);

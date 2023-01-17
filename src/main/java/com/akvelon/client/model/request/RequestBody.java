@@ -1,6 +1,7 @@
 package com.akvelon.client.model.request;
 
 import com.akvelon.client.model.response.ResponseBody;
+import com.akvelon.client.model.response.Value;
 import com.akvelon.client.util.JsonMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -15,30 +16,32 @@ public class RequestBody {
     /**
      * The map of record set as a value and name as a key.
      */
-    private final Map<String, RecordSet> parameters = new HashMap<>();
+    private Map<String, Value> parameters = new HashMap<>();
 
     /**
      * Associates the specified record set with the specified name.
      *
-     * @param property  the property name.
-     * @param recordSet the RecordSet object.
+     * @param property the property name.
+     * @param value    the RecordSet object.
      */
-    public void addParameter(String property, RecordSet recordSet) {
-        parameters.put(property, recordSet);
+    public void addParameter(String property, Value value) {
+        parameters.put(property, value);
+    }
+
+    public void setParameters(Map<String, Value> parameters) {
+        this.parameters = parameters;
     }
 
     /**
      * Method to deserialize JSON content from given JSON content String.
      *
      * @return the JsonNode object of the conversion.
-     * @throws JsonProcessingException used to signal fatal problems with mapping of content.
      */
     public JsonNode toJson() throws JsonProcessingException {
-        String jsonString = JsonMapper.writeValueAsString(parameters);
-        return JsonMapper.readValue(jsonString, JsonNode.class);
+        return JsonMapper.createObjectNodeWith2DArray(parameters);
     }
 
-    public Map<String, RecordSet> getParameters() {
+    public Map<String, Value> getParameters() {
         return parameters;
     }
 

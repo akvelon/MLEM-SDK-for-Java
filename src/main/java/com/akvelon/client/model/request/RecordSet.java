@@ -1,7 +1,7 @@
 package com.akvelon.client.model.request;
 
+import com.akvelon.client.model.response.Value;
 import com.akvelon.client.util.JsonMapper;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -12,12 +12,17 @@ import java.util.Objects;
 /**
  * A class that provides the list of records.
  */
-public final class RecordSet {
+public final class RecordSet extends Value {
     /**
      * The records list.
      */
-    @JsonProperty("values")
     private final List<Record> records = new ArrayList<>();
+
+    private final String property;
+
+    public RecordSet(String property) {
+        this.property = property;
+    }
 
     public List<Record> getRecords() {
         return records;
@@ -25,10 +30,6 @@ public final class RecordSet {
 
     public void addRecord(Record record) {
         records.add(record);
-    }
-
-    public JsonNode toJson(String property) throws JsonProcessingException {
-        return JsonMapper.createObjectNodeWithArray(property, records);
     }
 
     @Override
@@ -42,5 +43,10 @@ public final class RecordSet {
     @Override
     public int hashCode() {
         return Objects.hash(records);
+    }
+
+    @Override
+    public JsonNode toJson() throws JsonProcessingException {
+        return JsonMapper.createObjectNodeWithRecords(property, records);
     }
 }

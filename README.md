@@ -1,4 +1,4 @@
-# MLEM API Client
+# MLEM API Client (version 1.0, mlem version 0.4.0)
 
 ## What is MLEM?
 
@@ -34,12 +34,12 @@ MlemJClient.java interface is the one you may want to look at first.
 // init host.
 String HOST_URL = "http://example-mlem-get-started-app.herokuapp.com/";
 // create ExecutorService.
-        ExecutorService executorService = Executors.newFixedThreadPool(10);
+ExecutorService executorService = Executors.newFixedThreadPool(10);
 // create the simple implementation of System.Logger.
 // you can use other libraries for logging: log4j and slf4j.        
-        System.Logger LOGGER = System.getLogger("logger name here");
+System.Logger LOGGER = System.getLogger("logger name here");
 // create the client.
-        MlemJClient mlemClient = MlemJClientFactory.createMlemJClient(executorService,HOST_URL,LOGGER);
+MlemJClient mlemClient = MlemJClientFactory.createMlemJClient(executorService, HOST_URL, LOGGER);
 ```
 
 2) **Create the request body**
@@ -168,17 +168,46 @@ You can turn on/off this feature using `validationOn` properties of the mlem cli
 
 ## Classes generation
 
-There is an upcoming feature for classes generation - for request and response data.
+Mlem client provides classes generation functionality for request objects and response based on api schema of the deployed mlem model. 
+This feature can be useful to send request or handle a response easier.
+
+You can generate classes using `modelgenerator` package and `ExampleGenerator.java` class of the mlem client for request and response objects.
 
 ## Sample ML models
 
 There are the following sample models, that can be used for deployment and requests testing.
 - RegModel
 - Iris
+- Digits
+- Wine
 
 They are in `com.akvelon.client.model.request.typical` package.
 
 They are built using `LearnModelScript.py` scripts for each model.
+
+## Supported request object data types
+Mlem client support the following types:
+- Pandas types: dataframe
+- Numpy types: ndarray
+- Primitive types: float64, int (int8, int16,int32), uint (uint8, uint16, uint32, uint64), bool
+
+Please note that mlem [already sorts](https://github.com/iterative/mlem/blob/afb18dba1cbc3e69590caa2f2a93f99dcdddf1f1/mlem/contrib/pandas.py#L161) dataframe fields in right order - so there is no need to worry about columns order for this datatype (treat it just like a dictionary type).
+
+
+## Shared resources
+
+Some resources should be the same in .NET and Java clients. So, this reprository uses [git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) to get files like `Error_messages.json` and `Log_messages.json` from another private reporsitory - see README.md file in `[root]\ResourcesGenerator\CommonResources` for more details.
+This file is located in `[root]\ResourcesGenerator\CommonResources` folder, that is a clone of that private repository in fact. So, this folder can contain any shared files defined there.
+
+Regard to this Java repository, the client doesn't use these `.json` files directly. For example, `Error_messages.json` file converts into `\Resources\EM.java` file via `[root]\Update_resources.cmd` script; the same for `Log_messages.json` file and `[root]\MlemApi\Resources\LM.java`. After cloning of the repository you don't need to do anything additional to get the resources. They are already defined in `EM.java` and `LM.java` files.
+
+To update resources do the following:
+- Open `[root]\ResourcesGenerator\CommonResources\Error_messages.json` file (or `Log_messages.json`)
+- Make some changes, it will affect the both .NET and Java clients
+- Open `[root]\ResourcesGenerator\CommonResources` folder via git, here is the submodule local repository
+- Make a commit and push it to the `main` branch (make sure you have necessary permissions)
+- Next you need to update submodule dependencies. Just run `[root]\Update_resources.cmd` script. It will update `[root]\MlemApi\Resources\EM.java` and `[root]\MlemApi\Resources\LM.java` files and add submodule changes to the git index of the current .NET repository
+- Commit and push the new changes
 
 ## Conclusion
 

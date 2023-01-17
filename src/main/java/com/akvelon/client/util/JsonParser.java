@@ -1,11 +1,11 @@
 package com.akvelon.client.util;
 
 import com.akvelon.client.exception.*;
+import com.akvelon.client.model.request.Record;
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.RequestBody;
 import com.akvelon.client.model.validation.*;
 import com.akvelon.client.resources.EM;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NullNode;
@@ -26,10 +26,13 @@ public final class JsonParser {
      *                     or an illegal recordSetType has occurred or args is not array.
      */
     public ApiSchema parseApiSchema(JsonNode schema) throws IOException {
+        String version = schema.get("version").asText();
+        Logger.getInstance().log(System.Logger.Level.INFO, "MLEM API version: " + version);
+
         Map<String, JsonNode> jsonNodeMap = JsonMapper.readMap(schema.get("methods"));
         Map<String, RequestBodySchema> methods = parseMethods(jsonNodeMap);
 
-        return new ApiSchema(methods);
+        return new ApiSchema(methods, version);
     }
 
     /**
@@ -69,7 +72,7 @@ public final class JsonParser {
         Map<String, RecordSetSchema> parameterDescMap = new HashMap<>();
 
         for (JsonNode arg : args) {
-            RecordSetSchema recordSetSchema = parseRecordSetSchema(arg.get("type_"));
+            RecordSetSchema recordSetSchema = parseRecordSetSchema(arg.get("data_type"));
             parameterDescMap.put(arg.get("name").asText(), recordSetSchema);
         }
 
@@ -165,13 +168,17 @@ public final class JsonParser {
      * @return the ReturnType object of the conversion.
      */
     private ReturnType parseReturnsSchema(JsonNode returnsJsonNode) {
-        JsonNode shapes = returnsJsonNode.get("shape");
-        if (shapes == null) {
-            return new ReturnType(returnsJsonNode.get("ptype").asText(), returnsJsonNode.get("type").asText());
+        JsonNode jsonNode = returnsJsonNode.get("data_type");
+
+        JsonNode type = jsonNode.get("type");
+        if (type.asText().equals("ndarray")) {
+            return new ReturnType(jsonNode.get("dtype").asText(), jsonNode.get("type").asText());
         }
 
+        JsonNode shapes = jsonNode.get("shapes");
+
         if (!(shapes instanceof ArrayNode)) {
-            String exceptionMessage = EM.InvalidApiSchema + ", shape is not array: " + returnsJsonNode;
+            String exceptionMessage = String.format(EM.UnknownDataTypeInSchema, returnsJsonNode);
             Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
             throw new InvalidArgsTypeException(exceptionMessage);
         }
@@ -212,7 +219,6 @@ public final class JsonParser {
      *
      * @param recordSetJson the JsonNode representation of RecordSet.
      * @return the RecordSet object of the conversion.
-     * @throws JsonProcessingException used to signal fatal problems with mapping of content.
      */
     private RecordSet parseRecordSet(JsonNode recordSetJson) throws IOException {
         JsonNode jsonNode = recordSetJson.findValue("values");
@@ -223,6 +229,30 @@ public final class JsonParser {
             throw new InvalidValuesException(exceptionMessage);
         }
 
-        return JsonMapper.readValue(recordSetJson.toString(), RecordSet.class);
+        if (!jsonNode.isArray()) {
+            String exceptionMessage = String.format(EM.InvalidType, jsonNode, "JsonArray");
+            Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
+            throw new InvalidValuesException(exceptionMessage);
+        }
+
+        RecordSet recordSet = new RecordSet("values");
+        for (JsonNode recordJson : jsonNode) {
+            recordSet.addRecord(parseRecord(recordJson));
+        }
+
+        return recordSet;
+    }
+
+    private Record parseRecord(JsonNode recordJson) throws IOException {
+        Record record = new Record();
+
+        Map<String, JsonNode> recordsMap = JsonMapper.readMap(recordJson);
+        for (Map.Entry<String, JsonNode> entry : recordsMap.entrySet()) {
+            String value = entry.getValue().asText();
+            Number valueNum = JsonMapper.readValue(value, Number.class);
+            record.addColumn(entry.getKey(), valueNum);
+        }
+
+        return record;
     }
 }
