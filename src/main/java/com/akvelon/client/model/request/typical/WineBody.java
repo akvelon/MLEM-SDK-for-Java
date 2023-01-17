@@ -9,7 +9,7 @@ import com.akvelon.client.model.request.RequestBody;
  */
 public class WineBody extends RequestBody {
     /**
-     * Create new Wine body request parameters.
+     * Create new Wine body request body.
      *
      * @param property a parameter property name.
      */
@@ -19,9 +19,9 @@ public class WineBody extends RequestBody {
             record.addColumn(wineColumn.getProperty().property, wineColumn.getValue());
         }
 
-        RecordSet recordSet = new RecordSet();
+        RecordSet recordSet = new RecordSet(property);
         recordSet.addRecord(record);
 
-        this.addParameter(property, recordSet);
+        addParameter(property, recordSet);
     }
 }

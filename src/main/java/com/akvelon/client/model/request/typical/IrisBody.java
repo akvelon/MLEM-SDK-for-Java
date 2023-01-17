@@ -9,7 +9,7 @@ import com.akvelon.client.model.request.RequestBody;
  */
 public final class IrisBody extends RequestBody {
     /**
-     * Create new Iris request parameters.
+     * Create new Iris request body.
      *
      * @param property    a parameter property name.
      * @param sepalLength a value for sepal length (cm).
@@ -24,7 +24,7 @@ public final class IrisBody extends RequestBody {
         record.addColumn(IrisProperty.SEPAL_WIDTH, sepalWidth);
         record.addColumn(IrisProperty.PETAL_WIDTH, petalWidth);
 
-        RecordSet recordSet = new RecordSet();
+        RecordSet recordSet = new RecordSet(property);
         recordSet.addRecord(record);
 
         this.addParameter(property, recordSet);

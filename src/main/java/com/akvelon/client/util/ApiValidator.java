@@ -1,9 +1,11 @@
 package com.akvelon.client.util;
 
 import com.akvelon.client.exception.*;
+import com.akvelon.client.model.request.ArraySet;
 import com.akvelon.client.model.request.Record;
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.RequestBody;
+import com.akvelon.client.model.response.Value;
 import com.akvelon.client.model.validation.*;
 import com.akvelon.client.resources.EM;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -33,8 +35,7 @@ public final class ApiValidator {
         Map<String, RequestBodySchema> requestDescriptions = apiSchema.getRequestBodySchemas();
         // find given request in schema
         if (!requestDescriptions.containsKey(path)) {
-            String exceptionMessage = "The method " + path
-                    + " is not found in schema; Available methods list: " + requestDescriptions.keySet() + ".";
+            String exceptionMessage = String.format(EM.NoMethodInApi, path);
             Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
             throw new IllegalPathException(exceptionMessage);
         }
@@ -50,7 +51,7 @@ public final class ApiValidator {
      * @param requestBodySchema the request description provided by schema.
      */
     private void validateSingleRequestBody(RequestBody requestBody, RequestBodySchema requestBodySchema) {
-        Map<String, RecordSet> parameters = requestBody.getParameters();
+        Map<String, Value> parameters = requestBody.getParameters();
         Map<String, RecordSetSchema> parameterDescMap = requestBodySchema.getParameterDescMap();
         if (parameters.size() != parameterDescMap.size()) {
             String exceptionMessage = String.format(EM.InvalidParametersCount, parameters.size(), parameterDescMap.size());
@@ -67,20 +68,25 @@ public final class ApiValidator {
                 throw new InvalidParameterNameException(exceptionMessage);
             }
 
-            validateRecordSet(parameters.get(entryDesc.getKey()), entryDesc.getValue());
+            validateValue(parameters.get(entryDesc.getKey()), entryDesc.getValue());
         }
     }
 
     /**
-     * Validate RecordSet object by given description.
+     * Validate Value object by given description.
      *
-     * @param recordSet       the RecordSet object to validate.
+     * @param value           the object to validate.
      * @param recordSetSchema the record set description provided by schema.
      */
-    private void validateRecordSet(RecordSet recordSet, RecordSetSchema recordSetSchema) {
-        List<Record> recordList = recordSet.getRecords();
-        for (Record record : recordList) {
-            validateRecord(record, recordSetSchema);
+    private void validateValue(Value value, RecordSetSchema recordSetSchema) {
+        if (value instanceof RecordSet) {
+            List<Record> recordList = ((RecordSet) value).getRecords();
+            for (Record record : recordList) {
+                validateRecord(record, recordSetSchema);
+            }
+        } else if (value instanceof ArraySet) {
+            JsonNode jsonNode = JsonMapper.createObjectNodeWith2DArray(((ArraySet) value).getArrays());
+            validateArrayNesting(jsonNode, recordSetSchema.getColumns().get(0).getShape(), 1, recordSetSchema.getColumns().get(0).getType().type);
         }
     }
 
@@ -92,7 +98,17 @@ public final class ApiValidator {
      * @param recordSetSchema the record description provided by schema.
      */
     private void validateRecord(Record record, RecordSetSchema recordSetSchema) {
+        if (recordSetSchema.getType().equals("ndarray")) {
+            return;
+        }
+
         Map<String, Number> columns = record.getColumns();
+        if (columns.isEmpty()) {
+            String exceptionMessage = String.format(EM.MapModelColumnsIsEmpty);
+            Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
+            throw new IllegalColumnsNumberException(exceptionMessage);
+        }
+
         List<RecordSetColumnSchema> columnsDesc = recordSetSchema.getColumns();
         if (columns.size() != columnsDesc.size()) {
             String exceptionMessage = "Actual columns number: " + columns.size()
@@ -165,23 +181,28 @@ public final class ApiValidator {
     public void validateResponse(String path, JsonNode response, ApiSchema apiSchema) {
         RequestBodySchema requestBodySchema = validatePathAndGetRequestBodySchema(path, apiSchema);
 
-        validateSingleResponse(response, requestBodySchema.getReturnsSchema());
+        validateSingleResponse(path, response, requestBodySchema.getReturnsSchema());
     }
 
     /**
      * Validate Response object by given response description.
      *
+     * @param path       the method name for the request.
      * @param response   the Response object to validate.
      * @param returnType the response description provided by schema.
      */
-    private void validateSingleResponse(JsonNode response, ReturnType returnType) {
+    private void validateSingleResponse(String path, JsonNode response, ReturnType returnType) {
         if (response == null) {
-            throw new InvalidResponseTypeException("There is a null value in response.");
+            String exceptionMessage = String.format(EM.ReturnObjectTypeForMethodIsEmpty, path);
+            Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
+            throw new InvalidResponseTypeException(exceptionMessage);
         }
 
         String ndarray = returnType.getType();
         if (!response.isArray() && ndarray.equals("ndarray")) {
-            throw new InvalidResponseTypeException("response is not an array: " + response);
+            String exceptionMessage = String.format(EM.InvalidJsonResponseFromModel, response);
+            Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
+            throw new InvalidResponseTypeException(exceptionMessage);
         }
 
         validateArrayNesting(response, returnType.getShape(), 1, returnType.getDtype());
@@ -198,6 +219,10 @@ public final class ApiValidator {
     private void validateArrayNesting(JsonNode array, List<Integer> shapes, int nestingLevel, String dtype) {
         // shapes contains one null element
         // so nothing to validate.
+        if (shapes == null) {
+            return;
+        }
+
         if (shapes.size() == 1 && shapes.get(0) == null) {
             return;
         }
@@ -209,15 +234,17 @@ public final class ApiValidator {
             }
 
             if (nestingLevel != shapes.size()) {
-                throw new IllegalArrayNestingLevel("Unexpected level of nesting in the response data. " +
-                        "Actual: " + nestingLevel + ", expected: " + shapes.size());
+                String exceptionMessage = String.format(EM.UnexpectedLevelOfNestingResponseData, nestingLevel, shapes.size());
+                Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
+                throw new IllegalArrayNestingLevel(exceptionMessage);
             }
 
             int shapesLastIndex = shapes.size() - 1;
             Integer lastShape = shapes.get(shapesLastIndex);
             if (lastShape != null && array.size() != lastShape) {
-                throw new IllegalArrayLength("Unexpected length of the data: " + array +
-                        ". Actual: " + array.size() + ", expected: " + lastShape);
+                String exceptionMessage = String.format(EM.PrimitiveValueUnexpectedLevel, array.size(), lastShape);
+                Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
+                throw new IllegalArrayLength(exceptionMessage);
             }
 
             validateNumberType(item.numberValue(), DataType.fromString(dtype), array.asText());

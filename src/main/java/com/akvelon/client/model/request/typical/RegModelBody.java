@@ -9,7 +9,7 @@ import com.akvelon.client.model.request.RequestBody;
  */
 public final class RegModelBody extends RequestBody {
     /**
-     * Create new RegModel request parameters.
+     * Create new RegModel request body.
      *
      * @param property a parameter property name.
      * @param value    a value for "0".
@@ -18,9 +18,9 @@ public final class RegModelBody extends RequestBody {
         Record record = new Record();
         record.addColumn(RegModelProperty.VALUE, value);
 
-        RecordSet recordSet = new RecordSet();
+        RecordSet recordSet = new RecordSet(property);
         recordSet.addRecord(record);
 
-        this.addParameter(property, recordSet);
+        addParameter(property, recordSet);
     }
 }

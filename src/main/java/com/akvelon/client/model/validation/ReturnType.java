@@ -2,6 +2,9 @@ package com.akvelon.client.model.validation;
 
 import java.util.List;
 
+/**
+ * A class that provides the return type description.
+ */
 public class ReturnType {
     private List<Integer> shape;
     private final String dtype;

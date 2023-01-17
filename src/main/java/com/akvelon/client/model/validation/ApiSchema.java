@@ -1,5 +1,9 @@
 package com.akvelon.client.model.validation;
 
+import com.akvelon.client.util.JsonMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+
 import java.util.Map;
 
 /**
@@ -13,12 +17,18 @@ public final class ApiSchema {
     private final Map<String, RequestBodySchema> requestBodySchemas;
 
     /**
+     * API schema version.
+     */
+    private final String version;
+
+    /**
      * Constructs a new ApiSchema.
      *
      * @param requestBodySchemas the request body descriptions.
      */
-    public ApiSchema(Map<String, RequestBodySchema> requestBodySchemas) {
+    public ApiSchema(Map<String, RequestBodySchema> requestBodySchemas, String version) {
         this.requestBodySchemas = requestBodySchemas;
+        this.version = version;
     }
 
     /**
@@ -26,5 +36,13 @@ public final class ApiSchema {
      */
     public Map<String, RequestBodySchema> getRequestBodySchemas() {
         return requestBodySchemas;
+    }
+
+    public String toJsonString() throws JsonProcessingException {
+        return JsonMapper.writeValueAsString(this);
+    }
+
+    public JsonNode toJsonNode() throws JsonProcessingException {
+        return JsonMapper.readValue(toJsonString(), JsonNode.class);
     }
 }

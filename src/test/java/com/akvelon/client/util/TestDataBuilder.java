@@ -1,5 +1,6 @@
 package com.akvelon.client.util;
 
+import com.akvelon.client.model.request.ArraySet;
 import com.akvelon.client.model.request.Record;
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.RequestBody;
@@ -47,6 +48,12 @@ public class TestDataBuilder {
             "  }\n" +
             "}";
 
+    private static final String strRequestBody = "{\n" +
+            "  \"data\": [\n" +
+            "    \"1abcde\"\n" +
+            "  ]\n" +
+            "}";
+
     public static JsonNode buildDataRequestBody() throws JsonProcessingException {
         return JsonMapper.readValue(dataRequestBody, JsonNode.class);
     }
@@ -57,6 +64,10 @@ public class TestDataBuilder {
 
     public static JsonNode buildXRequestBody() throws JsonProcessingException {
         return JsonMapper.readValue(xRequestBody, JsonNode.class);
+    }
+
+    public static JsonNode buildStrRequestBody() throws JsonProcessingException {
+        return JsonMapper.readValue(strRequestBody, JsonNode.class);
     }
 
     public static JsonNode buildResponse1() throws JsonProcessingException {
@@ -80,7 +91,7 @@ public class TestDataBuilder {
         JsonNode jsonNode = record.toJsonNode();
         Assertions.assertNotNull(jsonNode);
 
-        RecordSet recordSet = new RecordSet();
+        RecordSet recordSet = new RecordSet("values");
         recordSet.addRecord(record);
 
         return recordSet;
@@ -95,7 +106,7 @@ public class TestDataBuilder {
         JsonNode jsonNode = record.toJsonNode();
         Assertions.assertNotNull(jsonNode);
 
-        RecordSet recordSet = new RecordSet();
+        RecordSet recordSet = new RecordSet("values");
         recordSet.addRecord(record);
 
         return recordSet;
@@ -110,7 +121,7 @@ public class TestDataBuilder {
         JsonNode jsonNode = record.toJsonNode();
         Assertions.assertNotNull(jsonNode);
 
-        RecordSet recordSet = new RecordSet();
+        RecordSet recordSet = new RecordSet("values");
         recordSet.addRecord(record);
 
         return recordSet;
@@ -122,13 +133,20 @@ public class TestDataBuilder {
         JsonNode jsonNode = record.toJsonNode();
         Assertions.assertNotNull(jsonNode);
 
-        RecordSet recordSet = new RecordSet();
+        RecordSet recordSet = new RecordSet("values");
         recordSet.addRecord(record);
 
         return recordSet;
     }
 
     public static RequestBody buildRequest(String property, RecordSet recordSet) {
+        RequestBody requestBody = new RequestBody();
+        requestBody.addParameter(property, recordSet);
+
+        return requestBody;
+    }
+
+    public static <T extends Number> RequestBody buildRequest(String property, ArraySet<T> recordSet) {
         RequestBody requestBody = new RequestBody();
         requestBody.addParameter(property, recordSet);
 
