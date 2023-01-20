@@ -1,5 +1,6 @@
 package com.akvelon.client.model.response;
 
+import com.akvelon.client.model.request.Value;
 import com.akvelon.client.model.validation.DataType;
 import com.akvelon.client.util.JsonMapper;
 import com.fasterxml.jackson.databind.JsonNode;

@@ -3,7 +3,7 @@ package com.akvelon.client.util;
 import com.akvelon.client.model.request.Record;
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.RequestBody;
-import com.akvelon.client.model.response.Value;
+import com.akvelon.client.model.request.Value;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

@@ -5,7 +5,7 @@ import com.akvelon.client.model.request.ArraySet;
 import com.akvelon.client.model.request.Record;
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.RequestBody;
-import com.akvelon.client.model.response.Value;
+import com.akvelon.client.model.request.Value;
 import com.akvelon.client.model.validation.*;
 import com.akvelon.client.resources.EM;
 import com.fasterxml.jackson.databind.JsonNode;
