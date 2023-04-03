@@ -19,7 +19,7 @@ public final class MlemJClientFactory {
     /**
      * Create the implementation of MlemJClient.
      *
-     * @param host       the host URL.
+     * @param host         the host URL.
      * @param validationOn the validation switcher.
      * @return the new MlemJClient.
      */
@@ -41,8 +41,8 @@ public final class MlemJClientFactory {
     /**
      * Create the implementation of MlemJClient.
      *
-     * @param host       the host URL.
-     * @param logger     the events logger.
+     * @param host         the host URL.
+     * @param logger       the events logger.
      * @param validationOn the validation switcher.
      * @return the new MlemJClient.
      */
@@ -68,7 +68,7 @@ public final class MlemJClientFactory {
      * @param executorService provides a pool of threads and an API for assigning tasks to it.
      * @param host            the host URL.
      * @param logger          the events logger.
-     * @param validationOn      the validation switcher.
+     * @param validationOn    the validation switcher.
      * @return the new MlemJClient.
      */
     public static MlemJClient createMlemJClient(ExecutorService executorService, String host, System.Logger logger, boolean validationOn) {

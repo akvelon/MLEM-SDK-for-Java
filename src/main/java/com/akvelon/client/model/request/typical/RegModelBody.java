@@ -1,7 +1,7 @@
 package com.akvelon.client.model.request.typical;
 
-import com.akvelon.client.model.request.Record;
 import com.akvelon.client.model.request.RecordSet;
+import com.akvelon.client.model.request.RecordType;
 import com.akvelon.client.model.request.RequestBody;
 
 /**
@@ -15,12 +15,12 @@ public final class RegModelBody extends RequestBody {
      * @param value    a value for "0".
      */
     public RegModelBody(String property, double value) {
-        Record record = new Record();
-        record.addColumn(RegModelProperty.VALUE, value);
+        RecordType recordType = new RecordType();
+        recordType.addColumn(RegModelProperty.VALUE, value);
 
         RecordSet recordSet = new RecordSet(property);
-        recordSet.addRecord(record);
+        recordSet.addRecord(recordType);
 
-        addParameter(property, recordSet);
+        setParameter(property, recordSet);
     }
 }

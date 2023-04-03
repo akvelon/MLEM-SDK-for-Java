@@ -9,6 +9,6 @@ import com.akvelon.client.model.request.RequestBody;
 public class DigitsBody<T extends Number> extends RequestBody {
     public DigitsBody(String property, T[][] arrays) {
         ArraySet<T> arraySet = new ArraySet<>(arrays);
-        addParameter(property, arraySet);
+        setParameter(property, arraySet);
     }
 }

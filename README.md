@@ -1,22 +1,29 @@
-# MLEM API Client (version 1.0, mlem version 0.4.0)
+# MLEM API Client v.1.0.2
 
 ## What is MLEM?
 
 MLEM, developed by iterative.ai - is an open-source tool that allows users to simplify machine learning model packaging and deployment. With MLEM, users can run their machine learning models anywhere, by wrapping models as a Python package or Docker Image, or deploying them to Heroku (SageMaker, Kubernetes, and more platforms coming soon).
 MLEM is written in Python, and runs as a microservice with applications calling for a simple HTTP API. This may concern some users who did not develop their applications in Python, which is why we decided to take a closer look at using models on different platforms.
 
+Our client currently supports the **0.4.7 version of MLEM**.
 
 ## What is the Java Client for MLEM?
 
-This Java HTTP client is designed to help software developers use a machine learning approach to create intelligent applications, based on Java, without needing a deep knowledge of MLEM. This client is a library that allow users to connect with MLEM API simply and easily, as well as integrate the MLEM model functionality to their Java project. It also supports request body validation by schema received from the MLEM server, and also offers a standard logging interface to use.
+Our Java HTTP client is an essential tool for software developers looking to incorporate machine learning into their Java-based applications. With this client, developers can harness the power of MLEM's machine learning capabilities without needing a deep understanding of the underlying technology.
 
-The client provides several methods for using MLEM technologies with given rules. The main of them are `predict` and `call`.
+The client is designed as a library, providing a simple and easy-to-use interface for connecting to the MLEM API and integrating its model functionality into Java projects. It offers a range of features, including request body validation using schemas received from the MLEM server, as well as a standard logging interface to streamline the development process.
+
+Whether you're building intelligent applications for business, research, or personal use, our Java HTTP client provides a reliable and efficient solution for integrating machine learning into your Java-based projects. With its easy-to-use interface and robust feature set, our client is the perfect tool for anyone looking to leverage the power of MLEM's machine learning capabilities.
+
+The client offers two methods for using MLEM technologies with given rules: predict and call.
 - `predict` makes an asynchronous request for the "predict" method
 - `call` makes an asynchronous request for any methods (including "predict")
 
 This is the core functionality of MLEM client for Java apps. Having a stable application with minimum functionality is a good way to support it now and make for easier improvements in the future.
 
-⚠️ There is a [.NET client](https://gitlab.akvelon.net/sdc/mlem-c-sharp/mlem-c-sharp) that does the same for .NET projects.
+⚠️ There is a [.NET client](https://github.com/akvelon/MLEM-SDK-for-C-Sharp) that does the same for .NET projects.
+
+⚠️ There is a [technology article](https://akvelon.com/akvelon-enables-non-python-apps-to-integrate-machine-learning-models-with-mlem) about Java and .Net clients.
 
 ## Getting Started
 Before using the client make sure that you have a deployed mlem model (local or remote). Read [MLEM docs](https://mlem.ai/doc/get-started) to know how to deploy a model. A list of sample models you can find below. Also, clone the repository and build the `MlemApi` project.
@@ -46,16 +53,16 @@ MlemJClient mlemClient = MlemJClientFactory.createMlemJClient(executorService, H
 
 ```java 
 // create the Record object:
-Record record = new Record();
+Record recordType = new Record();
 // add the test data.
-record.addColumn("sepal length (cm)", 1.2);
-record.addColumn("sepal width (cm)", 2.4);
-record.addColumn("petal length (cm)", 3.3);
-record.addColumn("petal width (cm)", 4.1);
+recordType.addColumn("sepal length (cm)", 1.2);
+recordType.addColumn("sepal width (cm)", 2.4);
+recordType.addColumn("petal length (cm)", 3.3);
+recordType.addColumn("petal width (cm)", 4.1);
    
 // add it to RecordSet.
 RecordSet recordSet = new RecordSet();
-recordSet.addRecord(record);
+recordSet.addRecord(recordType);
  
 // create the RequestBody object and add the recordSet object with property "data".
 RequestBody requestBody = new RequestBody();
@@ -131,7 +138,7 @@ The response will be:
 ```text 
 error text: Actual parameters: X, expected: data
 ```
-7) **Expected record name**
+7) **Expected recordType name**
 ```java 
 // send the /predict request.
 CompletableFuture<JsonNode> future = mlemClient.predict(requestBody);
@@ -144,7 +151,7 @@ The response will be:
 ```text 
 error text: Column name not found: sepal length (cm), for given data: [sepal length =1.1, sepal width (cm)=2.1, petal length (cm)=3.1, petal width (cm)=4.1]
 ```
-8) **Expected record type**
+8) **Expected recordType type**
 ```java 
 // send the /predict request.
 CompletableFuture<JsonNode> future = mlemClient.predict(requestBody);
@@ -180,8 +187,12 @@ There are the following sample models, that can be used for deployment and reque
 - Iris
 - Digits
 - Wine
+- LightGBM
+- XGBoost
+- Torch
+- TensorFlow
 
-They are in `com.akvelon.client.model.request.typical` package.
+Some of them are in `com.akvelon.client.model.request.typical` package.
 
 They are built using `LearnModelScript.py` scripts for each model.
 
@@ -189,14 +200,16 @@ They are built using `LearnModelScript.py` scripts for each model.
 Mlem client support the following types:
 - Pandas types: dataframe
 - Numpy types: ndarray
-- Primitive types: float64, int (int8, int16,int32), uint (uint8, uint16, uint32, uint64), bool
+- List type
+- TensorFlow types: torch
+- Primitive types: float64, int (int8, int16,int32), uint (uint8, uint16, uint32, uint64), bool, str
 
 Please note that mlem [already sorts](https://github.com/iterative/mlem/blob/afb18dba1cbc3e69590caa2f2a93f99dcdddf1f1/mlem/contrib/pandas.py#L161) dataframe fields in right order - so there is no need to worry about columns order for this datatype (treat it just like a dictionary type).
 
 
 ## Shared resources
 
-Some resources should be the same in .NET and Java clients. So, this reprository uses [git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) to get files like `Error_messages.json` and `Log_messages.json` from another private reporsitory - see README.md file in `[root]\ResourcesGenerator\CommonResources` for more details.
+Some resources should be the same in .NET and Java clients. So, this repository uses [git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) to get files like `Error_messages.json` and `Log_messages.json` from another private reporsitory - see README.md file in `[root]\ResourcesGenerator\CommonResources` for more details.
 This file is located in `[root]\ResourcesGenerator\CommonResources` folder, that is a clone of that private repository in fact. So, this folder can contain any shared files defined there.
 
 Regard to this Java repository, the client doesn't use these `.json` files directly. For example, `Error_messages.json` file converts into `\Resources\EM.java` file via `[root]\Update_resources.cmd` script; the same for `Log_messages.json` file and `[root]\MlemApi\Resources\LM.java`. After cloning of the repository you don't need to do anything additional to get the resources. They are already defined in `EM.java` and `LM.java` files.
@@ -215,3 +228,16 @@ MLEM makes the process of packaging and deployment of machine learning models mu
 Use the client with your existing or new applications:
 Web (Spring), Mobile (Android), Desktop (Swing).
 Forget about the need to create spaghetti code and get access to the advantages of MLEM’s features in your apps with the http clients developed by Akvelon's engineers!
+
+## What's Changed in 1.0.2 ?
+Our project has recently undergone several upgrades to improve its functionality and performance.
+
+1) JClient tested and upgraded to support the latest data types supported by MLEM, including LightGBM, XGBoost, Torch, and TensorFlow. This ensures that our client is compatible with the latest machine learning frameworks and can handle a wide range of data types.
+
+2) The JClient code generator improved to create more specific request and response bodies. This makes it easier for users to understand and work with the generated code, improving the overall user experience.
+
+3) The client's main method optimized and refactored to improve its performance and make it more efficient. This helps to reduce processing times and improve the overall speed and responsiveness of the client.
+
+4) The jar file building process customized to ensure that our software is delivered to users in a more streamlined and efficient manner.
+
+5) JClient supports the 0.4.7 version of MLEM 

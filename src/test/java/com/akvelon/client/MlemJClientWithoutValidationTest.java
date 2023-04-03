@@ -1,6 +1,5 @@
 package com.akvelon.client;
 
-import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.RequestBody;
 import com.akvelon.client.model.response.ResponseBody;
 import com.akvelon.client.util.TestDataBuilder;

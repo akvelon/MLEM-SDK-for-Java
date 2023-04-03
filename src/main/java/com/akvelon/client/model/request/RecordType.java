@@ -16,7 +16,7 @@ import java.util.Objects;
 /**
  * A class that provides numbers with their names.
  */
-public final class Record {
+public final class RecordType {
     /**
      * Map of number values with string name key.
      */
@@ -26,7 +26,7 @@ public final class Record {
     /**
      * Empty constructor. Do not remove it.
      */
-    public Record() {
+    public RecordType() {
     }
 
     /**
@@ -36,7 +36,7 @@ public final class Record {
      * @param columns Map of number values with string name key.
      */
     @JsonCreator
-    public Record(Map<String, Number> columns) {
+    public RecordType(Map<String, Number> columns) {
         this.columns = columns;
     }
 
@@ -72,8 +72,8 @@ public final class Record {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Record record = (Record) o;
-        return columns.equals(record.columns);
+        RecordType recordType = (RecordType) o;
+        return columns.equals(recordType.columns);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.akvelon.client.model.validation;
 
+import com.akvelon.client.model.common.DataType;
+
 import java.util.List;
 
 /**
@@ -7,14 +9,13 @@ import java.util.List;
  */
 public final class RecordSetColumnSchema {
     /**
-     * The column name.
-     */
-    private String name;
-    /**
      * The column type.
      */
     private final DataType type;
-
+    /**
+     * The column name.
+     */
+    private String name;
     /**
      * Shapes list.
      */

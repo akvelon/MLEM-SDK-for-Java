@@ -6,6 +6,11 @@ package com.akvelon.client.util;
  */
 public class Logger {
     private static Logger INSTANCE;
+    /**
+     * System.Logger instances log messages that will be routed to the underlying.
+     * logging framework the LoggerFinder uses.
+     */
+    private System.Logger logger;
 
     private Logger() {
     }
@@ -17,12 +22,6 @@ public class Logger {
 
         return INSTANCE;
     }
-
-    /**
-     * System.Logger instances log messages that will be routed to the underlying.
-     * logging framework the LoggerFinder uses.
-     */
-    private System.Logger logger;
 
     public void setLogger(System.Logger logger) {
         this.logger = logger;

@@ -48,12 +48,11 @@ final class MlemJClientImpl implements MlemJClient {
     private final HttpClient httpClient;
 
     private final JsonParser jsonParser;
-
+    private final boolean validationOn;
     /**
      * Requests bodies schema.
      */
     private ApiSchema apiSchema;
-    private final boolean validationOn;
 
     /**
      * Constructor for creating the implementation of Mlem HttpClient.

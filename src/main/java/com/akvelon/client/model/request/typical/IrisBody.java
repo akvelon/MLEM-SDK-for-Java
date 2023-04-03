@@ -1,7 +1,7 @@
 package com.akvelon.client.model.request.typical;
 
-import com.akvelon.client.model.request.Record;
 import com.akvelon.client.model.request.RecordSet;
+import com.akvelon.client.model.request.RecordType;
 import com.akvelon.client.model.request.RequestBody;
 
 /**
@@ -18,15 +18,15 @@ public final class IrisBody extends RequestBody {
      * @param petalWidth  a value for petal width (cm).
      */
     public IrisBody(String property, double sepalLength, double petalLength, double sepalWidth, double petalWidth) {
-        Record record = new Record();
-        record.addColumn(IrisProperty.SEPAL_LENGTH, sepalLength);
-        record.addColumn(IrisProperty.PETAL_LENGTH, petalLength);
-        record.addColumn(IrisProperty.SEPAL_WIDTH, sepalWidth);
-        record.addColumn(IrisProperty.PETAL_WIDTH, petalWidth);
+        RecordType recordType = new RecordType();
+        recordType.addColumn(IrisProperty.SEPAL_LENGTH, sepalLength);
+        recordType.addColumn(IrisProperty.PETAL_LENGTH, petalLength);
+        recordType.addColumn(IrisProperty.SEPAL_WIDTH, sepalWidth);
+        recordType.addColumn(IrisProperty.PETAL_WIDTH, petalWidth);
 
         RecordSet recordSet = new RecordSet(property);
-        recordSet.addRecord(record);
+        recordSet.addRecord(recordType);
 
-        this.addParameter(property, recordSet);
+        this.setParameter(property, recordSet);
     }
 }

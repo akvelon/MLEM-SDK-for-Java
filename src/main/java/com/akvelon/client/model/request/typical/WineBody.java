@@ -1,7 +1,7 @@
 package com.akvelon.client.model.request.typical;
 
-import com.akvelon.client.model.request.Record;
 import com.akvelon.client.model.request.RecordSet;
+import com.akvelon.client.model.request.RecordType;
 import com.akvelon.client.model.request.RequestBody;
 
 /**
@@ -14,14 +14,14 @@ public class WineBody extends RequestBody {
      * @param property a parameter property name.
      */
     public WineBody(String property, WineColumn[] wineColumns) {
-        Record record = new Record();
+        RecordType recordType = new RecordType();
         for (WineColumn wineColumn : wineColumns) {
-            record.addColumn(wineColumn.getProperty().property, wineColumn.getValue());
+            recordType.addColumn(wineColumn.getProperty().property, wineColumn.getValue());
         }
 
         RecordSet recordSet = new RecordSet(property);
-        recordSet.addRecord(record);
+        recordSet.addRecord(recordType);
 
-        addParameter(property, recordSet);
+        setParameter(property, recordSet);
     }
 }

@@ -1,7 +1,7 @@
 package com.akvelon.client.util;
 
-import com.akvelon.client.model.request.Record;
-import com.akvelon.client.model.response.Value;
+import com.akvelon.client.model.common.Value;
+import com.akvelon.client.model.request.RecordType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -78,16 +78,16 @@ public final class JsonMapper {
     }
 
     /**
-     * @param property the name of property to set value.
-     * @param records  the list of record values.
+     * @param property    the name of property to set value.
+     * @param recordTypes the list of record values.
      * @return This node after adding property value.
      * @throws JsonProcessingException caused when processing JSON finished with a problem.
      */
-    public static JsonNode createObjectNodeWithRecords(String property, List<Record> records) throws JsonProcessingException {
+    public static JsonNode createObjectNodeWithRecords(String property, List<RecordType> recordTypes) throws JsonProcessingException {
         ArrayNode arrayNode = mapper.createArrayNode();
 
-        for (Record record : records) {
-            arrayNode.add(record.toJsonNode());
+        for (RecordType recordType : recordTypes) {
+            arrayNode.add(recordType.toJsonNode());
         }
 
         return mapper.createObjectNode().set(property, arrayNode);
@@ -131,7 +131,7 @@ public final class JsonMapper {
         return arrayNode1Dim;
     }
 
-    public static <T extends Number> JsonNode createObjectNodeWithList(List<T> records1Dim) {
+    public static <T> JsonNode createObjectNodeWithList(List<T> records1Dim) {
         ArrayNode arrayNode1Dim = mapper.createArrayNode();
         for (T record : records1Dim) {
             if (record instanceof Float) {
@@ -142,9 +142,18 @@ public final class JsonMapper {
                 arrayNode1Dim.add((Integer) record);
             } else if (record instanceof Long) {
                 arrayNode1Dim.add((Long) record);
+            } else if (record instanceof String) {
+                arrayNode1Dim.add((String) record);
             }
         }
 
         return arrayNode1Dim;
+    }
+
+    public static JsonNode createPrimitive(String property, String data) {
+        ObjectNode jsonNode = mapper.createObjectNode();
+        jsonNode.put(property, data);
+
+        return jsonNode;
     }
 }

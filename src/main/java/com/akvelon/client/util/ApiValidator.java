@@ -1,11 +1,12 @@
 package com.akvelon.client.util;
 
 import com.akvelon.client.exception.*;
+import com.akvelon.client.model.common.DataType;
+import com.akvelon.client.model.common.Value;
 import com.akvelon.client.model.request.ArraySet;
-import com.akvelon.client.model.request.Record;
 import com.akvelon.client.model.request.RecordSet;
+import com.akvelon.client.model.request.RecordType;
 import com.akvelon.client.model.request.RequestBody;
-import com.akvelon.client.model.response.Value;
 import com.akvelon.client.model.validation.*;
 import com.akvelon.client.resources.EM;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -80,9 +81,9 @@ public final class ApiValidator {
      */
     private void validateValue(Value value, RecordSetSchema recordSetSchema) {
         if (value instanceof RecordSet) {
-            List<Record> recordList = ((RecordSet) value).getRecords();
-            for (Record record : recordList) {
-                validateRecord(record, recordSetSchema);
+            List<RecordType> recordTypeList = ((RecordSet) value).getRecords();
+            for (RecordType recordType : recordTypeList) {
+                validateRecord(recordType, recordSetSchema);
             }
         } else if (value instanceof ArraySet) {
             JsonNode jsonNode = JsonMapper.createObjectNodeWith2DArray(((ArraySet) value).getArrays());
@@ -94,15 +95,15 @@ public final class ApiValidator {
      * Validate Record object by given schema.
      * Throw exception if the specified parameters is not equal to record schema.
      *
-     * @param record          the Record object to validate.
+     * @param recordType      the Record object to validate.
      * @param recordSetSchema the record description provided by schema.
      */
-    private void validateRecord(Record record, RecordSetSchema recordSetSchema) {
-        if (recordSetSchema.getType().equals("ndarray")) {
+    private void validateRecord(RecordType recordType, RecordSetSchema recordSetSchema) {
+        if (recordSetSchema.getType().equals(DataType.Ndarray.type)) {
             return;
         }
 
-        Map<String, Number> columns = record.getColumns();
+        Map<String, Number> columns = recordType.getColumns();
         if (columns.isEmpty()) {
             String exceptionMessage = String.format(EM.MapModelColumnsIsEmpty);
             Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
@@ -127,7 +128,7 @@ public final class ApiValidator {
             }
 
             String argProperty = recordSetColumnSchema.getName();
-            if (argProperty == null || argProperty.isEmpty()) {
+            if (argProperty == null) {
                 String exceptionMessage = EM.EmptyArgument;
                 Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
                 throw new EmptyArgumentException(exceptionMessage);
@@ -199,7 +200,7 @@ public final class ApiValidator {
         }
 
         String ndarray = returnType.getType();
-        if (!response.isArray() && ndarray.equals("ndarray")) {
+        if (!response.isArray() && ndarray.equals(DataType.Ndarray.type)) {
             String exceptionMessage = String.format(EM.InvalidJsonResponseFromModel, response);
             Logger.getInstance().log(System.Logger.Level.ERROR, exceptionMessage);
             throw new InvalidResponseTypeException(exceptionMessage);
