@@ -1,12 +1,12 @@
 package {{packages}}
 
 import com.akvelon.client.model.request.RequestBody;
-import com.akvelon.client.model.response.Value;
+{{importClass}}
 
 public final class {{className}} extends RequestBody {
-    {{#properties}}
-    public void add{{methodName}}(Value value) {
-        addParameter("{{property}}", value);
+    {{#requestProperties}}
+    public void set{{methodName}}({{valueClass}} value) {
+        setParameter("{{property}}", value);
     }
-    {{/properties}}
+    {{/requestProperties}}
 }

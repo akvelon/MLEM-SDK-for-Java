@@ -4,7 +4,6 @@ import com.akvelon.client.exception.*;
 import com.akvelon.client.model.request.RequestBody;
 import com.akvelon.client.model.request.typical.IrisBody;
 import com.akvelon.client.model.response.ResponseBody;
-import com.akvelon.client.util.JsonParser;
 import com.akvelon.client.util.TestDataBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.AfterAll;
@@ -53,7 +52,7 @@ public class MlemJClientTest {
     @Test
     @DisplayName("Test post /predict method with Request request and Json response")
     public void testPredictRequest() throws ExecutionException, InterruptedException, IOException {
-        RequestBody requestBody = TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSet());
+        RequestBody requestBody = TestDataBuilder.buildRequest("data", TestDataBuilder.buildIrisRecordSet());
         assertResponseJsonOrHandleException(jClient.predict(requestBody));
     }
 
@@ -66,7 +65,7 @@ public class MlemJClientTest {
     @Test
     @DisplayName("Test post /predictProba method with Request request and Json response")
     public void testPredictProbaRequest() throws ExecutionException, InterruptedException, IOException {
-        RequestBody requestBody = TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSet());
+        RequestBody requestBody = TestDataBuilder.buildRequest("data", TestDataBuilder.buildIrisRecordSet());
 
         assertResponseJsonOrHandleException(jClient.call(POST_PREDICT_PROBA, requestBody));
     }
@@ -98,9 +97,9 @@ public class MlemJClientTest {
 
         MlemJClientImpl mlemJClient = new MlemJClientImpl(executorService, HOST_URL, LOGGER, true);
         List<RequestBody> dataRequestList = Arrays.asList(
-                TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSet()),
-                TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSet()),
-                TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSet()));
+                TestDataBuilder.buildRequest("data", TestDataBuilder.buildIrisRecordSet()),
+                TestDataBuilder.buildRequest("data", TestDataBuilder.buildIrisRecordSet()),
+                TestDataBuilder.buildRequest("data", TestDataBuilder.buildIrisRecordSet()));
         CompletableFuture<List<ResponseBody>> completableFutures = mlemJClient.predict(dataRequestList);
 
         assertResponseListOrHandleException(completableFutures);
@@ -115,9 +114,9 @@ public class MlemJClientTest {
 
         MlemJClientImpl mlemJClient = new MlemJClientImpl(executorService, HOST_URL, LOGGER, true);
         List<RequestBody> dataRequestList = Arrays.asList(
-                TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSet()),
-                TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSet()),
-                TestDataBuilder.buildRequest("data", TestDataBuilder.buildRecordSet()));
+                TestDataBuilder.buildRequest("data", TestDataBuilder.buildIrisRecordSet()),
+                TestDataBuilder.buildRequest("data", TestDataBuilder.buildIrisRecordSet()),
+                TestDataBuilder.buildRequest("data", TestDataBuilder.buildIrisRecordSet()));
         CompletableFuture<List<ResponseBody>> completableFutures = mlemJClient.call(POST_PREDICT_PROBA, dataRequestList);
 
         assertResponseListOrHandleException(completableFutures);

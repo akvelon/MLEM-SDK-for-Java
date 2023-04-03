@@ -1,13 +1,13 @@
 package {{packages}}
 
-import com.akvelon.client.model.response.ArrayValue;
+import com.akvelon.client.model.common.*;
 import com.akvelon.client.model.response.ResponseBody;
-import com.akvelon.client.model.validation.DataType;
+import com.akvelon.client.model.common.DataType;
 
 import java.util.List;
 
 public final class {{className}} extends ResponseBody {
-    public {{className}}({{#properties}}{{type}} {{argument}}{{/properties}}) {
-        super({{#properties}}{{firstResponseConstructorArg}}, {{secondResponseConstructorArg}}{{/properties}});
+    public {{className}}({{#responseProperties}}{{type}} {{argument}}{{/responseProperties}}) {
+        super({{#responseProperties}}{{firstResponseConstructorArg}}, {{secondResponseConstructorArg}}{{/responseProperties}});
     }
 }

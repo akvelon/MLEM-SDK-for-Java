@@ -1,7 +1,7 @@
 package com.akvelon.client.util;
 
 import com.akvelon.client.model.request.ArraySet;
-import com.akvelon.client.model.request.Record;
+import com.akvelon.client.model.request.RecordType;
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.RequestBody;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -82,74 +82,87 @@ public class TestDataBuilder {
         return JsonMapper.readValue("[[1.7, 2.1]]", JsonNode.class);
     }
 
-    public static RecordSet buildRecordSet() throws JsonProcessingException {
-        Record record = new Record();
-        record.addColumn("sepal length (cm)", 1.2);
-        record.addColumn("sepal width (cm)", 2.4);
-        record.addColumn("petal length (cm)", 3.3);
-        record.addColumn("petal width (cm)", 4.1);
-        JsonNode jsonNode = record.toJsonNode();
+    public static RecordSet buildIrisRecordSet() throws JsonProcessingException {
+        RecordType recordType = new RecordType();
+        recordType.addColumn("sepal length (cm)", 1.2);
+        recordType.addColumn("sepal width (cm)", 2.4);
+        recordType.addColumn("petal length (cm)", 3.3);
+        recordType.addColumn("petal width (cm)", 4.1);
+        JsonNode jsonNode = recordType.toJsonNode();
         Assertions.assertNotNull(jsonNode);
 
         RecordSet recordSet = new RecordSet("values");
-        recordSet.addRecord(record);
+        recordSet.addRecord(recordType);
 
         return recordSet;
     }
 
     public static RecordSet buildRecordSetWrongValue() throws JsonProcessingException {
-        Record record = new Record();
-        record.addColumn("sepal length (cm)", 1);
-        record.addColumn("sepal width (cm)", 2.4);
-        record.addColumn("petal length (cm)", 3.3);
-        record.addColumn("petal width (cm)", 4.1);
-        JsonNode jsonNode = record.toJsonNode();
+        RecordType recordType = new RecordType();
+        recordType.addColumn("sepal length (cm)", 1);
+        recordType.addColumn("sepal width (cm)", 2.4);
+        recordType.addColumn("petal length (cm)", 3.3);
+        recordType.addColumn("petal width (cm)", 4.1);
+        JsonNode jsonNode = recordType.toJsonNode();
         Assertions.assertNotNull(jsonNode);
 
         RecordSet recordSet = new RecordSet("values");
-        recordSet.addRecord(record);
+        recordSet.addRecord(recordType);
 
         return recordSet;
     }
 
     public static RecordSet buildRecordSetWrongName() throws JsonProcessingException {
-        Record record = new Record();
-        record.addColumn("length (cm)", 1);
-        record.addColumn("sepal width (cm)", 2.4);
-        record.addColumn("petal length (cm)", 3.3);
-        record.addColumn("petal width (cm)", 4.1);
-        JsonNode jsonNode = record.toJsonNode();
+        RecordType recordType = new RecordType();
+        recordType.addColumn("length (cm)", 1);
+        recordType.addColumn("sepal width (cm)", 2.4);
+        recordType.addColumn("petal length (cm)", 3.3);
+        recordType.addColumn("petal width (cm)", 4.1);
+        JsonNode jsonNode = recordType.toJsonNode();
         Assertions.assertNotNull(jsonNode);
 
         RecordSet recordSet = new RecordSet("values");
-        recordSet.addRecord(record);
+        recordSet.addRecord(recordType);
 
         return recordSet;
     }
 
     public static RecordSet buildRecordSetWrongCount() throws JsonProcessingException {
-        Record record = new Record();
-        record.addColumn("length (cm)", 1);
-        JsonNode jsonNode = record.toJsonNode();
+        RecordType recordType = new RecordType();
+        recordType.addColumn("length (cm)", 1);
+        JsonNode jsonNode = recordType.toJsonNode();
         Assertions.assertNotNull(jsonNode);
 
         RecordSet recordSet = new RecordSet("values");
-        recordSet.addRecord(record);
+        recordSet.addRecord(recordType);
 
         return recordSet;
     }
 
     public static RequestBody buildRequest(String property, RecordSet recordSet) {
         RequestBody requestBody = new RequestBody();
-        requestBody.addParameter(property, recordSet);
+        requestBody.setParameter(property, recordSet);
 
         return requestBody;
     }
 
     public static <T extends Number> RequestBody buildRequest(String property, ArraySet<T> recordSet) {
         RequestBody requestBody = new RequestBody();
-        requestBody.addParameter(property, recordSet);
+        requestBody.setParameter(property, recordSet);
 
         return requestBody;
+    }
+
+    public static RecordSet buildSeriesTypeRecordSet() throws JsonProcessingException {
+        RecordType recordType = new RecordType();
+        recordType.addColumn("Pclass", 1L);
+        recordType.addColumn("Parch", 2L);
+        JsonNode jsonNode = recordType.toJsonNode();
+        Assertions.assertNotNull(jsonNode);
+
+        RecordSet recordSet = new RecordSet("values");
+        recordSet.addRecord(recordType);
+
+        return recordSet;
     }
 }

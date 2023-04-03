@@ -1,6 +1,6 @@
 package com.akvelon.client.model.request;
 
-import com.akvelon.client.model.response.Value;
+import com.akvelon.client.model.common.Value;
 import com.akvelon.client.util.JsonMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 

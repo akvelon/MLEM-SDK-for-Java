@@ -1,8 +1,9 @@
 package com.akvelon.client.util;
 
 import com.akvelon.client.exception.*;
-import com.akvelon.client.model.request.Record;
+import com.akvelon.client.model.common.DataType;
 import com.akvelon.client.model.request.RecordSet;
+import com.akvelon.client.model.request.RecordType;
 import com.akvelon.client.model.request.RequestBody;
 import com.akvelon.client.model.validation.*;
 import com.akvelon.client.resources.EM;
@@ -88,14 +89,14 @@ public final class JsonParser {
      * @return the RecordSetDesc object of the conversion.
      * @throws IOException signals that an illegal recordSetType has occurred.
      */
-    private RecordSetSchema parseRecordSetSchema(JsonNode type_) throws IOException {
+    private <T> RecordSetSchema parseRecordSetSchema(JsonNode type_) throws IOException {
         String recordSetDescType = type_.get("type").asText();
 
         if (recordSetDescType.equals("dataframe")) {
             JsonNode columns = type_.get("columns");
             JsonNode dtypes = type_.get("dtypes");
 
-            List<String> names = JsonMapper.readList(columns);
+            List<T> names = JsonMapper.readList(columns);
             List<String> dTypes = JsonMapper.readList(dtypes);
             if (names.size() != dTypes.size()) {
                 String exceptionMessage = EM.InvalidApiSchema + ", columns size must be equal to dtypes. " +
@@ -107,13 +108,18 @@ public final class JsonParser {
             ArrayList<RecordSetColumnSchema> recordSetColumnSchemas = new ArrayList<>();
 
             for (int i = 0; i < names.size(); i++) {
-                recordSetColumnSchemas.add(new RecordSetColumnSchema(names.get(i), DataType.fromString(dTypes.get(i))));
+                T name = names.get(i);
+                if (name instanceof String) {
+                    recordSetColumnSchemas.add(new RecordSetColumnSchema((String) name, DataType.fromString(dTypes.get(i))));
+                } else if (name instanceof Integer) {
+                    recordSetColumnSchemas.add(new RecordSetColumnSchema(name.toString(), DataType.fromString(dTypes.get(i))));
+                }
             }
 
             return new RecordSetSchema(recordSetDescType, recordSetColumnSchemas);
         }
 
-        if (recordSetDescType.equals("ndarray")) {
+        if (recordSetDescType.equals("ndarray") || recordSetDescType.equals("torch")) {
             JsonNode shapes = type_.get("shape");
             if (!shapes.isArray()) {
                 String exceptionMessage = EM.InvalidApiSchema + ", shapes is not array: " + shapes;
@@ -175,7 +181,11 @@ public final class JsonParser {
             return new ReturnType(jsonNode.get("dtype").asText(), jsonNode.get("type").asText());
         }
 
-        JsonNode shapes = jsonNode.get("shapes");
+        if (type.asText().equals("primitive")) {
+            return new ReturnType(jsonNode.get("ptype").asText(), jsonNode.get("type").asText());
+        }
+
+        JsonNode shapes = jsonNode.get("shape");
 
         if (!(shapes instanceof ArrayNode)) {
             String exceptionMessage = String.format(EM.UnknownDataTypeInSchema, returnsJsonNode);
@@ -193,7 +203,7 @@ public final class JsonParser {
             shapesList.add(shape.intValue());
         }
 
-        return new ReturnType(shapesList, returnsJsonNode.get("dtype").asText(), returnsJsonNode.get("type").asText());
+        return new ReturnType(shapesList, jsonNode.get("dtype").asText(), jsonNode.get("type").asText());
     }
 
     /**
@@ -208,7 +218,7 @@ public final class JsonParser {
         RequestBody requestBody = new RequestBody();
 
         for (Map.Entry<String, JsonNode> entry : parameters.entrySet()) {
-            requestBody.addParameter(entry.getKey(), parseRecordSet(entry.getValue()));
+            requestBody.setParameter(entry.getKey(), parseRecordSet(entry.getValue()));
         }
 
         return requestBody;
@@ -243,16 +253,16 @@ public final class JsonParser {
         return recordSet;
     }
 
-    private Record parseRecord(JsonNode recordJson) throws IOException {
-        Record record = new Record();
+    private RecordType parseRecord(JsonNode recordJson) throws IOException {
+        RecordType recordType = new RecordType();
 
         Map<String, JsonNode> recordsMap = JsonMapper.readMap(recordJson);
         for (Map.Entry<String, JsonNode> entry : recordsMap.entrySet()) {
             String value = entry.getValue().asText();
             Number valueNum = JsonMapper.readValue(value, Number.class);
-            record.addColumn(entry.getKey(), valueNum);
+            recordType.addColumn(entry.getKey(), valueNum);
         }
 
-        return record;
+        return recordType;
     }
 }

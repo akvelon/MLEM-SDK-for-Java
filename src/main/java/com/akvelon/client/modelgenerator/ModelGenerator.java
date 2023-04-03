@@ -13,11 +13,10 @@ import java.util.concurrent.ExecutionException;
  * A class that provides a Java-classes generation.
  */
 public class ModelGenerator {
-    private final MlemJClient jClient;
-
     private final static String REQUEST_BODY_PATTERN_FILE_NAME = "request_body.mustache";
     private final static String RESPONSE_PATTERN_FILE_NAME = "response.mustache";
     private final static String DIRECTORY_AND_FILE_NAME = "generated/{0}.java";
+    private final MlemJClient jClient;
 
     /**
      * Create the ModelGenerator with jClient.
@@ -26,26 +25,6 @@ public class ModelGenerator {
      */
     public ModelGenerator(String host) {
         this.jClient = MlemJClientFactory.createMlemJClient(host);
-    }
-
-    /**
-     * Generate classes by given directory and package name with mustache pattern.
-     * The mustache patterns stored in resource directory.
-     *
-     * @param path        the path to the file.
-     * @param packageName the name of the package.
-     * @throws ExecutionException   Exception thrown when attempting to retrieve the result
-     *                              of a task that aborted by throwing an exception.
-     * @throws InterruptedException Thrown when a thread is waiting, sleeping, or otherwise occupied,
-     *                              and the thread is interrupted, either before or during the activity.
-     */
-    public void generate(String path, String packageName) throws ExecutionException, InterruptedException {
-        if (path == null || path.isEmpty()) {
-            throw new EmptyDirectoryPathException("Directory path must not be null or empty");
-        }
-        ApiSchema apiSchema = jClient.interfaceJsonAsync().get();
-        generateRequestBodies(apiSchema, path, packageName);
-        generateResponses(apiSchema, path, packageName);
     }
 
     /*
@@ -86,5 +65,25 @@ public class ModelGenerator {
             String content = Util.mustacheContent(context, pattern).replace("\\&lt;", "<").replace("\\&gt;", ">");
             Util.generateFile(MessageFormat.format(path + DIRECTORY_AND_FILE_NAME, context.className), content);
         }
+    }
+
+    /**
+     * Generate classes by given directory and package name with mustache pattern.
+     * The mustache patterns stored in resource directory.
+     *
+     * @param path        the path to the file.
+     * @param packageName the name of the package.
+     * @throws ExecutionException   Exception thrown when attempting to retrieve the result
+     *                              of a task that aborted by throwing an exception.
+     * @throws InterruptedException Thrown when a thread is waiting, sleeping, or otherwise occupied,
+     *                              and the thread is interrupted, either before or during the activity.
+     */
+    public void generate(String path, String packageName) throws ExecutionException, InterruptedException {
+        if (path == null || path.isEmpty()) {
+            throw new EmptyDirectoryPathException("Directory path must not be null or empty");
+        }
+        ApiSchema apiSchema = jClient.interfaceJsonAsync().get();
+        generateRequestBodies(apiSchema, path, packageName);
+        generateResponses(apiSchema, path, packageName);
     }
 }

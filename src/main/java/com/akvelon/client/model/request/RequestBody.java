@@ -1,7 +1,7 @@
 package com.akvelon.client.model.request;
 
+import com.akvelon.client.model.common.Value;
 import com.akvelon.client.model.response.ResponseBody;
-import com.akvelon.client.model.response.Value;
 import com.akvelon.client.util.JsonMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -24,12 +24,8 @@ public class RequestBody {
      * @param property the property name.
      * @param value    the RecordSet object.
      */
-    public void addParameter(String property, Value value) {
+    public void setParameter(String property, Value value) {
         parameters.put(property, value);
-    }
-
-    public void setParameters(Map<String, Value> parameters) {
-        this.parameters = parameters;
     }
 
     /**
@@ -43,6 +39,10 @@ public class RequestBody {
 
     public Map<String, Value> getParameters() {
         return parameters;
+    }
+
+    public void setParameters(Map<String, Value> parameters) {
+        this.parameters = parameters;
     }
 
     public ResponseBody createResponse() {

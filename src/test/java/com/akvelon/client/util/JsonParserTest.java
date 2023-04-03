@@ -1,9 +1,9 @@
 package com.akvelon.client.util;
 
-import com.akvelon.client.model.request.Record;
+import com.akvelon.client.model.request.RecordType;
 import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.model.request.RequestBody;
-import com.akvelon.client.model.response.Value;
+import com.akvelon.client.model.common.Value;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -27,10 +27,10 @@ public class JsonParserTest {
             RecordSet recordSet = (RecordSet) entry.getValue();
             Assertions.assertNotNull(recordSet);
 
-            List<Record> records = recordSet.getRecords();
-            Assertions.assertNotNull(records);
-            for (Record record : records) {
-                Assertions.assertNotNull(record);
+            List<RecordType> recordTypes = recordSet.getRecords();
+            Assertions.assertNotNull(recordTypes);
+            for (RecordType recordType : recordTypes) {
+                Assertions.assertNotNull(recordType);
             }
         }
     }

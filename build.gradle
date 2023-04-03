@@ -3,18 +3,18 @@ plugins {
 }
 
 group 'com.akvelon'
-version '1.0'
-description = 'mlem 0.4.0'
+version '1.0.2'
+description = 'mlem 0.4.7'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
 
     implementation 'com.github.spullara.mustache.java:mustache-maven-plugin:0.9.10'
 }
@@ -22,7 +22,7 @@ dependencies {
 jar {
     manifest {
         attributes(
-                'Main-Class': 'com.akvelon.client.MlemJClientImpl',
+                'Main-Class': 'com.akvelon.client.MlemJClientImpl'
         )
     }
 }
@@ -30,7 +30,7 @@ jar {
 task fatJar(type: Jar) {
     manifest.from jar.manifest
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    classifier = 'all'
+    archiveClassifier = 'all'
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     } {

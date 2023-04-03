@@ -26,14 +26,14 @@ public class RequestBodyMappingTest {
     @Test
     @DisplayName("Test a deserialization JSON content from given RecordSet content.")
     public void testRecordSetToJsonNode() throws JsonProcessingException {
-        JsonNode jsonArray = TestDataBuilder.buildRecordSet().toJson();
+        JsonNode jsonArray = TestDataBuilder.buildIrisRecordSet().toJson();
         Assertions.assertNotNull(jsonArray);
     }
 
     @Test
     @DisplayName("Test a deserialization JSON content from given Request content.")
     public void testRequestToJsonNode() throws JsonProcessingException {
-        RecordSet recordSet = TestDataBuilder.buildRecordSet();
+        RecordSet recordSet = TestDataBuilder.buildIrisRecordSet();
         RequestBody requestBody = TestDataBuilder.buildRequest("data", recordSet);
         JsonNode jsonNode = requestBody.toJson();
 

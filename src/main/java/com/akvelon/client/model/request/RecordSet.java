@@ -1,6 +1,6 @@
 package com.akvelon.client.model.request;
 
-import com.akvelon.client.model.response.Value;
+import com.akvelon.client.model.common.Value;
 import com.akvelon.client.util.JsonMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -16,7 +16,7 @@ public final class RecordSet extends Value {
     /**
      * The records list.
      */
-    private final List<Record> records = new ArrayList<>();
+    private final List<RecordType> recordTypes = new ArrayList<>();
 
     private final String property;
 
@@ -24,12 +24,12 @@ public final class RecordSet extends Value {
         this.property = property;
     }
 
-    public List<Record> getRecords() {
-        return records;
+    public List<RecordType> getRecords() {
+        return recordTypes;
     }
 
-    public void addRecord(Record record) {
-        records.add(record);
+    public void addRecord(RecordType recordType) {
+        recordTypes.add(recordType);
     }
 
     @Override
@@ -37,16 +37,16 @@ public final class RecordSet extends Value {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RecordSet recordSet = (RecordSet) o;
-        return Objects.equals(records, recordSet.records);
+        return Objects.equals(recordTypes, recordSet.recordTypes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(records);
+        return Objects.hash(recordTypes);
     }
 
     @Override
     public JsonNode toJson() throws JsonProcessingException {
-        return JsonMapper.createObjectNodeWithRecords(property, records);
+        return JsonMapper.createObjectNodeWithRecords(property, recordTypes);
     }
 }

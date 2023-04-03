@@ -19,7 +19,7 @@ public final class RequestBodySchema {
      * Construct a new RequestDesc.
      *
      * @param parameterDescMap the request parameters description.
-     * @param returnType    the request return schema.
+     * @param returnType       the request return schema.
      */
     public RequestBodySchema(Map<String, RecordSetSchema> parameterDescMap, ReturnType returnType) {
         this.parameterDescMap = parameterDescMap;

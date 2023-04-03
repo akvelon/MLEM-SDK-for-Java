@@ -1,6 +1,8 @@
 package com.akvelon.client.model.response;
 
-import com.akvelon.client.model.validation.DataType;
+import com.akvelon.client.model.common.ArrayValue;
+import com.akvelon.client.model.common.DataType;
+import com.akvelon.client.model.common.Value;
 import com.akvelon.client.util.JsonMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 

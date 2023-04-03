@@ -1,5 +1,6 @@
-package com.akvelon.client.model.validation;
+package com.akvelon.client.model.common;
 
+import com.akvelon.client.model.request.RecordSet;
 import com.akvelon.client.resources.EM;
 
 import java.util.List;
@@ -20,19 +21,38 @@ public enum DataType {
     Uint64("uint64", Long.class),
     Bool("bool", Boolean.class),
     Str("str", String.class),
-    Ndarray("ndarray", List.class);
+    Ndarray("ndarray", List.class, "import java.util.List;"),
+    Dataframe("dataframe", RecordSet.class, "import com.akvelon.client.model.request.RecordSet;"),
+    List("list", ArrayValue.class, "import com.akvelon.client.model.common.ArrayValue;"),
+    Primitive("primitive", Primitive.class, "import com.akvelon.client.model.common.Primitive;"),
+    Torch("torch", ArrayValue.class, "import com.akvelon.client.model.common.ArrayValue;");
 
     public final String type;
     private final Class clazz;
+    private String importString;
 
     /**
      * Constructs a new DataType.
      *
-     * @param type the representation of DataType.
+     * @param type  the representation of DataType.
+     * @param clazz the Java class
      */
     DataType(String type, Class clazz) {
         this.type = type;
         this.clazz = clazz;
+    }
+
+    /**
+     * Constructs a new DataType.
+     *
+     * @param type         the representation of DataType.
+     * @param clazz        the Java class
+     * @param importString import of the Class
+     */
+    DataType(String type, Class clazz, String importString) {
+        this.type = type;
+        this.clazz = clazz;
+        this.importString = importString;
     }
 
     /**
@@ -54,5 +74,9 @@ public enum DataType {
 
     public Class getClazz() {
         return clazz;
+    }
+
+    public String getImportString() {
+        return importString;
     }
 }

@@ -1,4 +1,4 @@
-package com.akvelon.client.model.response;
+package com.akvelon.client.model.common;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
