@@ -8,6 +8,6 @@ import java.util.List;
 
 public final class {{className}} extends ResponseBody {
     public {{className}}({{#responseProperties}}{{type}} {{argument}}{{/responseProperties}}) {
-        super({{#responseProperties}}{{firstResponseConstructorArg}}, {{secondResponseConstructorArg}}{{/responseProperties}});
+        super({{#responseProperties}}{{responseConstructorFirstArg}}, {{responseConstructorSecondArg}}{{/responseProperties}});
     }
 }
